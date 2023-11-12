@@ -191,7 +191,7 @@ function LA.BroadcastTable(AssignmentsTable)
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeRaid)
     else
-        LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeRaid, LA.CommTarget)
     end
 	--LockAssignment:SendCommMessage("LAComms", serializedTable, "WHISPER", "John Doe")
 end
@@ -202,7 +202,7 @@ function LA.BroadcastSSCooldown(myself)
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeRaid)
     else
-        LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeRaid, LA.CommTarget)
     end
 end
 
@@ -214,7 +214,7 @@ function LA.RequestAssignments()
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid)
     else
-        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid, LA.CommTarget)
     end
 end
 
@@ -231,7 +231,7 @@ function  LA.SendAssignmentAcknowledgement(answer)
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid)
     else
-        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid, LA.CommTarget)
     end
 end
 
@@ -243,7 +243,7 @@ function LA.SendAssignmentReset()
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid)
     else
-        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("LAComms", message, LA.CommModeRaid, LA.CommTarget)
     end
 end
 
