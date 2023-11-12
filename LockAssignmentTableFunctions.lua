@@ -112,7 +112,7 @@ do
 	end 
 	
 	-- Gets the index of a string value.
-	function NL.GetIndexFromTable(table, value)
+	function LA.GetIndexFromTable(table, value)
 		local index={}
 		for k,v in pairs(table) do
 		   index[v]=k
@@ -127,7 +127,7 @@ do
 		return result
 	end
 
-	function NL.GetSSIndexFromTable(table, value)
+	function LA.GetSSIndexFromTable(table, value)
 		local index={}
 		for k,v in pairs(table) do
 		   index[v.Name]=k
@@ -142,7 +142,7 @@ do
 		return result
 	end
 
-	function NL.GetTableLength(T)
+	function LA.GetTableLength(T)
 		local count = 0
 		for _ in pairs(T) do count = count + 1 end
 		return count

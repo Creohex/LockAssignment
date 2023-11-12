@@ -1,26 +1,26 @@
 --General global variables
-NL = {};
-NL.RaidMode = true;
-NL.DebugMode = false;
-NL.Version = 113
-NL.LockyFriendFrameWidth = 500;
-NL.LockyFriendFrameHeight = 128
-NL.LockyFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
-NL.LockyData_HasInitialized = false;
-NL.LockyData_Timestamp = 0.0;
-NL.LockyFriendsData = {}; -- Global for storing the warlocks and thier assignements.
-NL.NeverLockyClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
-NL.NeverLockySSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
-NL.NeverLockySSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
+LA = {};
+LA.RaidMode = true;
+LA.DebugMode = false;
+LA.Version = 113
+LA.LockyFriendFrameWidth = 500;
+LA.LockyFriendFrameHeight = 128
+LA.LockyFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
+LA.LockyData_HasInitialized = false;
+LA.LockyData_Timestamp = 0.0;
+LA.LockyFriendsData = {}; -- Global for storing the warlocks and thier assignements.
+LA.NeverLockyClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
+LA.NeverLockySSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
+LA.NeverLockySSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
 if NeverLocky == nil then
 	NeverLocky = LibStub("AceAddon-3.0"):NewAddon("NeverLocky", "AceComm-3.0")
 end
-NL.LockyAssignCheckFrame={}
-NL.IsMyAddonOutOfDate=false;
-NL.MacroName =  "CurseAssignment";
+LA.LockyAssignCheckFrame={}
+LA.IsMyAddonOutOfDate=false;
+LA.MacroName =  "CurseAssignment";
 
 
-function  NL.CreateWarlock(name, curse, banish, raidIndex)
+function  LA.CreateWarlock(name, curse, banish, raidIndex)
 	local Warlock = {}
 			Warlock.Name = name
 			Warlock.CurseAssignment = curse
@@ -38,33 +38,33 @@ function  NL.CreateWarlock(name, curse, banish, raidIndex)
 end
 
 --Pulls all of the warlocks in the raid and initilizes thier assignment data.
-function NL.RegisterWarlocks()
+function LA.RegisterWarlocks()
 	local raidInfo = {}
 	for i=1, 40 do
 		local name, rank, subgroup, level, class, fileName, 
 		  zone, online, isDead, role, isML = GetRaidRosterInfo(i);
 		if not (name == nil) then
 			if fileName == "WARLOCK" then
-				if NL.DebugMode then
+				if LA.DebugMode then
 					print(name .. "-" .. fileName)
 				end
-				table.insert(raidInfo, NL.CreateWarlock(name, "None", "None", i))
+				table.insert(raidInfo, LA.CreateWarlock(name, "None", "None", i))
 			end
 		end		
 	end
-	if NL.GetTableLength(raidInfo) == 0 then
-		NL.RaidMode = false;
-		return NL.RegisterMySoloData();
+	if LA.GetTableLength(raidInfo) == 0 then
+		LA.RaidMode = false;
+		return LA.RegisterMySoloData();
 	else
-		NL.RaidMode = true;
+		LA.RaidMode = true;
 	end
 
 	return raidInfo
 end
 
-function  NL.IsLockyTableDirty(LockyData)
+function  LA.IsLockyTableDirty(LockyData)
 	for k,v in pairs(LockyData) do
-		local lock = NL.GetLockyDataByName(v.Name);
+		local lock = LA.GetLockyDataByName(v.Name);
 		if lock.CurseAssignment ~= v.CurseAssignment or
 		lock.BanishAssignment ~= v.BanishAssignment or 
 		lock.SSAssignment ~= v.SSAssignment then
@@ -75,8 +75,8 @@ function  NL.IsLockyTableDirty(LockyData)
 end
 
 
-function NL.IsMyDataDirty(lockyData)
-	local myData = NL.GetMyLockyData();
+function LA.IsMyDataDirty(lockyData)
+	local myData = LA.GetMyLockyData();
 	if myData.CurseAssignment ~= lockyData.CurseAssignment or
 		myData.BanishAssignment ~= lockyData.BanishAssignment or
 		myData.SSAssignment ~= lockyData.SSAssignment then
@@ -87,42 +87,42 @@ function NL.IsMyDataDirty(lockyData)
 end
 
 -- will merge any newcomers or remove any deserters from the table and return it while leaving assignments intact.
-function NL.UpdateWarlocks(LockyTable)
-	local Newcomers = NL.RegisterWarlocks();	
+function LA.UpdateWarlocks(LockyTable)
+	local Newcomers = LA.RegisterWarlocks();
 	--Register Newcomers
 	for k, v in pairs(Newcomers) do
-		if NL.WarlockIsInTable(v.Name, LockyTable) then
+		if LA.WarlockIsInTable(v.Name, LockyTable) then
 			--Do nothing I think...
 		else
-			if NL.DebugMode then
+			if LA.DebugMode then
 				print("Newcomer detected")
 			end
 
 			--Add the newcomer to the data.
-			table.insert(LockyTable, NL.CreateWarlock(v.Name, "None", "None"));
+			table.insert(LockyTable, LA.CreateWarlock(v.Name, "None", "None"));
 		end
 	end
 	--De-register deserters
 	for k, v in pairs(LockyTable) do
-		if NL.WarlockIsInTable(v.Name, Newcomers) then
+		if LA.WarlockIsInTable(v.Name, Newcomers) then
 			--Do nothing I think...
 		else
 			--Remove the Deserter
-			if NL.DebugMode then
+			if LA.DebugMode then
 				print("Deserter detected")
 			end
-			local p = NL.GetLockyFriendIndexByName(NL.LockyFriendsData, v.Name)
+			local p = LA.GetLockyFriendIndexByName(LA.LockyFriendsData, v.Name)
 			if not (p==nil) then
-				table.remove(NL.LockyFriendsData, p)
+				table.remove(LA.LockyFriendsData, p)
 			end
 		end
 	end
 	return LockyTable;
 end
 
-function NL.MergeAssignments(LockyTable)
+function LA.MergeAssignments(LockyTable)
 	for k,v in pairs(LockyTable) do 
-		local lock = NL.GetLockyDataByName(v.Name);
+		local lock = LA.GetLockyDataByName(v.Name);
 		if lock~=nil then
 			lock.SSAssignment = v.SSAssignment;
 			lock.CurseAssignment = v.CurseAssignment;
@@ -131,14 +131,14 @@ function NL.MergeAssignments(LockyTable)
 	end
 end
 
-function  NL.ResetAssignmentAcks(LockyTable)
+function  LA.ResetAssignmentAcks(LockyTable)
 	for k,v in pairs(LockyTable) do 
-		local lock = NL.GetLockyDataByName(v.Name);
+		local lock = LA.GetLockyDataByName(v.Name);
 		lock.AcceptedAssignments = "nil";
 	end
 end
 
-function NL.WarlockIsInTable(LockyName, LockyTable)
+function LA.WarlockIsInTable(LockyName, LockyTable)
 	for k, v in pairs(LockyTable) do
 		if (v.Name == LockyName) then
 			return true;
@@ -148,7 +148,7 @@ function NL.WarlockIsInTable(LockyName, LockyTable)
 end
 
 --Global List of banish markers
-NL.BanishMarkers = {
+LA.BanishMarkers = {
 	"None",
 	"Diamond",
 	"Star",
@@ -161,7 +161,7 @@ NL.BanishMarkers = {
 }
 
 --Global list of curse options to be displayed in the curse assignment menu.
-NL.CurseOptions = {
+LA.CurseOptions = {
 	"None",
    "Elements",
    "Shadows",
@@ -172,26 +172,26 @@ NL.CurseOptions = {
    "Agony"
 }
 
-NL.AnnouncerOptions = {
+LA.AnnouncerOptions = {
 	"Addon Only",
 	"Raid",
 	"Party",
 	"Whisper"
 }
 
-NL.SSTargets = {};
+LA.SSTargets = {};
 
-NL.SSTargetFlipperTester = true;
+LA.SSTargetFlipperTester = true;
 
 --Function will find main healers in the raid and add them to the SS target dropdown
 --Need to make test mode dynamic.
 
-function NL.GetClassColor(fileName)
+function LA.GetClassColor(fileName)
 return 1, 1, 1, "ffffffff"
 end
 
-function NL.GetSSTargetsFromRaid()
-	if NL.RaidMode then
+function LA.GetSSTargetsFromRaid()
+	if LA.RaidMode then
 		--print("Raid MODE!!")
 		--I need to implement this next time I am in a raid.
 		local results = {}	
@@ -199,7 +199,7 @@ function NL.GetSSTargetsFromRaid()
 			local name, rank, subgroup, level, class, fileName, 
 				zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i);
 
-			local rPerc, gPerc, bPerc, argbHex = NL.GetClassColor(fileName);
+			local rPerc, gPerc, bPerc, argbHex = LA.GetClassColor(fileName);
 			if not (name == nil) then
 				--print(name .. "-" .. fileName .. "-" .. rank .. role)
 				--if fileName == "PRIEST" or fileName == "PALADIN" or fileName == "SHAMAN" or role == "MAINTANK" then
@@ -222,11 +222,11 @@ function NL.GetSSTargetsFromRaid()
 		table.insert(results,ssWithColor)
 		return results
 	else
-		-- if NL.DebugMode then
+		-- if LA.DebugMode then
 		-- 	print("Registering Test SS target data.");
-		-- 	if NL.SSTargetFlipperTester then
-		-- 		NL.SSTargetFlipperTester = false
-		-- 		if NL.DebugMode then
+		-- 	if LA.SSTargetFlipperTester then
+		-- 		LA.SSTargetFlipperTester = false
+		-- 		if LA.DebugMode then
 		-- 			print("Setting SS target set 1.");
 		-- 		end
 		-- 		return {
@@ -239,8 +239,8 @@ function NL.GetSSTargetsFromRaid()
 		-- 			"None"
 		-- 		}
 		-- 	else
-		-- 		NL.SSTargetFlipperTester = true
-		-- 		if NL.DebugMode then
+		-- 		LA.SSTargetFlipperTester = true
+		-- 		if LA.DebugMode then
 		-- 			print("Setting SS target set 2.");
 		-- 		end
 		-- 		return {
@@ -263,20 +263,20 @@ function NL.GetSSTargetsFromRaid()
 	end
 end
 
-NL.SSTargets = NL.GetSSTargetsFromRaid();
+LA.SSTargets = LA.GetSSTargetsFromRaid();
 
-function NL.GetSSTargets()
-	return NL.SSTargets;
+function LA.GetSSTargets()
+	return LA.SSTargets;
 end
 
-function NL.UpdateSSTargets()
-	NL.SSTargets = NL.GetSSTargetsFromRaid();
+function LA.UpdateSSTargets()
+	LA.SSTargets = LA.GetSSTargetsFromRaid();
 --	print ("SS Targets Updated success.")
 end
 
-function NL.GetMyLockyData()
-	for k, v in pairs(NL.LockyFriendsData) do
-		if NL.DebugMode then
+function LA.GetMyLockyData()
+	for k, v in pairs(LA.LockyFriendsData) do
+		if LA.DebugMode then
 			--print(v.Name, " vs ", UnitName("player"));
 		end
         if v.Name == UnitName("player") then
@@ -285,9 +285,9 @@ function NL.GetMyLockyData()
 	end	
 end
 
-function NL.GetMyLockyDataFromTable(lockyDataTable)
+function LA.GetMyLockyDataFromTable(lockyDataTable)
 	for k, v in pairs(lockyDataTable) do
-		if NL.DebugMode then
+		if LA.DebugMode then
 			--print(v.Name, " vs ", UnitName("player"));
 		end
         if v.Name == UnitName("player") then
@@ -296,40 +296,40 @@ function NL.GetMyLockyDataFromTable(lockyDataTable)
     end
 end
 
-function  NL.GetLockyDataByName(name)
-    for k, v in pairs(NL.LockyFriendsData) do
+function  LA.GetLockyDataByName(name)
+    for k, v in pairs(LA.LockyFriendsData) do
         if v.Name == name then
             return v
         end
     end
 end
 
-function NL.SetupAssignmentMacro(CurseAssignment)
+function LA.SetupAssignmentMacro(CurseAssignment)
 	
 	-- If macro exists?
-	local macroIndex = GetMacroIndexByName(NL.MacroName)
+	local macroIndex = GetMacroIndexByName(LA.MacroName)
 	if (macroIndex == 0) then
-		macroIndex = CreateMacro(NL.MacroName, 1, nil, nil, true);
-		if NL.DebugMode then
+		macroIndex = CreateMacro(LA.MacroName, 1, nil, nil, true);
+		if LA.DebugMode then
 			print("Never Locky macro did not exist, creating a new one with ID" .. macroIndex);
 		end
 	end
 	
 	--print('anything working?');
-	local curseName = NL.GetSpellNameFromDropDownList(CurseAssignment);
+	local curseName = LA.GetSpellNameFromDropDownList(CurseAssignment);
 	--print(curseName .. 'vs None');
 	if (curseName == nil) then	
-		if NL.DebugMode then
+		if LA.DebugMode then
 			print("No update applied because no curse selected");
 		end
 	else
-		if NL.DebugMode then
+		if LA.DebugMode then
 			print("Updating macro ".. macroIndex .. " to the new assigment " .. curseName);
 		end
 
-		EditMacro(macroIndex, NL.MacroName, NL.GetSpellTextureFromDropDownList(CurseAssignment), NL.BuildMacroTexe(curseName), 1, 1);
+		EditMacro(macroIndex, LA.MacroName, LA.GetSpellTextureFromDropDownList(CurseAssignment), LA.BuildMacroTexe(curseName), 1, 1);
 		
-		if NL.DebugMode then
+		if LA.DebugMode then
 			print("Update success!!!!!");
 		end
 	end
@@ -337,7 +337,7 @@ function NL.SetupAssignmentMacro(CurseAssignment)
 	-- I think I can just pass in the texture in param 2?
 end
 
-function  NL.BuildMacroTexe(curseName)
+function  LA.BuildMacroTexe(curseName)
 	return "#showtooltip "..
 	 curseName ..
 	 "\n/run CastSpellByName(\""..curseName.."\");"

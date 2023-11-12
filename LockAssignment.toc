@@ -15,10 +15,10 @@ Libs\AceConfig-3.0\AceConfigDialog-3.0\AceConfigDialog-3.0.lua
 Libs\AceConsole-3.0\AceConsole-3.0.lua
 ##Libs\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenuTemplates.xml
 ##Libs\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
-LockyGlobalData.lua
-LockyTableFunctions.lua
-LockyUI.lua
-LockyDataUI.lua
-LockyComms.lua
-NeverLocky.lua
-NeverLocky.xml
+LockAssignmentGlobalData.lua
+LockAssignmentTableFunctions.lua
+LockAssignmentUI.lua
+LockAssignmentDataUI.lua
+LockAssignmentComms.lua
+LockAssignment.lua
+LockAssignment.xml

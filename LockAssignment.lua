@@ -1,5 +1,5 @@
 --Initialization logic for setting up the entire addon
-function NL.NeverLockyInit()
+function LA.NeverLockyInit()
 	if not LockyFrame_HasInitialized then
 		--print("Prepping init")
 		NeverLockyFrame:SetBackdrop({
@@ -10,23 +10,23 @@ function NL.NeverLockyInit()
 			edgeSize = 32,
 			insets = { left = 11, right = 12, top = 12, bottom = 11 }
 		})
-		NL.InitLockyFrameScrollArea()
+		LA.InitLockyFrameScrollArea()
 		--print("ScrollFrame initialized successfully.")
-		NL.RegisterForComms()
+		LA.RegisterForComms()
 		--print("Comms initialized successfully.")
 		LockyFrame_HasInitialized = true
 		--LockyFriendsData = InitLockyFriendData()
 		--print("LockyFriendsData initialized successfully.")
 		--LockyFriendsData = SetDefaultAssignments(LockyFriendsData)
 		--print("LockyFriendsData Default Assignments Set successfully.")
-		NL.UpdateAllLockyFriendFrames();
+		LA.UpdateAllLockyFriendFrames();
 		
 		--print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")
 		--print("Use |cff9322B5/nl|cFFFFFFFF or |cff9322B5/neverlocky|cFFFFFFFF to view assignment information.")
 		--NeverLockyFrame:Show()
-		NL.InitLockyAssignCheckFrame();
-		NL.InitPersonalMonitorFrame();
-		NL.InitAnnouncerOptionFrame();
+		LA.InitLockyAssignCheckFrame();
+		LA.InitPersonalMonitorFrame();
+		LA.InitAnnouncerOptionFrame();
 	end	
 end
 
@@ -37,32 +37,32 @@ function NeverLocky_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
 
 	self.TimeSinceLastClockUpdate = self.TimeSinceLastClockUpdate + elapsed; 	
-	if (self.TimeSinceLastClockUpdate > NL.NeverLockyClocky_UpdateInterval) then
+	if (self.TimeSinceLastClockUpdate > LA.NeverLockyClocky_UpdateInterval) then
 		self.TimeSinceLastClockUpdate = 0;
-		if NL.DebugMode then
+		if LA.DebugMode then
 			--print("Updating the UI");
 		end
-		NL.UpdateLockyClockys()
+		LA.UpdateLockyClockys()
 	end
 
 	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
 	self.TimeSinceLastSSCDBroadcast = self.TimeSinceLastSSCDBroadcast + elapsed;
-	if(self.TimeSinceLastSSCDUpdate > NL.NeverLockySSCD_UpdateInterval) then		
+	if(self.TimeSinceLastSSCDUpdate > LA.NeverLockySSCD_UpdateInterval) then
 		self.TimeSinceLastSSCDUpdate = 0;
-		if NL.DebugMode then
+		if LA.DebugMode then
 			print("Checking SSCD");
 		end
-		NL.CheckSSCD(self)
+		LA.CheckSSCD(self)
 	end
 end
 
-function NL.RegisterRaid()
+function LA.RegisterRaid()
 	local raidInfo = {}
 	for i=1, 40 do
 		local name, rank, subgroup, level, class, fileName, 
 		  zone, online, isDead, role, isML = GetRaidRosterInfo(i);
 		if not (name == nil) then
-			if NL.DebugMode then
+			if LA.DebugMode then
 				print(name .. "-" .. fileName)	
 			end
 			table.insert(raidInfo, name)
@@ -78,103 +78,103 @@ TestType.remove = "Remove Test"
 TestType.setDefault = "Default Settings Test"
 local testmode = TestType.init
 
-function NL.InitLockyFriendData()
-	if(NL.RaidMode) then
-		if NL.DebugMode then
+function LA.InitLockyFriendData()
+	if(LA.RaidMode) then
+		if LA.DebugMode then
 			print("Initializing Friend Data")
 		end
 		DEFAULT_CHAT_FRAME:AddMessage("InitLockyFriendData in raid mode")
-		return NL.RegisterWarlocks()
+		return LA.RegisterWarlocks()
 	else
 		print("Raid mode is not active, running in Test mode.")			
 		if testmode == TestType.init then
 			print("Initializing with Test Data.")
 			testmode = TestType.add
-			return NL.RegisterMyTestData()
+			return LA.RegisterMyTestData()
 		elseif testmode == TestType.add then
 			print("testing add")
-			table.insert(NL.LockyFriendsData, NL.RegisterMyTestData()[1])
+			table.insert(LA.LockyFriendsData, LA.RegisterMyTestData()[1])
 			testmode = TestType.remove
-			return NL.LockyFriendsData
+			return LA.LockyFriendsData
 		elseif testmode == TestType.remove then
 			print("testing remove")
-			local p = NL.GetLockyFriendIndexByName(NL.LockyFriendsData, "Brylack")
+			local p = LA.GetLockyFriendIndexByName(LA.LockyFriendsData, "Brylack")
 			if not (p==nil) then
-				table.remove(NL.LockyFriendsData, p)
+				table.remove(LA.LockyFriendsData, p)
 			end
 			testmode = TestType.setDefault
-			return NL.LockyFriendsData
+			return LA.LockyFriendsData
 		elseif testmode == TestType.setDefault then
 			print ("Setting default selection")
-			NL.LockyFriendsData = NL.SetDefaultAssignments(NL.LockyFriendsData)
+			LA.LockyFriendsData = LA.SetDefaultAssignments(LA.LockyFriendsData)
 			testmode = TestType.init
-			return NL.LockyFriendsData
+			return LA.LockyFriendsData
 		else
-			return NL.LockyFriendsData
+			return LA.LockyFriendsData
 		end		
 	end
 end
 
-function  NL.GetLockyFriendIndexByName(table, name)
+function  LA.GetLockyFriendIndexByName(table, name)
 
 	for key, value in pairs(table) do
 		--print(key, " -- ", value["LockyFrameID"])
 		--print(value.Name)
 		if value.Name == name then
-			if NL.DebugMode then
+			if LA.DebugMode then
 				print(value.Name, "is in position", key)
 			end
 			return key
 		end
 	end
-	if NL.DebugMode then
+	if LA.DebugMode then
 		print(name, "is not in the list.")
 	end
 	return nil
 end
 
 --Generates a series of test data to populate the ui.
-function NL.RegisterTestData()
+function LA.RegisterTestData()
 	local testData = {}
 	for i=1, 5 do
-		table.insert(testData, NL.CreateWarlock("Brylack", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
+		table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	end
 	return testData
 end
 
 --Generates test data that more closly mimics what one could see in an actual raid.
-function NL.RegisterRealisicTestData()
+function LA.RegisterRealisicTestData()
 	local testData = {}
 	--table.insert(testData, AddAWarlock("Brylack", CurseOptions[math.random(1,GetTableLength(CurseOptions))], BanishMarkers[math.random(1,GetTableLength(BanishMarkers))]));
-	table.insert(testData, NL.CreateWarlock("Giandy", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
-	table.insert(testData, NL.CreateWarlock("Melon", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
-	table.insert(testData, NL.CreateWarlock("Brylack", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));	
-	table.insert(testData, NL.CreateWarlock("Itsyrekt", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
-	table.insert(testData, NL.CreateWarlock("Dessian", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
-	table.insert(testData, NL.CreateWarlock("Sociopath", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Giandy", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Melon", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Itsyrekt", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Dessian", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Sociopath", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	return testData
 end
 
 --Generates just my data and returns it in a table.
-function NL.RegisterMyTestData()
+function LA.RegisterMyTestData()
 	local testData = {}
-	table.insert(testData, NL.CreateWarlock("Brylack", NL.CurseOptions[math.random(1,NL.GetTableLength(NL.CurseOptions))], NL.BanishMarkers[math.random(1,NL.GetTableLength(NL.BanishMarkers))]));	
+	table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	return testData
 end
 
-function NL.RegisterMySoloData()
+function LA.RegisterMySoloData()
 	local localizedClass, englishClass, classIndex = UnitClass("player");
 
 	local soloData = {}
 	if englishClass == "WARLOCK" then
-		table.insert(soloData, NL.CreateWarlock(UnitName("player"), "None", "None"));	
+		table.insert(soloData, LA.CreateWarlock(UnitName("player"), "None", "None"));
 	end
 	return soloData
 end
 
 --This is wired to a button click at present.
-function NL.NeverLocky_HideFrame()	
-	if NL.IsUIDirty(NL.LockyFriendsData) then
+function LA.NeverLocky_HideFrame()
+	if LA.IsUIDirty(LA.LockyFriendsData) then
 		print("Changes were not saved.")
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		NeverLockyFrame:Hide()
@@ -184,73 +184,73 @@ function NL.NeverLocky_HideFrame()
 	end
 end
 
-function NL.NeverLocky_Commit()
-	NL.LockyFriendsData = NL.CommitChanges(NL.LockyFriendsData)
-	NL.UpdateAllLockyFriendFrames();
-	NL.SendAssignmentReset();
-	NL.BroadcastTable(NL.LockyFriendsData)
+function LA.NeverLocky_Commit()
+	LA.LockyFriendsData = LA.CommitChanges(LA.LockyFriendsData)
+	LA.UpdateAllLockyFriendFrames();
+	LA.SendAssignmentReset();
+	LA.BroadcastTable(LA.LockyFriendsData)
 	--print("Changes were sent out.");
 
-	NL.AnnounceAssignments();
+	LA.AnnounceAssignments();
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 	--NeverLockyFrame:Hide()
 end
 
 --At this time this is just a test function.
-function NL.Test()
+function LA.Test()
 	print("Updating a frame....")				
-	NL.LockyFriendsData = NL.InitLockyFriendData();
+	LA.LockyFriendsData = LA.InitLockyFriendData();
 	NLTest_Button.Text:SetText(testmode)
 	--UpdateAllLockyFriendFrames();	
-	NL.BroadcastTable(NL.LockyFriendsData);
+	LA.BroadcastTable(LA.LockyFriendsData);
 end
 
 -- Event for handling the frame showing.
-function NL.NeverLocky_OnShowFrame()
+function LA.NeverLocky_OnShowFrame()
 	if not LockyData_HasInitialized then
-		NL.LockyFriendsData = NL.InitLockyFriendData()
+		LA.LockyFriendsData = LA.InitLockyFriendData()
 		
 		--LockyData_Timestamp = 0
 		LockyData_HasInitialized = true
-		if NL.DebugMode then
+		if LA.DebugMode then
 			print("Initialization complete");
 			
-			print("Found " .. NL.GetTableLength(NL.LockyFriendsData) .. " Warlocks in raid." );
+			print("Found " .. LA.GetTableLength(LA.LockyFriendsData) .. " Warlocks in raid." );
 		end		
 	end
 
-	if NL.DebugMode then
+	if LA.DebugMode then
 		print("Frame should be showing now.")	
 	end
 	
 	--PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 	--print("Updating SS targets")
-	NL.UpdateSSTargets()
-	NL.LockyFriendsData = NL.UpdateWarlocks(NL.LockyFriendsData);
-	NL.UpdateAllLockyFriendFrames();	
-	NL.RequestAssignments()
-	if NL.DebugMode then
-		print("Found " .. NL.GetTableLength(NL.LockyFriendsData) .. " Warlocks in raid." );
+	LA.UpdateSSTargets()
+	LA.LockyFriendsData = LA.UpdateWarlocks(LA.LockyFriendsData);
+	LA.UpdateAllLockyFriendFrames();
+	LA.RequestAssignments()
+	if LA.DebugMode then
+		print("Found " .. LA.GetTableLength(LA.LockyFriendsData) .. " Warlocks in raid." );
 	end	
-	if NL.GetTableLength(NL.LockyFriendsData) == 0 then
-		DEFAULT_CHAT_FRAME:AddMessage("NL.NeverLocky_OnShowFrame table empty")
-		NL.RaidMode = false;
-		NL.LockyFriendsData = NL.RegisterMySoloData();
+	if LA.GetTableLength(LA.LockyFriendsData) == 0 then
+		DEFAULT_CHAT_FRAME:AddMessage("LA.NeverLocky_OnShowFrame table empty")
+		LA.RaidMode = false;
+		LA.LockyFriendsData = LA.RegisterMySoloData();
 	end
-	NL.SetExtraChats();
+	LA.SetExtraChats();
 end
 
 -- /command for opening the ui.
 SLASH_NL1 = "/nl"
 SLASH_NL2 = "/neverlocky"
-SlashCmdList["NL"] = function(msg)
+SlashCmdList["LA"] = function(msg)
 
 	if msg == "debug" then
-		if(NL.DebugMode) then
-			NL.DebugMode = false
+		if(LA.DebugMode) then
+			LA.DebugMode = false
 			print("Never Locky Debug Mode OFF")
 		else
-			NL.DebugMode = true
+			LA.DebugMode = true
 			print("Never Locky Debug Mode ON")
 		end		
 	elseif msg == "test" then

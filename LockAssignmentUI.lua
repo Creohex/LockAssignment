@@ -1,11 +1,11 @@
 --Creates a scroll area to hold the locky friend frames. 
 --This logic was lifted from a snippet from wowprogramming.com I think....
 --This needs a refactor.
-function NL.InitLockyFrameScrollArea()
+function LA.InitLockyFrameScrollArea()
 
 	--parent frame 	
 	LockyFrame = CreateFrame("Frame", nil, NeverLockyFrame)
-	LockyFrame:SetWidth(NL.LockyFriendFrameWidth-52)
+	LockyFrame:SetWidth(LA.LockyFriendFrameWidth-52)
 	LockyFrame:SetHeight(500)
 	LockyFrame:SetPoint("CENTER", NeverLockyFrame, "CENTER", -9, 6)
 	
@@ -37,21 +37,21 @@ function NL.InitLockyFrameScrollArea()
 	
 	--content frame 	
 	local content = CreateFrame("Frame", nil, scrollframe) 
-	content:SetWidth(NL.LockyFriendFrameWidth-77)
+	content:SetWidth(LA.LockyFriendFrameWidth-77)
 	content:SetHeight(500)
 	
 	content.LockyFriendFrames = {}
 		
 	--This is poorly optimized, but it is what it is.
 	for i=0, 39 do
-		table.insert(content.LockyFriendFrames, NL.CreateLockyFriendFrame("Brylack", i, content, i + 1))
+		table.insert(content.LockyFriendFrames, LA.CreateLockyFriendFrame("Brylack", i, content, i + 1))
 	end
 
 	scrollframe.content = content 
 	-- 290 is perfect for housing 6 locky frames.
 	-- 410 is perfect for housing 7
 	-- 530 is perfect for housing 8
-	scrollbar:SetMinMaxValues(1, NL.GetMaxValueForScrollBar(content.LockyFriendFrames))
+	scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(content.LockyFriendFrames))
 	
 	--print(GetTableLength(content.LockyFriendFrames))
 	--print(GetMaxValueForScrollBar(content.LockyFriendFrames))
@@ -64,12 +64,12 @@ function NL.InitLockyFrameScrollArea()
 	NeverLockyFrame.WarningTextFrame:SetHeight(30);
 	NeverLockyFrame.WarningTextFrame:SetPoint("BOTTOMLEFT", NeverLockyFrame, "BOTTOMLEFT", 0, 0)
 	
-	NeverLockyFrame.WarningTextFrame.value = NL.AddTextToFrame(NeverLockyFrame.WarningTextFrame, "Warning your addon is out of date!", 240)
+	NeverLockyFrame.WarningTextFrame.value = LA.AddTextToFrame(NeverLockyFrame.WarningTextFrame, "Warning your addon is out of date!", 240)
 	NeverLockyFrame.WarningTextFrame.value:SetPoint("LEFT", NeverLockyFrame.WarningTextFrame, "LEFT", 0, 0);
 	NeverLockyFrame.WarningTextFrame:Hide();
 end
 
-function NL.modf(f)
+function LA.modf(f)
   if math.modf then return math.modf(f) end
   if f > 0 then
     return math.floor(f), math.mod(f,1)
@@ -78,20 +78,20 @@ function NL.modf(f)
 end
 
 --Will take in a table object and return a number of pixels 
-function NL.GetMaxValueForScrollBar(LockyFrames)
-	local numberOfFrames = NL.GetTableLength(LockyFrames)
+function LA.GetMaxValueForScrollBar(LockyFrames)
+	local numberOfFrames = LA.GetTableLength(LockyFrames)
 	--total frame height is 500 we can probably survive with hardcoding this.
-	local _, mod = NL.modf(500/NL.LockyFriendFrameHeight)
-	local shiftFactor = ((1-mod)*NL.LockyFriendFrameHeight) + 13 --There is roughly a 13 pixel spacer somewhere but I am having a hard time nailing it down.
-	local FrameSupports = math.floor(500/NL.LockyFriendFrameHeight)
-	local FirstClippedFrame = math.ceil(500/NL.LockyFriendFrameHeight)
+	local _, mod = LA.modf(500/LA.LockyFriendFrameHeight)
+	local shiftFactor = ((1-mod)*LA.LockyFriendFrameHeight) + 13 --There is roughly a 13 pixel spacer somewhere but I am having a hard time nailing it down.
+	local FrameSupports = math.floor(500/LA.LockyFriendFrameHeight)
+	local FirstClippedFrame = math.ceil(500/LA.LockyFriendFrameHeight)
 
 	if numberOfFrames <= FrameSupports then
 		return 1
 	elseif numberOfFrames == FirstClippedFrame then --this is like a partial frame that wont render all the way.
 		return shiftFactor
 	elseif numberOfFrames > FirstClippedFrame then
-		return (numberOfFrames-FirstClippedFrame)*NL.LockyFriendFrameHeight + shiftFactor
+		return (numberOfFrames-FirstClippedFrame)*LA.LockyFriendFrameHeight + shiftFactor
 	end
 end
 
@@ -109,49 +109,49 @@ end
 
     A status indicator to show if locky friend has accepted the assignment.
 ]]--
-function NL.CreateLockyFriendFrame(LockyName, number, scrollframe)
+function LA.CreateLockyFriendFrame(LockyName, number, scrollframe)
     --Draws the Locky Friend Component Frame, adds the border, and positions it relative to the number of frames created.
-    local LockyFrame = NL.CreateLockyFriendContainer(scrollframe, number)
+    local LockyFrame = LA.CreateLockyFriendContainer(scrollframe, number)
     LockyFrame.LockyFrameID  = "LockyFriendFrame_0"..tostring(number)
     LockyFrame.LockyName = LockyName
     
     --Creates a portrait to assist in identifying units.
-    LockyFrame.Portrait = NL.CreateLockyFriendPortrait(LockyFrame, LockyName, number)
+    LockyFrame.Portrait = LA.CreateLockyFriendPortrait(LockyFrame, LockyName, number)
     
     -- Draws the name in the frame.
-    LockyFrame.NamePlate = NL.CreateNamePlate(LockyFrame, LockyName)
+    LockyFrame.NamePlate = LA.CreateNamePlate(LockyFrame, LockyName)
 
     --Draws the curse dropdown.
-    LockyFrame.CurseAssignmentMenu = NL.CreateCurseAssignmentMenu(LockyFrame)
+    LockyFrame.CurseAssignmentMenu = LA.CreateCurseAssignmentMenu(LockyFrame)
 
     --Draw a BanishAssignment DropDownMenu
-    LockyFrame.BanishAssignmentMenu = NL.CreateBanishAssignmentMenu(LockyFrame)	
+    LockyFrame.BanishAssignmentMenu = LA.CreateBanishAssignmentMenu(LockyFrame)
 
     --Draw a SS Assignment Menu.
-    LockyFrame.SSAssignmentMenu = NL.CreateSSAssignmentMenu(LockyFrame)
+    LockyFrame.SSAssignmentMenu = LA.CreateSSAssignmentMenu(LockyFrame)
 
     --Draw the SSCooldownTracker
-    LockyFrame.SSCooldownTracker = NL.CreateSSCooldownTracker(LockyFrame.SSAssignmentMenu)
+    LockyFrame.SSCooldownTracker = LA.CreateSSCooldownTracker(LockyFrame.SSAssignmentMenu)
 	
-	LockyFrame.AssignmentAcknowledgement = NL.CreateAckFrame(LockyFrame);
+	LockyFrame.AssignmentAcknowledgement = LA.CreateAckFrame(LockyFrame);
 
-	LockyFrame.Warning = NL.CreateWarningFrame(LockyFrame);
+	LockyFrame.Warning = LA.CreateWarningFrame(LockyFrame);
 
     return LockyFrame
 end
 
 --Creates a textframe to display the SS cooldown.
-function NL.CreateSSCooldownTracker(ParentFrame)
-    local TextFrame = NL.AddTextToFrame(ParentFrame, "Available", 120)
+function LA.CreateSSCooldownTracker(ParentFrame)
+    local TextFrame = LA.AddTextToFrame(ParentFrame, "Available", 120)
     TextFrame:SetPoint("TOP", ParentFrame, "BOTTOM", 0,0)
     return TextFrame
 end
 
 --Creates the frame that will act as teh container for the component control.
-function NL.CreateLockyFriendContainer(ParentFrame, number)
+function LA.CreateLockyFriendContainer(ParentFrame, number)
 	local LockyFriendFrame = CreateFrame("Frame", nil, ParentFrame, BackdropTemplateMixin and "BackdropTemplate") 
-	LockyFriendFrame:SetWidth(NL.LockyFriendFrameWidth-67)
-	LockyFriendFrame:SetHeight(NL.LockyFriendFrameHeight)
+	LockyFriendFrame:SetWidth(LA.LockyFriendFrameWidth-67)
+	LockyFriendFrame:SetHeight(LA.LockyFriendFrameHeight)
 	--Set up the border around the locky frame.
 	LockyFriendFrame:SetBackdrop({
 		bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -162,14 +162,14 @@ function NL.CreateLockyFriendContainer(ParentFrame, number)
 		insets = { left = 0, right = 0, top = 0, bottom = 0 }
 	})	
 	--Calculate where to draw the frame on the screen.
-	local yVal = (number*(-NL.LockyFriendFrameHeight))-10
+	local yVal = (number*(-LA.LockyFriendFrameHeight))-10
 	LockyFriendFrame:SetPoint("TOPLEFT", ParentFrame, "TOPLEFT", 8, yVal)
 	
 	return LockyFriendFrame
 end
 
 --Creates and assigns the player portrait to the individual raiders in the contrl.
-function NL.CreateLockyFriendPortrait(ParentFrame, LockName, number)
+function LA.CreateLockyFriendPortrait(ParentFrame, LockName, number)
 	local portrait = CreateFrame("Frame", nil, ParentFrame)
 		portrait:SetWidth(80)
 		portrait:SetHeight(80)
@@ -189,10 +189,10 @@ function NL.CreateLockyFriendPortrait(ParentFrame, LockName, number)
 end
 
 --Builds and sets the banish Icon assignment menu.
-function NL.CreateBanishAssignmentMenu(ParentFrame)
-	local BanishAssignmentMenu = NL.CreateDropDownMenu(ParentFrame, NL.BanishMarkers, "BANISH")
+function LA.CreateBanishAssignmentMenu(ParentFrame)
+	local BanishAssignmentMenu = LA.CreateDropDownMenu(ParentFrame, LA.BanishMarkers, "BANISH")
 	BanishAssignmentMenu:SetPoint("CENTER", -50, -30)	
-	BanishAssignmentMenu.Label = NL.CreateBanishAssignmentLabel(BanishAssignmentMenu)
+	BanishAssignmentMenu.Label = LA.CreateBanishAssignmentLabel(BanishAssignmentMenu)
 
 
 	local BanishGraphicFrame = CreateFrame("Frame", nil, ParentFrame)
@@ -206,21 +206,21 @@ function NL.CreateBanishAssignmentMenu(ParentFrame)
 end
 
 --Creates and sets the Banish Assignment Label as part of the banish assignment control.
-function NL.CreateBanishAssignmentLabel(ParentFrame)
-	local Label = NL.AddTextToFrame(ParentFrame, "Banish Assignment", 150)
+function LA.CreateBanishAssignmentLabel(ParentFrame)
+	local Label = LA.AddTextToFrame(ParentFrame, "Banish Assignment", 150)
 	Label:SetPoint("BOTTOMLEFT", ParentFrame, "TOPLEFT", 0, 0)
 	return Label
 end
 
 --Creates and sets the nameplate for the Locky Friends Frame.
-function NL.CreateNamePlate(ParentFrame, Text)
+function LA.CreateNamePlate(ParentFrame, Text)
 	local NameplateFrame = ParentFrame:CreateTexture(nil, "OVERLAY")
 	NameplateFrame:SetWidth(205)
 	NameplateFrame:SetHeight(50)
 	NameplateFrame:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
 	NameplateFrame:SetPoint("LEFT", ParentFrame, "TOPLEFT", -45, -20)
 
-	local TextFrame = NL.AddTextToFrame(ParentFrame, Text, 90)
+	local TextFrame = LA.AddTextToFrame(ParentFrame, Text, 90)
 	TextFrame:SetPoint("TOPLEFT", 10,-6)
 
 	NameplateFrame.TextFrame = TextFrame
@@ -230,7 +230,7 @@ end
 
 -- Adds text to a frame that is passed in.
 -- This text will not be automatically displayed and must be anchored before it will render to the screen.
-function NL.AddTextToFrame(ParentFrame, Text, Width)
+function LA.AddTextToFrame(ParentFrame, Text, Width)
 	local NamePlate = ParentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		NamePlate:SetText(Text)
 		NamePlate:SetWidth(Width)
@@ -241,10 +241,10 @@ function NL.AddTextToFrame(ParentFrame, Text, Width)
 end
 
 --Creates the curse assignment menu.
-function NL.CreateCurseAssignmentMenu(ParentFrame)			
-	local CurseAssignmentMenu = NL.CreateDropDownMenu(ParentFrame, NL.CurseOptions, "CURSE")
+function LA.CreateCurseAssignmentMenu(ParentFrame)
+	local CurseAssignmentMenu = LA.CreateDropDownMenu(ParentFrame, LA.CurseOptions, "CURSE")
 	CurseAssignmentMenu:SetPoint("CENTER", -50, 20)	
-	CurseAssignmentMenu.Label = NL.CreateCurseAssignmentLabel(CurseAssignmentMenu)
+	CurseAssignmentMenu.Label = LA.CreateCurseAssignmentLabel(CurseAssignmentMenu)
 	
 	local CurseGraphicFrame = CreateFrame("Frame", nil, ParentFrame)
 		CurseGraphicFrame:SetWidth(30)
@@ -258,16 +258,16 @@ end
 
 --Parent Frame is the drop down control.
 --Curse List Value should be the plain text version of the selected curse option.
-function NL.UpdateCurseGraphic(ParentFrame, CurseListValue)
+function LA.UpdateCurseGraphic(ParentFrame, CurseListValue)
 	--print("Updating Curse Graphic to " .. CurseListValue)
 	if not (CurseListValue == nil) then
 		if(ParentFrame.CurseGraphicFrame.CurseTexture == nil) then
 			local CurseGraphic = ParentFrame.CurseGraphicFrame:CreateTexture(nil, "OVERLAY")
 			CurseGraphic:SetAllPoints()
-			CurseGraphic:SetTexture(NL.GetSpellTextureFromDropDownList(CurseListValue))
+			CurseGraphic:SetTexture(LA.GetSpellTextureFromDropDownList(CurseListValue))
 			ParentFrame.CurseGraphicFrame.CurseTexture = CurseGraphic
 		else
-			ParentFrame.CurseGraphicFrame.CurseTexture:SetTexture(NL.GetSpellTextureFromDropDownList(CurseListValue))
+			ParentFrame.CurseGraphicFrame.CurseTexture:SetTexture(LA.GetSpellTextureFromDropDownList(CurseListValue))
 		end
 	else 
 		if not (ParentFrame.CurseGraphicFrame.CurseTexture == nil) then
@@ -282,17 +282,17 @@ function NL.UpdateCurseGraphic(ParentFrame, CurseListValue)
 end
 
 --Parent Frame is the drop down control.
-function NL.UpdateBanishGraphic(ParentFrame, BanishListValue)
+function LA.UpdateBanishGraphic(ParentFrame, BanishListValue)
 	--print("Updating Banish Graphic to " .. BanishListValue)
 	if not (BanishListValue == nil) then
 		if(ParentFrame.BanishGraphicFrame.BanishTexture == nil) then
 			local BanishGraphic = ParentFrame.BanishGraphicFrame:CreateTexture(nil, "OVERLAY") 
 			BanishGraphic:SetAllPoints()
-			BanishGraphic:SetTexture(NL.GetAssetLocationFromRaidMarker(BanishListValue))
+			BanishGraphic:SetTexture(LA.GetAssetLocationFromRaidMarker(BanishListValue))
 			ParentFrame.BanishGraphicFrame.BanishTexture = BanishGraphic
 		else
 			--print("|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1|t")
-			ParentFrame.BanishGraphicFrame.BanishTexture:SetTexture(NL.GetAssetLocationFromRaidMarker(BanishListValue))
+			ParentFrame.BanishGraphicFrame.BanishTexture:SetTexture(LA.GetAssetLocationFromRaidMarker(BanishListValue))
 		end
 	else 
 		if not (ParentFrame.BanishGraphicFrame.BanishTexture == nil) then
@@ -310,32 +310,32 @@ end
 -- This event is what is fired when a box is changed manually. 
 -- This event does not fire when the dropdown selection is changed programmatically.
 -- This acts as a router to determine which menu was changed, if the menu is not of a certain "DropDownType" then this function does nothing.
-function NL.UpdateDropDownSideGraphic(DropDownMenu, SelectedValue, DropDownType)
+function LA.UpdateDropDownSideGraphic(DropDownMenu, SelectedValue, DropDownType)
 	if DropDownType == "CURSE" then
-		NL.UpdateCurseGraphic(DropDownMenu, SelectedValue)
+		LA.UpdateCurseGraphic(DropDownMenu, SelectedValue)
 	elseif DropDownType == "BANISH" then
-		NL.UpdateBanishGraphic(DropDownMenu, SelectedValue)
+		LA.UpdateBanishGraphic(DropDownMenu, SelectedValue)
 	end
 end
 
 -- Gets the selected value of the cures from the drop down list.
 -- Use GetValueFromDropDownList instead.
-function NL.GetCurseValueFromDropDownList(DropDownMenu)
+function LA.GetCurseValueFromDropDownList(DropDownMenu)
 	local selectedValue = UIDropDownMenu_GetSelectedID(DropDownMenu)
-	return NL.CurseOptions[selectedValue]
+	return LA.CurseOptions[selectedValue]
 end
 
 -- Gets the selected value of the banish target from the drop down list.
 -- This is arguably an easier way than referencing the getvalue from dropdown list function.
-function NL.GetBanishValueFromDropDownList(DropDownMenu)
+function LA.GetBanishValueFromDropDownList(DropDownMenu)
 	local selectedValue = UIDropDownMenu_GetSelectedID(DropDownMenu)
-	return NL.BanishMarkers[selectedValue]
+	return LA.BanishMarkers[selectedValue]
 end
 
 -- Returns the value of the selected option in a drop down menu.
 -- This exists because the built in UIDropDownMenu_GetSelectedValue appears to be broken.
 -- Of course, it is probable that I am using the drop down menu incorrectly in this case.
-function NL.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
+function LA.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
 	local selectedValue = UIDropDownMenu_GetSelectedID(DropDownMenu)
 	if DropDownType == "SSAssignments" then
 		if OptionList[selectedValue] == nil then
@@ -351,7 +351,7 @@ end
 -- Function that converts the Option Value to the Spell Name.
 -- This is used for setting the appropriate texture in in the sidebar graphic.
 -- Acts as a converter from our "Locky Spell Name" to the actual in-game name.
-function NL.GetSpellNameFromDropDownList(ListValue)
+function LA.GetSpellNameFromDropDownList(ListValue)
 	if ListValue == "Elements" then
 		return "Curse of the Elements"
 	elseif ListValue == "Shadows" then
@@ -373,7 +373,7 @@ end
 -- Function that converts the Option Value to the Spell Name.
 -- This is used for setting the appropriate texture in in the sidebar graphic.
 -- Acts as a converter from our "Locky Spell Name" to the actual in-game name.
-function NL.GetSpellIdFromDropDownList(ListValue)
+function LA.GetSpellIdFromDropDownList(ListValue)
 	if ListValue == "Elements" then
 		return 11722
 	elseif ListValue == "Shadows" then
@@ -392,8 +392,8 @@ function NL.GetSpellIdFromDropDownList(ListValue)
 	return nil
 end
 
-function NL.GetSpellTextureFromDropDownList(ListValue)
-local spellName = NL.GetSpellNameFromDropDownList(ListValue)
+function LA.GetSpellTextureFromDropDownList(ListValue)
+local spellName = LA.GetSpellNameFromDropDownList(ListValue)
 local spellsTable = {
 	["Curse of the Elements"] = "Interface\\Icons\\Spell_Shadow_ChillTouch",
 	["Curse of Shadow"] = "Interface\\Icons\\Spell_Shadow_CurseOfAchimonde",
@@ -408,7 +408,7 @@ end
 
 -- Function provides the asset location of the raid targetting icon.
 -- E.X. Converts "Star" to - Interface\\TargetingFrame\\UI-RaidTargetingIcon_1
-function NL.GetAssetLocationFromRaidMarker(raidMarker)
+function LA.GetAssetLocationFromRaidMarker(raidMarker)
 	if(raidMarker == "Skull") then
 		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_8"
 	elseif raidMarker == "Star" then
@@ -430,8 +430,8 @@ function NL.GetAssetLocationFromRaidMarker(raidMarker)
 end
 
 --Creates the label for the curse assignment. This may not need to have been encapsulated as such but it made sense to me at the time.
-function NL.CreateCurseAssignmentLabel(ParentFrame)
-	local Label = NL.AddTextToFrame(ParentFrame, "Curse Assignment", 150)
+function LA.CreateCurseAssignmentLabel(ParentFrame)
+	local Label = LA.AddTextToFrame(ParentFrame, "Curse Assignment", 150)
 	Label:SetPoint("BOTTOMLEFT", ParentFrame, "TOPLEFT", 0, 0)
 	return Label
 end
@@ -439,47 +439,47 @@ end
 
 --Builds and sets the banish Icon assignment menu.
 --Parent Frame refers to a "LockyFriendFrame"
-function NL.CreateSSAssignmentMenu(ParentFrame)
+function LA.CreateSSAssignmentMenu(ParentFrame)
 
-	local SSTargets = NL.GetSSTargets();
+	local SSTargets = LA.GetSSTargets();
 
-	local SSAssignmentMenu = NL.CreateDropDownMenu(ParentFrame, SSTargets, "SSAssignments")
+	local SSAssignmentMenu = LA.CreateDropDownMenu(ParentFrame, SSTargets, "SSAssignments")
 	SSAssignmentMenu:SetPoint("CENTER", 140, 20)	
-	SSAssignmentMenu.Label = NL.CreateSSAssignmentLabel(SSAssignmentMenu)
+	SSAssignmentMenu.Label = LA.CreateSSAssignmentLabel(SSAssignmentMenu)
 	
 	return SSAssignmentMenu
 end
 
 --Builds the acknowledgment frame that attaches to the main window to display if assignments have been accepted or not.
-function NL.CreateAckFrame(ParentFrame)
+function LA.CreateAckFrame(ParentFrame)
 	local AckFrame = CreateFrame("Frame", nil, ParentFrame)
 	AckFrame:SetWidth(150)
 	AckFrame:SetHeight(30)
 	AckFrame:SetPoint("CENTER", ParentFrame, "CENTER",80,-25)
 
-	AckFrame.label = NL.AddTextToFrame(AckFrame, "Accepted:", 150)
+	AckFrame.label = LA.AddTextToFrame(AckFrame, "Accepted:", 150)
 	AckFrame.label:SetPoint("LEFT", AckFrame, "LEFT", 0, 0)
 
-	AckFrame.value = NL.AddTextToFrame(AckFrame, "Not Recieved", 120)
+	AckFrame.value = LA.AddTextToFrame(AckFrame, "Not Recieved", 120)
 	AckFrame.value:SetPoint("LEFT", AckFrame, "LEFT", 85, 0)
 	return AckFrame;
 end
 
 -- Builds a warning fram that shows if the addon is out of date.
-function NL.CreateWarningFrame(ParentFrame)
+function LA.CreateWarningFrame(ParentFrame)
 	local NoteFrame = CreateFrame("Frame", nil, ParentFrame)
 	NoteFrame:SetWidth(150)
 	NoteFrame:SetHeight(30)
 	NoteFrame:SetPoint("BOTTOMLEFT", ParentFrame, "BOTTOMLEFT",0,0)
-	NoteFrame.value = NL.AddTextToFrame(NoteFrame, "Warning: Addon out of date", 250)
+	NoteFrame.value = LA.AddTextToFrame(NoteFrame, "Warning: Addon out of date", 250)
 	NoteFrame.value:SetPoint("LEFT", NoteFrame, "LEFT", 0, 0)
 	NoteFrame:Hide();
 	return NoteFrame;
 end
 
 --Create's the "Soul Stone" Label that appears above the soul stone target drop down menu.
-function  NL.CreateSSAssignmentLabel(ParentFrame)
-	local Label = NL.AddTextToFrame(ParentFrame, "Soul Stone", 130)
+function  LA.CreateSSAssignmentLabel(ParentFrame)
+	local Label = LA.AddTextToFrame(ParentFrame, "Soul Stone", 130)
 	Label:SetPoint("BOTTOMLEFT", ParentFrame, "TOPLEFT", 0, 0)
 	return Label
 end
@@ -488,18 +488,18 @@ local dropdowncount = 0
 
 --Creates and adds a dropdown menu with the passed in option list. 
 --Adding a dropdown type further allows for the sidebar graphic to update as well, but is not required.
-function NL.CreateDropDownMenu(ParentFrame, OptionList, DropDownType)
+function LA.CreateDropDownMenu(ParentFrame, OptionList, DropDownType)
     dropdowncount = dropdowncount + 1
     local NewDropDownMenu = CreateFrame("Frame", "NL_DropDown0"..dropdowncount, ParentFrame, "UIDropDownMenuTemplate")
 
     local function OnClick(_)
 		UIDropDownMenu_SetSelectedID(NewDropDownMenu, this:GetID())
 
-		local selection = NL.GetValueFromDropDownList(NewDropDownMenu, OptionList, DropDownType)
-		if NL.DebugMode then
+		local selection = LA.GetValueFromDropDownList(NewDropDownMenu, OptionList, DropDownType)
+		if LA.DebugMode then
 			print("User changed selection to " .. selection)
 		end
-        NL.UpdateDropDownSideGraphic(NewDropDownMenu, selection, DropDownType)
+        LA.UpdateDropDownSideGraphic(NewDropDownMenu, selection, DropDownType)
     end
 
     local function initialize()
@@ -526,15 +526,15 @@ function NL.CreateDropDownMenu(ParentFrame, OptionList, DropDownType)
     return NewDropDownMenu
 end
 
-function NL.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownType)
+function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownType)
 	local function OnClick(self)		
         UIDropDownMenu_SetSelectedID(DropDownMenu, this:GetID())
     
-		local selection = NL.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
-		if NL.DebugMode then
+		local selection = LA.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
+		if LA.DebugMode then
 			print("User changed selection to " .. selection)
 		end
-        NL.UpdateDropDownSideGraphic(DropDownMenu, selection, DropDownType)
+        LA.UpdateDropDownSideGraphic(DropDownMenu, selection, DropDownType)
     end
     
     local function initialize()
@@ -567,7 +567,7 @@ function NL.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownT
 	--print(DropDownMenu.colorCode);
 end
 
-function NL.InitLockyAssignCheckFrame()
+function LA.InitLockyAssignCheckFrame()
 	LockyAssignCheckFrame =  CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate");
 
 	LockyAssignCheckFrame:SetWidth(200)
@@ -594,22 +594,22 @@ function NL.InitLockyAssignCheckFrame()
 	LockyAssignRejectButton:SetHeight(20);
 	LockyAssignRejectButton:SetPoint("BOTTOMRIGHT", LockyAssignCheckFrame, "BOTTOMRIGHT",-15,15)
 	LockyAssignRejectButton:SetText("No");
-	LockyAssignRejectButton:SetScript("OnClick", NL.LockyAssignRejectClick);
+	LockyAssignRejectButton:SetScript("OnClick", LA.LockyAssignRejectClick);
 
 	LockyAssignAcceptButton = CreateFrame("Button", nil, LockyAssignCheckFrame, "GameMenuButtonTemplate");
 	LockyAssignAcceptButton:SetWidth(70);
 	LockyAssignAcceptButton:SetHeight(20);
 	LockyAssignAcceptButton:SetPoint("RIGHT", LockyAssignRejectButton, "LEFT",-5,0)
 	LockyAssignAcceptButton:SetText("Yes");
-	LockyAssignAcceptButton:SetScript("OnClick", NL.LockyAssignAcceptClick);
+	LockyAssignAcceptButton:SetScript("OnClick", LA.LockyAssignAcceptClick);
 
 	LockyAssignCheckFrame.AcceptButton = LockyAssignAcceptButton;
 	LockyAssignCheckFrame.RejectButton = LockyAssignRejectButton;
 
-	LockyAssignCheckFrame.Label = NL.AddTextToFrame(LockyAssignCheckFrame, "Your new assignments:", 140)
+	LockyAssignCheckFrame.Label = LA.AddTextToFrame(LockyAssignCheckFrame, "Your new assignments:", 140)
 	LockyAssignCheckFrame.Label:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 10, -15)
 
-	LockyAssignCheckFrame.CurseLabel = NL.AddTextToFrame(LockyAssignCheckFrame, "Curse:", 130)
+	LockyAssignCheckFrame.CurseLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "Curse:", 130)
 	LockyAssignCheckFrame.CurseLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -37)
 
 
@@ -620,7 +620,7 @@ function NL.InitLockyAssignCheckFrame()
 	
 	LockyAssignCheckFrame.CurseGraphicFrame = CurseGraphicFrame
 
-	LockyAssignCheckFrame.BanishLabel = NL.AddTextToFrame(LockyAssignCheckFrame, "Banish:", 130)
+	LockyAssignCheckFrame.BanishLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "Banish:", 130)
 	LockyAssignCheckFrame.BanishLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -67)
 
 	local BanishGraphicFrame = CreateFrame("Frame", nil, LockyAssignCheckFrame)
@@ -629,17 +629,17 @@ function NL.InitLockyAssignCheckFrame()
 	BanishGraphicFrame:SetPoint("CENTER", LockyAssignCheckFrame, "LEFT", 105, 12)
 	LockyAssignCheckFrame.BanishGraphicFrame = BanishGraphicFrame;
 
-	LockyAssignCheckFrame.SoulStoneLabel = NL.AddTextToFrame(LockyAssignCheckFrame, "SoulStone:", 130)
+	LockyAssignCheckFrame.SoulStoneLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "SoulStone:", 130)
 	LockyAssignCheckFrame.SoulStoneLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", -8, -97)
 
-	LockyAssignCheckFrame.SoulStoneAssignment = NL.AddTextToFrame(LockyAssignCheckFrame, "", 130)
+	LockyAssignCheckFrame.SoulStoneAssignment = LA.AddTextToFrame(LockyAssignCheckFrame, "", 130)
 	LockyAssignCheckFrame.SoulStoneAssignment:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 65, -97)
 
-	LockyAssignCheckFrame.Prompt = NL.AddTextToFrame(LockyAssignCheckFrame, "Do you accept?", 130)
+	LockyAssignCheckFrame.Prompt = LA.AddTextToFrame(LockyAssignCheckFrame, "Do you accept?", 130)
 	LockyAssignCheckFrame.Prompt:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -120)
 	
 	
-	LockyAssignCheckFrame:SetScript("OnShow", NL.LockyAssignFrameOnShow);
+	LockyAssignCheckFrame:SetScript("OnShow", LA.LockyAssignFrameOnShow);
 
 	
 	LockyAssignCheckFrame:Hide();
@@ -649,55 +649,55 @@ function NL.InitLockyAssignCheckFrame()
 	--LockyAssignCheckFrame:Show();
 end
 
-function NL.SetLockyCheckFrameAssignments(curse, banish, sstarget)
-	if NL.DebugMode then
+function LA.SetLockyCheckFrameAssignments(curse, banish, sstarget)
+	if LA.DebugMode then
 		print(curse,banish, sstarget);
 	end
-	NL.UpdateCurseGraphic(LockyAssignCheckFrame, curse)
+	LA.UpdateCurseGraphic(LockyAssignCheckFrame, curse)
 	LockyAssignCheckFrame.pendingCurse = curse;
-	NL.UpdateBanishGraphic(LockyAssignCheckFrame, banish)
-	NL.UpdateSoulStoneAssignment(sstarget)
+	LA.UpdateBanishGraphic(LockyAssignCheckFrame, banish)
+	LA.UpdateSoulStoneAssignment(sstarget)
 	LockyAssignCheckFrame:Show();
 end
 
-function NL.LockyAssignFrameOnShow()	
+function LA.LockyAssignFrameOnShow()
 	--PlaySound(SOUNDKIT.READY_CHECK)
-	if NL.DebugMode then	
+	if LA.DebugMode then
 		print("Assignment ready check recieved. Assignment check frame should be showing now.");
 	end	
 end
 
-function NL.LockyAssignAcceptClick()
+function LA.LockyAssignAcceptClick()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	LockyAssignCheckFrame:Hide()
 	
-	if NL.DebugMode then
+	if LA.DebugMode then
 		print("You clicked Yes.")
 	end
 	LockyAssignCheckFrame.activeCurse = LockyAssignCheckFrame.pendingCurse;
-	if NL.DebugMode then
+	if LA.DebugMode then
 		print("Attempting to create macro for curse: ".. LockyAssignCheckFrame.activeCurse);		
 	end
 
-	NL.SetupAssignmentMacro(LockyAssignCheckFrame.activeCurse);
-	NL.SendAssignmentAcknowledgement("true");
+	LA.SetupAssignmentMacro(LockyAssignCheckFrame.activeCurse);
+	LA.SendAssignmentAcknowledgement("true");
 end
 
-function NL.LockyAssignRejectClick()
+function LA.LockyAssignRejectClick()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	LockyAssignCheckFrame:Hide()
-	if NL.DebugMode then
+	if LA.DebugMode then
 		print("You clicked No.")
 	end
-	NL.SendAssignmentAcknowledgement("false");
+	LA.SendAssignmentAcknowledgement("false");
 end
 
-function NL.UpdateSoulStoneAssignment(Assignment)
+function LA.UpdateSoulStoneAssignment(Assignment)
 	LockyAssignCheckFrame.SoulStoneAssignment:SetText(Assignment);
 end
 
 
-function NL.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
+function LA.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
 	--print("Updating Curse Graphic to " .. CurseListValue)
 	if not (CurseListValue == nil) then
 		if(CurseGraphicFrame.CurseTexture == nil) then
@@ -720,7 +720,7 @@ function NL.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
 	end
 end
 
-function NL.InitPersonalMonitorFrame()
+function LA.InitPersonalMonitorFrame()
 	--LockyPersonalAnchorButton = CreateFrame("Button", nil, UIParent)
 	--LockyPersonalAnchorButton:SetSize(30,30)
 	--LockyPersonalAnchorButton:SetPoint("CENTER", UIParent, "CENTER")
@@ -762,11 +762,11 @@ function NL.InitPersonalMonitorFrame()
 	LockyPersonalMonitorFrame.BanishGraphicFrame:SetHeight(30)
 	LockyPersonalMonitorFrame.BanishGraphicFrame:SetPoint("LEFT", LockyPersonalMonitorFrame.CurseGraphicFrame, "RIGHT", 2, 0)
 
-	LockyPersonalMonitorFrame.SSAssignmentText = NL.AddTextToFrame(LockyPersonalMonitorFrame, "", 75);
+	LockyPersonalMonitorFrame.SSAssignmentText = LA.AddTextToFrame(LockyPersonalMonitorFrame, "", 75);
 	LockyPersonalMonitorFrame.SSAssignmentText:SetPoint("LEFT", LockyPersonalMonitorFrame.BanishGraphicFrame,"RIGHT", 5, 0)
 	LockyPersonalMonitorFrame.SSAssignmentText:SetJustifyH("LEFT")
 
-	LockyPersonalMonitorFrame.MainLabel = NL.AddTextToFrame(LockyPersonalMonitorFrame,"Lock Assigns:", 125);
+	LockyPersonalMonitorFrame.MainLabel = LA.AddTextToFrame(LockyPersonalMonitorFrame,"Lock Assigns:", 125);
 	LockyPersonalMonitorFrame.MainLabel:SetPoint("BOTTOM", LockyPersonalMonitorFrame, "TOP");
 
 	LockyPersonalMonitorFrame:Hide();
@@ -775,7 +775,7 @@ function NL.InitPersonalMonitorFrame()
 	--print(LockyPersonalMonitorFrame.CurseGraphicFrame.CurseTexture)
 end
 
-function NL.UpdatePersonalSSAssignment(ParentFrame, SSAssignment)
+function LA.UpdatePersonalSSAssignment(ParentFrame, SSAssignment)
 	if SSAssignment ~= "None" then
 		ParentFrame.SSAssignmentText:SetText(SSAssignment);
 		else
@@ -783,14 +783,14 @@ function NL.UpdatePersonalSSAssignment(ParentFrame, SSAssignment)
 	end
 end
 
-function NL.UpdatePersonalMonitorFrame()
-	local myData = NL.GetMyLockyData()
-	NL.UpdateBanishGraphic(LockyPersonalMonitorFrame, myData.BanishAssignment);
-	NL.UpdateCurseGraphic(LockyPersonalMonitorFrame, myData.CurseAssignment);
-	NL.UpdatePersonalSSAssignment(LockyPersonalMonitorFrame, myData.SSAssignment);
+function LA.UpdatePersonalMonitorFrame()
+	local myData = LA.GetMyLockyData()
+	LA.UpdateBanishGraphic(LockyPersonalMonitorFrame, myData.BanishAssignment);
+	LA.UpdateCurseGraphic(LockyPersonalMonitorFrame, myData.CurseAssignment);
+	LA.UpdatePersonalSSAssignment(LockyPersonalMonitorFrame, myData.SSAssignment);
 
 	--Need to resize the frame accordingly.
-	NL.UpdatePersonalMonitorSize(myData);
+	LA.UpdatePersonalMonitorSize(myData);
 
 	--Need to shift stuff around since this display is wrong.
 	--if myData.CurseAssignment ~= "None" and myData.BanishAssignment ~= "None" then
@@ -817,7 +817,7 @@ function NL.UpdatePersonalMonitorFrame()
 	
 end
 
-function NL.UpdatePersonalMonitorSize(myData)
+function LA.UpdatePersonalMonitorSize(myData)
 	local picframesize = 34
 	local buffcount = 0;
 	if myData.CurseAssignment ~= "None" then
@@ -834,9 +834,9 @@ function NL.UpdatePersonalMonitorSize(myData)
 	LockyPersonalMonitorFrame:SetHeight(34)
 end
 
-function NL.InitAnnouncerOptionFrame()
+function LA.InitAnnouncerOptionFrame()
 		--print("Creating Announcer menu");
-		LockyAnnouncerOptionMenu = NL.CreateDropDownMenu(NLAnnouncerContainer, NL.AnnouncerOptions, "CHAT")	
+		LockyAnnouncerOptionMenu = LA.CreateDropDownMenu(NLAnnouncerContainer, LA.AnnouncerOptions, "CHAT")
 		LockyAnnouncerOptionMenu:SetPoint("CENTER", NLAnnouncerContainer, "CENTER", 0,0);	
 end
 
@@ -848,13 +848,13 @@ function GetTableLng(tbl)
 		return getN
 	end
 
-function NL.SetExtraChats()
-	NL.AnnouncerOptions ={
+function LA.SetExtraChats()
+	LA.AnnouncerOptions ={
 		"Addon Only",
 		"Raid",
 		"Party",
 		"Whisper"
 	}
 
-	NL.UpdateDropDownMenuWithNewOptions(LockyAnnouncerOptionMenu, NL.AnnouncerOptions, "CHAT")
+	LA.UpdateDropDownMenuWithNewOptions(LockyAnnouncerOptionMenu, LA.AnnouncerOptions, "CHAT")
 end
