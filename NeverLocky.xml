@@ -1,0 +1,174 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="Libs\LibStub\LibStub.lua" />
+	<Script File="LockyGlobalData.lua" />
+	<Script file="Libs\Ace3.lua" />
+	<Script File="LockyTableFunctions.lua" />
+	<Script File="LockyDataUI.lua" />
+	<Script File="LockyUI.lua" />
+	<Script File="LockyComms.lua" />
+	<Script File="NeverLocky.lua" />
+	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml" />
+	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
+
+
+	<Frame name="NeverLockyFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="500" y="563" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<!--	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+           edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+-->
+		<Layers>
+			<Layer>
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="180" y="32" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3.5" y="5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Never Locky">
+					<Size>
+						<AbsDimension x="140" y="0" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="3.85" y="-6" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="14" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!--
+		I need to add the following into this UI.
+		
+		A scrolling box containing a list of all warlocks in the group.
+			This list will have a portrait, thier spec, thier assigned curse, banish target, soulstone target, soulstone CD.
+		
+		A dropdown list of curses to assign.
+		
+		A dropdown list of names for SoulStones... or maybe a text box for the name... 
+		
+		A timer to keep track of SS targets.
+		
+		A timer to keep track of SS CDs.
+		
+		A drop down list of raid markers for banish assignments.
+		
+		Possible ready check style confirmations...
+		-->
+			<Button name="NLTest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
+				<Size>
+					<AbsDimension x="90" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="16" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						NL.NL_Test()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="NLCancel_Button" inherits="GameMenuButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="90" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="16" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						NL.NeverLocky_HideFrame()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="NLCommit_Button" inherits="GameMenuButtonTemplate" text="Send Changes">
+				<Size>
+					<AbsDimension x="115" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NLCancel_Button" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						NL.NeverLocky_Commit()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="NLAnnouncerContainer">
+				<Size>
+					<AbsDimension x="115" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NLCommit_Button" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				NL.NeverLockyInit()
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnShow>	
+				NL.NeverLocky_OnShowFrame()
+			</OnShow>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+			<OnUpdate function="NeverLocky_OnUpdate" />
+		</Scripts>
+	</Frame>
+
+</Ui>
