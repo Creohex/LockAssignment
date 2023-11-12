@@ -1,7 +1,7 @@
 --Initialization logic for setting up the entire addon
 function LA.LockAssignmentInit()
 	if not LockAssignmentFrame_HasInitialized then
-		--print("Prepping init")
+		--PrintMessageToMainChatFrame("Prepping init")
 		LockAssignmentFrame:SetBackdrop({
 			bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
 			edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
@@ -10,21 +10,11 @@ function LA.LockAssignmentInit()
 			edgeSize = 32,
 			insets = { left = 11, right = 12, top = 12, bottom = 11 }
 		})
-		LA.InitLockyFrameScrollArea()
-		--print("ScrollFrame initialized successfully.")
+		LA.InitLockAssignmentFrameScrollArea()
 		LA.RegisterForComms()
-		--print("Comms initialized successfully.")
 		LockAssignmentFrame_HasInitialized = true
-		--LockAssignmentFriendsData = InitLockyFriendData()
-		--print("LockAssignmentFriendsData initialized successfully.")
-		--LockAssignmentFriendsData = SetDefaultAssignments(LockAssignmentFriendsData)
-		--print("LockAssignmentFriendsData Default Assignments Set successfully.")
-		LA.UpdateAllLockyFriendFrames();
-		
-		--print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")
-		--print("Use |cff9322B5/nl|cFFFFFFFF or |cff9322B5/neverlocky|cFFFFFFFF to view assignment information.")
-		--LockAssignmentFrame:Show()
-		LA.InitLockyAssignCheckFrame();
+		LA.UpdateAllWarlockFrames();
+		LA.InitLockAssignmentCheckFrame();
 		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
 	end	
@@ -37,12 +27,12 @@ function LockAssignment_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
 
 	self.TimeSinceLastClockUpdate = self.TimeSinceLastClockUpdate + elapsed; 	
-	if (self.TimeSinceLastClockUpdate > LA.LockAssignmentClocky_UpdateInterval) then
+	if (self.TimeSinceLastClockUpdate > LA.LockAssignmentClock_UpdateInterval) then
 		self.TimeSinceLastClockUpdate = 0;
 		if LA.DebugMode then
-			--print("Updating the UI");
+			--PrintMessageToMainChatFrame("Updating the UI");
 		end
-		LA.UpdateLockyClockys()
+		LA.UpdateLockAssignmentClock()
 	end
 
 	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
@@ -50,7 +40,7 @@ function LockAssignment_OnUpdate(self, elapsed)
 	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval) then
 		self.TimeSinceLastSSCDUpdate = 0;
 		if LA.DebugMode then
-			print("Checking SSCD");
+			PrintMessageToMainChatFrame("Checking SSCD");
 		end
 		LA.CheckSSCD(self)
 	end
@@ -63,7 +53,7 @@ function LA.RegisterRaid()
 		  zone, online, isDead, role, isML = GetRaidRosterInfo(i);
 		if not (name == nil) then
 			if LA.DebugMode then
-				print(name .. "-" .. fileName)	
+				PrintMessageToMainChatFrame(name .. "-" .. fileName)
 			end
 			table.insert(raidInfo, name)
 		end
@@ -78,57 +68,56 @@ TestType.remove = "Remove Test"
 TestType.setDefault = "Default Settings Test"
 local testmode = TestType.init
 
-function LA.InitLockyFriendData()
+function LA.InitLockAssignmentData()
 	if(LA.RaidMode) then
 		if LA.DebugMode then
-			print("Initializing Friend Data")
+			PrintMessageToMainChatFrame("Initializing Warlock Data")
 		end
-		DEFAULT_CHAT_FRAME:AddMessage("InitLockyFriendData in raid mode")
 		return LA.RegisterWarlocks()
 	else
-		print("Raid mode is not active, running in Test mode.")			
+		PrintMessageToMainChatFrame("Raid mode is not active, running in Test mode.")
 		if testmode == TestType.init then
-			print("Initializing with Test Data.")
+			PrintMessageToMainChatFrame("Initializing with Test Data.")
 			testmode = TestType.add
 			return LA.RegisterMyTestData()
 		elseif testmode == TestType.add then
-			print("testing add")
-			table.insert(LA.LockAssignmentFriendsData, LA.RegisterMyTestData()[1])
+			PrintMessageToMainChatFrame("testing add")
+			table.insert(LA.LockAssignmentsData, LA.RegisterMyTestData()[1])
 			testmode = TestType.remove
-			return LA.LockAssignmentFriendsData
+			return LA.LockAssignmentsData
 		elseif testmode == TestType.remove then
-			print("testing remove")
-			local p = LA.GetLockyFriendIndexByName(LA.LockAssignmentFriendsData, "Brylack")
+			PrintMessageToMainChatFrame("testing remove")
+			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, "Brylack")
 			if not (p==nil) then
-				table.remove(LA.LockAssignmentFriendsData, p)
+				table.remove(LA.LockAssignmentsData, p)
 			end
 			testmode = TestType.setDefault
-			return LA.LockAssignmentFriendsData
+			return LA.LockAssignmentsData
 		elseif testmode == TestType.setDefault then
-			print ("Setting default selection")
-			LA.LockAssignmentFriendsData = LA.SetDefaultAssignments(LA.LockAssignmentFriendsData)
+			PrintMessageToMainChatFrame ("Setting default selection")
+			LA.LockAssignmentsData = LA.SetDefaultAssignments(LA.LockAssignmentsData)
 			testmode = TestType.init
-			return LA.LockAssignmentFriendsData
+			return LA.LockAssignmentsData
 		else
-			return LA.LockAssignmentFriendsData
+			return LA.LockAssignmentsData
 		end		
 	end
 end
 
-function  LA.GetLockyFriendIndexByName(table, name)
+function  LA.GetAssignmentIndexByName(table, name)
 
 	for key, value in pairs(table) do
-		--print(key, " -- ", value["LockyFrameID"])
-		--print(value.Name)
+		--PrintMessageToMainChatFrame(key, " -- ", value["LockFrameID"])
+		--PrintMessageToMainChatFrame(value.Name)
 		if value.Name == name then
 			if LA.DebugMode then
-				print(value.Name, "is in position", key)
+				PrintMessageToMainChatFrame(value.Name, "is in position", key)
 			end
 			return key
 		end
 	end
 	if LA.DebugMode then
-		print(name, "is not in the list.")
+		PrintMessageToMainChatFrame(name, "is not in the list.")
 	end
 	return nil
 end
@@ -174,8 +163,8 @@ end
 
 --This is wired to a button click at present.
 function LA.LockAssignment_HideFrame()
-	if LA.IsUIDirty(LA.LockAssignmentFriendsData) then
-		print("Changes were not saved.")
+	if LA.IsUIDirty(LA.LockAssignmentsData) then
+		PrintMessageToMainChatFrame("Changes were not saved.")
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		LockAssignmentFrame:Hide()
 	else
@@ -185,11 +174,11 @@ function LA.LockAssignment_HideFrame()
 end
 
 function LA.LockAssignment_Commit()
-	LA.LockAssignmentFriendsData = LA.CommitChanges(LA.LockAssignmentFriendsData)
-	LA.UpdateAllLockyFriendFrames();
+	LA.LockAssignmentsData = LA.CommitChanges(LA.LockAssignmentsData)
+	LA.UpdateAllWarlockFrames();
 	LA.SendAssignmentReset();
-	LA.BroadcastTable(LA.LockAssignmentFriendsData)
-	--print("Changes were sent out.");
+	LA.BroadcastTable(LA.LockAssignmentsData)
+	--PrintMessageToMainChatFrame("Changes were sent out.");
 
 	LA.AnnounceAssignments();
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
@@ -198,43 +187,43 @@ end
 
 --At this time this is just a test function.
 function LA.Test()
-	print("Updating a frame....")				
-	LA.LockAssignmentFriendsData = LA.InitLockyFriendData();
+	PrintMessageToMainChatFrame("Updating a frame....")
+	LA.LockAssignmentsData = LA.InitLockAssignmentData();
 	NLTest_Button.Text:SetText(testmode)
-	--UpdateAllLockyFriendFrames();	
-	LA.BroadcastTable(LA.LockAssignmentFriendsData);
+	--UpdateAllWarlockFrames();
+	LA.BroadcastTable(LA.LockAssignmentsData);
 end
 
 -- Event for handling the frame showing.
 function LA.LockAssignment_OnShowFrame()
 	if not LockAssignmentData_HasInitialized then
-		LA.LockAssignmentFriendsData = LA.InitLockyFriendData()
+		LA.LockAssignmentsData = LA.InitLockAssignmentData()
 		
 		--LockAssignmentData_Timestamp = 0
 		LockAssignmentData_HasInitialized = true
 		if LA.DebugMode then
-			print("Initialization complete");
+			PrintMessageToMainChatFrame("Initialization complete");
 			
-			print("Found " .. LA.GetTableLength(LA.LockAssignmentFriendsData) .. " Warlocks in raid." );
+			PrintMessageToMainChatFrame("Found " .. LA.GetTableLength(LA.LockAssignmentsData) .. " Warlocks in raid." );
 		end		
 	end
 
 	if LA.DebugMode then
-		print("Frame should be showing now.")	
+		PrintMessageToMainChatFrame("Frame should be showing now.")
 	end
 	
 	--PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
-	--print("Updating SS targets")
+	--PrintMessageToMainChatFrame("Updating SS targets")
 	LA.UpdateSSTargets()
-	LA.LockAssignmentFriendsData = LA.UpdateWarlocks(LA.LockAssignmentFriendsData);
-	LA.UpdateAllLockyFriendFrames();
+	LA.LockAssignmentsData = LA.UpdateWarlocks(LA.LockAssignmentsData);
+	LA.UpdateAllWarlockFrames();
 	LA.RequestAssignments()
 	if LA.DebugMode then
-		print("Found " .. LA.GetTableLength(LA.LockAssignmentFriendsData) .. " Warlocks in raid." );
+		PrintMessageToMainChatFrame("Found " .. LA.GetTableLength(LA.LockAssignmentsData) .. " Warlocks in raid." );
 	end	
-	if LA.GetTableLength(LA.LockAssignmentFriendsData) == 0 then
+	if LA.GetTableLength(LA.LockAssignmentsData) == 0 then
 		LA.RaidMode = false;
-		LA.LockAssignmentFriendsData = LA.RegisterMySoloData();
+		LA.LockAssignmentsData = LA.RegisterMySoloData();
 	end
 	LA.SetExtraChats();
 end
@@ -247,10 +236,10 @@ SlashCmdList["LA"] = function(msg)
 	if msg == "debug" then
 		if(LA.DebugMode) then
 			LA.DebugMode = false
-			print("Never Locky Debug Mode OFF")
+			PrintMessageToMainChatFrame("Lock Assignment Debug Mode OFF")
 		else
 			LA.DebugMode = true
-			print("Never Locky Debug Mode ON")
+			print("Lock Assignment Debug Mode ON")
 		end		
 	elseif msg == "test" then
 		LockAssignmentAssignCheckFrame:Show();

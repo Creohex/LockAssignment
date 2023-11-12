@@ -3,13 +3,13 @@ LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
 LA.Version = 113
-LA.LockAssignmentFriendFrameWidth = 500;
-LA.LockAssignmentFriendFrameHeight = 128
+LA.LockAssignmentWarlockFrameWidth = 500;
+LA.LockAssignmentWarlockFrameHeight = 128
 LA.LockAssignmentFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
 LA.LockAssignmentData_HasInitialized = false;
 LA.LockAssignmentData_Timestamp = 0.0;
-LA.LockAssignmentFriendsData = {}; -- Global for storing the warlocks and thier assignements.
-LA.LockAssignmentClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
+LA.LockAssignmentsData = {}; -- Global for storing the warlocks and thier assignements.
+LA.LockAssignmentClock_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
 LA.LockAssignmentSSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
 LA.LockAssignmentSSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
 if LockAssignment == nil then
@@ -28,7 +28,7 @@ function  LA.CreateWarlock(name, curse, banish, raidIndex)
 			Warlock.SSAssignment = "None"
 			Warlock.SSCooldown=0
 			Warlock.AcceptedAssignments = "nil"
-			Warlock.LockyFrameLocation = ""
+			Warlock.AssignmentFrameLocation = ""
 			Warlock.SSonCD = "false"
 			Warlock.LocalTime= 0
 			Warlock.MyTime = 0
@@ -46,7 +46,7 @@ function LA.RegisterWarlocks()
 		if not (name == nil) then
 			if fileName == "WARLOCK" then
 				if LA.DebugMode then
-					print(name .. "-" .. fileName)
+					PrintMessageToMainChatFrame(name .. "-" .. fileName)
 				end
 				table.insert(raidInfo, LA.CreateWarlock(name, "None", "None", i))
 			end
@@ -62,9 +62,9 @@ function LA.RegisterWarlocks()
 	return raidInfo
 end
 
-function  LA.IsLockyTableDirty(LockyData)
-	for k,v in pairs(LockyData) do
-		local lock = LA.GetLockyDataByName(v.Name);
+function  LA.IsAssignmentsTableDirty(AssignmentData)
+	for k,v in pairs(AssignmentData) do
+		local lock = LA.GetAssignmentDataByName(v.Name);
 		if lock.CurseAssignment ~= v.CurseAssignment or
 		lock.BanishAssignment ~= v.BanishAssignment or 
 		lock.SSAssignment ~= v.SSAssignment then
@@ -75,11 +75,11 @@ function  LA.IsLockyTableDirty(LockyData)
 end
 
 
-function LA.IsMyDataDirty(lockyData)
-	local myData = LA.GetMyLockyData();
-	if myData.CurseAssignment ~= lockyData.CurseAssignment or
-		myData.BanishAssignment ~= lockyData.BanishAssignment or
-		myData.SSAssignment ~= lockyData.SSAssignment then
+function LA.IsMyDataDirty(AssignmentData)
+	local myData = LA.GetMyData();
+	if myData.CurseAssignment ~= AssignmentData.CurseAssignment or
+		myData.BanishAssignment ~= AssignmentData.BanishAssignment or
+		myData.SSAssignment ~= AssignmentData.SSAssignment then
 			return true;
 	end
 
@@ -87,23 +87,23 @@ function LA.IsMyDataDirty(lockyData)
 end
 
 -- will merge any newcomers or remove any deserters from the table and return it while leaving assignments intact.
-function LA.UpdateWarlocks(LockyTable)
+function LA.UpdateWarlocks(AssignmentsTable)
 	local Newcomers = LA.RegisterWarlocks();
 	--Register Newcomers
 	for k, v in pairs(Newcomers) do
-		if LA.WarlockIsInTable(v.Name, LockyTable) then
+		if LA.WarlockIsInTable(v.Name, AssignmentsTable) then
 			--Do nothing I think...
 		else
 			if LA.DebugMode then
-				print("Newcomer detected")
+				PrintMessageToMainChatFrame("Newcomer detected")
 			end
 
 			--Add the newcomer to the data.
-			table.insert(LockyTable, LA.CreateWarlock(v.Name, "None", "None"));
+			table.insert(AssignmentsTable, LA.CreateWarlock(v.Name, "None", "None"));
 		end
 	end
 	--De-register deserters
-	for k, v in pairs(LockyTable) do
+	for k, v in pairs(AssignmentsTable) do
 		if LA.WarlockIsInTable(v.Name, Newcomers) then
 			--Do nothing I think...
 		else
@@ -111,18 +111,18 @@ function LA.UpdateWarlocks(LockyTable)
 			if LA.DebugMode then
 				print("Deserter detected")
 			end
-			local p = LA.GetLockyFriendIndexByName(LA.LockAssignmentFriendsData, v.Name)
+			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, v.Name)
 			if not (p==nil) then
-				table.remove(LA.LockAssignmentFriendsData, p)
+				table.remove(LA.LockAssignmentsData, p)
 			end
 		end
 	end
-	return LockyTable;
+	return AssignmentsTable;
 end
 
-function LA.MergeAssignments(LockyTable)
-	for k,v in pairs(LockyTable) do 
-		local lock = LA.GetLockyDataByName(v.Name);
+function LA.MergeAssignments(AssignmentsTable)
+	for k,v in pairs(AssignmentsTable) do
+		local lock = LA.GetAssignmentDataByName(v.Name);
 		if lock~=nil then
 			lock.SSAssignment = v.SSAssignment;
 			lock.CurseAssignment = v.CurseAssignment;
@@ -131,16 +131,16 @@ function LA.MergeAssignments(LockyTable)
 	end
 end
 
-function  LA.ResetAssignmentAcks(LockyTable)
-	for k,v in pairs(LockyTable) do 
-		local lock = LA.GetLockyDataByName(v.Name);
+function  LA.ResetAssignmentAcks(AssignmentsTable)
+	for k,v in pairs(AssignmentsTable) do
+		local lock = LA.GetAssignmentDataByName(v.Name);
 		lock.AcceptedAssignments = "nil";
 	end
 end
 
-function LA.WarlockIsInTable(LockyName, LockyTable)
-	for k, v in pairs(LockyTable) do
-		if (v.Name == LockyName) then
+function LA.WarlockIsInTable(WarlockName, AssignmentsTable)
+	for k, v in pairs(AssignmentsTable) do
+		if (v.Name == WarlockName) then
 			return true;
 		end
 	end
@@ -274,8 +274,8 @@ function LA.UpdateSSTargets()
 --	print ("SS Targets Updated success.")
 end
 
-function LA.GetMyLockyData()
-	for k, v in pairs(LA.LockAssignmentFriendsData) do
+function LA.GetMyData()
+	for k, v in pairs(LA.LockAssignmentsData) do
 		if LA.DebugMode then
 			--print(v.Name, " vs ", UnitName("player"));
 		end
@@ -285,8 +285,8 @@ function LA.GetMyLockyData()
 	end	
 end
 
-function LA.GetMyLockyDataFromTable(lockyDataTable)
-	for k, v in pairs(lockyDataTable) do
+function LA.GetMyAssignmentDataFromTable(assignmenDataTable)
+	for k, v in pairs(assignmenDataTable) do
 		if LA.DebugMode then
 			--print(v.Name, " vs ", UnitName("player"));
 		end
@@ -296,8 +296,8 @@ function LA.GetMyLockyDataFromTable(lockyDataTable)
     end
 end
 
-function  LA.GetLockyDataByName(name)
-    for k, v in pairs(LA.LockAssignmentFriendsData) do
+function  LA.GetAssignmentDataByName(name)
+    for k, v in pairs(LA.LockAssignmentsData) do
         if v.Name == name then
             return v
         end
@@ -311,7 +311,7 @@ function LA.SetupAssignmentMacro(CurseAssignment)
 	if (macroIndex == 0) then
 		macroIndex = CreateMacro(LA.MacroName, 1, nil, nil, true);
 		if LA.DebugMode then
-			print("Never Locky macro did not exist, creating a new one with ID" .. macroIndex);
+			print("Lock Assignment macro did not exist, creating a new one with ID" .. macroIndex);
 		end
 	end
 	

@@ -1,147 +1,144 @@
 --All of these functions are related to updating the ui from the data or vice versa.
---Will take in the string ID and return the appropriate Locky Frame
-function LA.GetLockyFriendFrameById(LockyFrameID)
-	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
-		--print(key, " -- ", value["LockyFrameID"])
-		if value["LockyFrameID"] == LockyFrameID then
+--Will take in the string ID and return the appropriate Lock Frame
+function LA.GetWarlockFrameById(LockFrameID)
+	for key, value in pairs(AssignmentFrame.scrollframe.content.WarlockFrames) do
+		--PrintMessageToMainChatFrame(key, " -- ", value["LockFrameID"])
+		if value["LockFrameID"] == LockFrameID then
 			return value
 		end
 	end
 end
 
---Will take in a string name and return the appropriate Locky Frame.
-function LA.GetLockyFriendFrameByName(LockyName)
-	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
-		--print(key, " -- ", value["LockyFrameID"])
-		if value["LockyName"] == LockyName then
+--Will take in a string name and return the appropriate frame.
+function LA.GetWarlockFrameByName(WarlockName)
+	for key, value in pairs(AssignmentFrame.scrollframe.content.WarlockFrames) do
+		--PrintMessageToMainChatFrame(key, " -- ", value["LockFrameID"])
+		if value["WarlockName"] == WarlockName then
 			return value
 		end
 	end
 end
 
---Will update a locky friend frame with the warlock data passed in.
+--Will update a warlock frame with the warlock data passed in.
 --If the warlock object is null it will clear and hide the data from the screen.
-function LA.UpdateLockyFrame(Warlock, LockyFriendFrame)
-	--print("Updating Locky Frame")
+function LA.UpdateAssignmentFrame(Warlock, AssignmentFrame)
 	if(Warlock == nil) then
-		LockyFriendFrame:Hide()
+		AssignmentFrame:Hide()
 		Warlock = LA.CreateWarlock("", "None", "None", 0)
 	else
-		LockyFriendFrame:Show()
+		AssignmentFrame:Show()
 	end
 	--Set the nametag
-    --print("Updating Nameplate Text to: ".. Warlock.Name)
-    LockyFriendFrame.LockyName = Warlock.Name
-	LockyFriendFrame.NamePlate.TextFrame:SetText(Warlock.Name)
+    --PrintMessageToMainChatFrame("Updating Nameplate Text to: ".. Warlock.Name)
+    AssignmentFrame.WarlockName = Warlock.Name
+	AssignmentFrame.NamePlate.TextFrame:SetText(Warlock.Name)
 	--Set the CurseAssignment
 	--print("Updating Curse to: ".. Warlock.CurseAssignment) -- this may need to be done by index.....
 	--GetIndexFromTable(CurseOptions, Warlock.CurseAssignment)
-	UIDropDownMenu_SetSelectedID(LockyFriendFrame.CurseAssignmentMenu, LA.GetIndexFromTable(LA.CurseOptions, Warlock.CurseAssignment))
-	LA.UpdateCurseGraphic(LockyFriendFrame.CurseAssignmentMenu, LA.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu))
-	UIDropDownMenu_SetText(LA.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu), LockyFriendFrame.CurseAssignmentMenu)
+	UIDropDownMenu_SetSelectedID(AssignmentFrame.CurseAssignmentMenu, LA.GetIndexFromTable(LA.CurseOptions, Warlock.CurseAssignment))
+	LA.UpdateCurseGraphic(AssignmentFrame.CurseAssignmentMenu, LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu))
+	UIDropDownMenu_SetText(LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu), AssignmentFrame.CurseAssignmentMenu)
 
 	--Set the BanishAssignmentMenu
 	--print("Updating Banish to: ".. Warlock.BanishAssignment)
-	UIDropDownMenu_SetSelectedID(LockyFriendFrame.BanishAssignmentMenu, LA.GetIndexFromTable(LA.BanishMarkers, Warlock.BanishAssignment))
-	LA.UpdateBanishGraphic(LockyFriendFrame.BanishAssignmentMenu, LA.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
-	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, LA.BanishMarkers, ""), LockyFriendFrame.BanishAssignmentMenu)
+	UIDropDownMenu_SetSelectedID(AssignmentFrame.BanishAssignmentMenu, LA.GetIndexFromTable(LA.BanishMarkers, Warlock.BanishAssignment))
+	LA.UpdateBanishGraphic(AssignmentFrame.BanishAssignmentMenu, LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
+	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""), AssignmentFrame.BanishAssignmentMenu)
 
 	--Set the SS Assignment
 	--print("Updating SS to: ".. Warlock.SSAssignment)
-	LA.UpdateDropDownMenuWithNewOptions(LockyFriendFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments");
-	UIDropDownMenu_SetSelectedID(LockyFriendFrame.SSAssignmentMenu, LA.GetSSIndexFromTable(LA.GetSSTargets(),Warlock.SSAssignment))
-	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(LockyFriendFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments"), LockyFriendFrame.SSAssignmentMenu)
+	LA.UpdateDropDownMenuWithNewOptions(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments");
+	UIDropDownMenu_SetSelectedID(AssignmentFrame.SSAssignmentMenu, LA.GetSSIndexFromTable(LA.GetSSTargets(),Warlock.SSAssignment))
+	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments"), AssignmentFrame.SSAssignmentMenu)
 
 	--Update the Portrait picture	
 	if Warlock.Name=="" then
-		LockyFriendFrame.Portrait:Hide()		
+		AssignmentFrame.Portrait:Hide()
 	else
-		--print("Trying to set diff portrait")
-		if(LockyFriendFrame.Portrait.Texture == nil) then
-			--print("The obj never existed")
-			local PortraitGraphic = LockyFriendFrame.Portrait:CreateTexture(nil, "OVERLAY") 
+		if(AssignmentFrame.Portrait.Texture == nil) then
+			local PortraitGraphic = AssignmentFrame.Portrait:CreateTexture(nil, "OVERLAY")
 			PortraitGraphic:SetAllPoints()
-			if Warlock.LockyName == UnitName("player") then
+			if Warlock.WarlockName == UnitName("player") then
 				SetPortraitTexture(texture, "player")
 			else
 				if Warlock.RaidIndex ~= nil then
-					SetPortraitTexture(LockyFriendFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
+					SetPortraitTexture(AssignmentFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
 				end
 			end
-			LockyFriendFrame.Portrait.Texture = PortraitGraphic
+			AssignmentFrame.Portrait.Texture = PortraitGraphic
 		else
-			if Warlock.LockyName == UnitName("player") then
+			if Warlock.WarlockName == UnitName("player") then
 				SetPortraitTexture(texture, "player")
 			else
 				if Warlock.RaidIndex ~= nil then
-					SetPortraitTexture(LockyFriendFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
+					SetPortraitTexture(AssignmentFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
 				end
 			end
 
 		end
-		LockyFriendFrame.Portrait:Show()
+		AssignmentFrame.Portrait:Show()
 	end
 
 	--Update acknowledged Update that text:
 	if(Warlock.AcceptedAssignments == "true")then
-		LockyFriendFrame.AssignmentAcknowledgement.value:SetText("Yes")
+		AssignmentFrame.AssignmentAcknowledgement.value:SetText("Yes")
 	elseif Warlock.AcceptedAssignments == "false" then
-		LockyFriendFrame.AssignmentAcknowledgement.value:SetText("No")
+		AssignmentFrame.AssignmentAcknowledgement.value:SetText("No")
 	else
-		LockyFriendFrame.AssignmentAcknowledgement.value:SetText("Not Received")
+		AssignmentFrame.AssignmentAcknowledgement.value:SetText("Not Received")
 	end
 
 	if(Warlock.AddonVersion == 0) then
-		LockyFriendFrame.Warning.value:SetText("Warning: Addon not installed")
-		LockyFriendFrame.Warning:Show();		
+		AssignmentFrame.Warning.value:SetText("Warning: Addon not installed")
+		AssignmentFrame.Warning:Show();
 	elseif (Warlock.AddonVersion< LA.Version) then
-		LockyFriendFrame.Warning.value:SetText("Warning: Addon out of date")
-		LockyFriendFrame.Warning:Show();
+		AssignmentFrame.Warning.value:SetText("Warning: Addon out of date")
+		AssignmentFrame.Warning:Show();
 	else
-		LockyFriendFrame.Warning:Hide();
+		AssignmentFrame.Warning:Hide();
 	end
 
-	return LockyFriendFrame.LockyFrameID
+	return AssignmentFrame.LockFrameID
 end
 
---This will use the global locky friends data.
-function LA.UpdateAllLockyFriendFrames()
+--This will use the global warlocks data.
+function LA.UpdateAllWarlockFrames()
 	if LA.DebugMode then
-		print("Updating all frames.")
+		PrintMessageToMainChatFrame("Updating all frames.")
 	end
-    LA.ClearAllLockyFrames()
+    LA.ClearAllAssignmentFrames()
    -- print("All frames Cleared")
     LA.ConsolidateFrameLocations()
     --print("Frame Locations Consolidated")
-	for key, value in pairs(LA.LockAssignmentFriendsData) do
-		LA.UpdateLockyFrame(value, LA.GetLockyFriendFrameById(value.LockyFrameLocation))
+	for key, value in pairs(LA.LockAssignmentsData) do
+		LA.UpdateAssignmentFrame(value, LA.GetWarlockFrameById(value.AssignmentFrameLocation))
 	end
 	if LA.DebugMode then
 		print("Frames updated successfully.")
 	end
-    AssignmentFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentFriendsData))
+    AssignmentFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentsData))
   --  print("ScrollRegion size updated successfully")
 end
 
 
 --Loops through and clears all of the data currently loaded.
-function  LA.ClearAllLockyFrames()
+function  LA.ClearAllAssignmentFrames()
 	--print("Clearing the frames")
-	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
+	for key, value in pairs(AssignmentFrame.scrollframe.content.WarlockFrames) do
 
-		LA.UpdateLockyFrame(nil, value)
-		--print(value.LockyFrameID, "successfully cleared.")
+		LA.UpdateAssignmentFrame(nil, value)
+		--print(value.LockFrameID, "successfully cleared.")
 	end
 end
 
 --This function will take in the warlock table object and update the frame assignment to make sense.
 function  LA.ConsolidateFrameLocations()
-	--Need to loop through and assign a locky frame id to a locky friend.
-	--print("Setting up FrameLocations for the locky friend data.")
-	for key, value in pairs(LA.LockAssignmentFriendsData) do
+	--Need to loop through and assign a frame id to a warlock.
+	--print("Setting up FrameLocations for the warlock data.")
+	for key, value in pairs(LA.LockAssignmentsData) do
 		--print(value.Name, "will be assigned a frame.")
-		value.LockyFrameLocation = AssignmentFrame.scrollframe.content.LockyFriendFrames[key].LockyFrameID;
-		--print("Assigned Frame:",value.LockyFrameLocation)
+		value.AssignmentFrameLocation = AssignmentFrame.scrollframe.content.WarlockFrames[key].LockFrameID;
+		--print("Assigned Frame:",value.AssignmentFrameLocation)
 	end
 end
 
@@ -151,8 +148,8 @@ end
 	Update the CD Tracker Text
 	else do nothing.
 	]]--
-function LA.UpdateLockyClockys()
-	for k,v in pairs(LA.LockAssignmentFriendsData) do
+function LA.UpdateLockAssignmentClock()
+	for k,v in pairs(LA.LockAssignmentsData) do
 		if (LA.DebugMode) then
 			--print(v.Name, "on cooldown =", v.SSonCD)
 		end
@@ -172,7 +169,7 @@ function LA.UpdateLockyClockys()
 			if(LA.DebugMode and v.SSCooldown~=0) then
 				--print(v.Name,"my time:", v.MyTime, "localtime:", v.LocalTime, "timeShift:", timeShift, "LocalCD", v.SSCooldown, "Abs CD:",absCD, "Time Remaining:",secondsRemaining)
 			end
-			local frame = LA.GetLockyFriendFrameById(v.LockyFrameLocation)
+			local frame = LA.GetWarlockFrameById(v.AssignmentFrameLocation)
 			frame.SSCooldownTracker:SetText("CD "..result)
 
 			if secondsRemaining <=0 or v.SSCooldown == 0 then
@@ -212,10 +209,10 @@ end
 
 -- Gets the index of the frame that currently houses a particular warlock. 
 -- This is used for force removal and not much else that I can recall.
-function  LA.GetLockyFriendIndexByName(table, name)
+function  LA.GetAssignmentIndexByName(table, name)
 
 	for key, value in pairs(table) do
-		--print(key, " -- ", value["LockyFrameID"])
+		--print(key, " -- ", value["LockFrameID"])
 		--print(value.Name)
 		if value.Name == name then
 			if LA.DebugMode then
@@ -233,8 +230,8 @@ end
 --Checks to see if the SS is on CD, and broadcasts if it is to all everyone.
 function LA.CheckSSCD(self)
     local startTime, duration, enable = GetItemCooldown(16896)
-    --if my CD in never locky is different from the what I am aware of then I need to update.
-	local myself = LA.GetMyLockyData()
+    --if my CD in lock assignments is different from the what I am aware of then I need to update.
+	local myself = LA.GetMyData()
 	if myself ~= nil then
 		if(myself.SSCooldown~=startTime) then
 			if LA.DebugMode then
@@ -282,7 +279,7 @@ function LA.ForceUpdateSSCD()
 	local bag, slot = GetBagPosition(itemName)
 	if bag ~= nil and slot ~= nil then
 		local startTime, duration, enable = GetContainerItemCooldown(bag, slot)
-		local myself = LA.GetMyLockyData()
+		local myself = LA.GetMyData()
 		if myself ~= nil then
 			if(myself.SSCooldown~=startTime) then
 				if LA.DebugMode then
@@ -301,8 +298,8 @@ function LA.ForceUpdateSSCD()
 end
 
 --Updates the cooldown of a warlock in the ui.
-function LA.UpdateLockySSCDByName(name, cd)
-	local warlock = LA.GetLockyDataByName(name)
+function LA.UpdateAssignmentSSCDByName(name, cd)
+	local warlock = LA.GetAssignmentDataByName(name)
 	if LA.DebugMode then
 		print("Attempting to update SS CD for", name);
 	end
@@ -317,25 +314,25 @@ end
 --Returns a warlock table object from the AssignmentFrame
 --This function is used to determine if unsaved UI changes have been made.
 --This will be used by the is dirty function to determine if the frame is dirty.
-function LA.GetWarlockFromLockyFrame(LockyName)
-    local LockyFriendFrame = LA.GetLockyFriendFrameByName(LockyName)
-    local Warlock = LA.CreateWarlock(LockyFriendFrame.LockyName,
-	LA.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu),
-	LA.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
-    Warlock.SSAssignment = LA.GetValueFromDropDownList(LockyFriendFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments")
-    Warlock.LockyFrameLocation = LockyFriendFrame.LockyFrameID       
+function LA.GetWarlockFromAssignmentFrame(WarlockName)
+    local AssignmentFrame = LA.GetWarlockFrameByName(WarlockName)
+    local Warlock = LA.CreateWarlock(AssignmentFrame.WarlockName,
+	LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu),
+	LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
+    Warlock.SSAssignment = LA.GetValueFromDropDownList(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments")
+    Warlock.AssignmentFrameLocation = AssignmentFrame.LockFrameID
     return Warlock   
 end
 
 --Returns true if changes have been made but have not been saved.
-function LA.IsUIDirty(LockyData)
+function LA.IsUIDirty(AssignmentData)
 	if(not LockAssignmentData_HasInitialized) then
-		LA.LockAssignmentFriendsData = LA.InitLockyFriendData();
+		LA.LockAssignmentsData = LA.InitLockAssignmentData();
 		LockAssignmentData_HasInitialized = true;
 		return true;
 	end
-    for k, v in pairs(LockyData) do
-        local uiLock = LA.GetWarlockFromLockyFrame(v.Name)
+    for k, v in pairs(AssignmentData) do
+        local uiLock = LA.GetWarlockFromAssignmentFrame(v.Name)
         if(v.CurseAssignment~=uiLock.CurseAssignment or
         v.BanishAssignment ~= uiLock.BanishAssignment or
         v.SSAssignment ~= uiLock.SSAssignment) then
@@ -345,11 +342,11 @@ function LA.IsUIDirty(LockyData)
     return false
 end
 
---Commits any UI changes to the global LockyFriendsDataModel
-function LA.CommitChanges(LockAssignmentFriendsData)
+--Commits any UI changes to the global LockAssignmentsData
+function LA.CommitChanges(LockAssignmentsData)
     
-    for k, v in pairs(LockAssignmentFriendsData) do
-        local uiLock = LA.GetWarlockFromLockyFrame(v.Name)
+    for k, v in pairs(LockAssignmentsData) do
+        local uiLock = LA.GetWarlockFromAssignmentFrame(v.Name)
         if LA.DebugMode then
 			print("Old: ", v.CurseAssignment, "New: ", uiLock.CurseAssignment)
 			print("Old: ", v.BanishAssignment, "New: ", uiLock.BanishAssignment)
@@ -361,12 +358,12 @@ function LA.CommitChanges(LockAssignmentFriendsData)
 		v.AcceptedAssignments = "nil"
     end
     LockAssignmentData_Timestamp = GetTime()
-    return LockAssignmentFriendsData
+    return LockAssignmentsData
 end
 
 function LA.AnnounceAssignments()
-	local AnnounceOption = 	LA.GetValueFromDropDownList(LockyAnnouncerOptionMenu, LA.AnnouncerOptions, "");
-	for k, v in pairs(LA.LockAssignmentFriendsData) do
+	local AnnounceOption = 	LA.GetValueFromDropDownList(LockAssignmentAnnouncerOptionMenu, LA.AnnouncerOptions, "");
+	for k, v in pairs(LA.LockAssignmentsData) do
 		local message = ""
 		if v.CurseAssignme1nt ~= "None"  or v.BanishAssignment ~= "None" or v.SSAssignment~="None" then
 			message = v.Name .. ": ";

@@ -1,7 +1,7 @@
 ## Interface: 11305
-## Title: Never Locky
+## Title: Lock Assignments
 ## Notes: Allows the user to see and share warlock assignments.
-## Author: Brylack
+## Author: Zedorff, base on Brylack's NeverLocky
 
 Libs\LibStub\LibStub.lua
 Libs\AceCore-3.0\AceCore-3.0.lua
@@ -13,8 +13,7 @@ Libs\AceGUI-3.0\AceGUI-3.0.lua
 Libs\AceConfig-3.0\AceConfigRegistry-3.0\AceConfigRegistry-3.0.lua
 Libs\AceConfig-3.0\AceConfigDialog-3.0\AceConfigDialog-3.0.lua
 Libs\AceConsole-3.0\AceConsole-3.0.lua
-##Libs\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenuTemplates.xml
-##Libs\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
+LockAssignmentsCommons.lua
 LockAssignmentGlobalData.lua
 LockAssignmentTableFunctions.lua
 LockAssignmentUI.lua

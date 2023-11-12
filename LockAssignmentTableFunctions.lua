@@ -6,14 +6,6 @@ do
 	   return string.format("%q", s)
 	end
 
-	function GetTableLng(tbl)
-		local getN = 0
-		for n in pairs(tbl) do
-		getN = getN + 1
-		end
-		return getN
-	end
-
  	--Table Serialization stuff pulled from a lua tutorial and modified to work for my needs.
 	--// The Save Function
 	function table.serialize(tbl)

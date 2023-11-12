@@ -1,11 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Script file="Libs\LibStub\LibStub.lua" />
-	<Script File="LockyGlobalData.lua" />
+	<Script File="LockAssignmentData.lua" />
 	<Script file="Libs\Ace3.lua" />
-	<Script File="LockyTableFunctions.lua" />
-	<Script File="LockyDataUI.lua" />
-	<Script File="LockyUI.lua" />
-	<Script File="LockyComms.lua" />
+	<Script File="LockAssignmentTableFunctions.lua" />
+	<Script File="LockAssignmentDataUI.lua" />
+	<Script File="LockAssignmentUI.lua" />
+	<Script File="LockAssignmentComms.lua" />
 	<Script File="LockAssignment.lua" />
 	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml" />
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
@@ -51,7 +51,7 @@
 					</Anchors>
 					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
 				</Texture>
-				<FontString inherits="GameFontNormal" text="Never Locky">
+				<FontString inherits="GameFontNormal" text="Lock Assignment">
 					<Size>
 						<AbsDimension x="140" y="0" />
 					</Size>

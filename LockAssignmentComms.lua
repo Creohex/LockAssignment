@@ -11,7 +11,7 @@ LA.CommAction.AssigmentResponse = "AssignmentResponse"
 LA.CommAction.AssignmentReset = "AssignmentReset"
 
 function LA.CreateMessageFromTable(action, data, dataAge)
-    --print("Creating outbound message.")
+    --PrintMessageToMainChatFrame("Creating outbound message.")
     local message = {}
     message.action = action
     message.data = data
@@ -19,7 +19,7 @@ function LA.CreateMessageFromTable(action, data, dataAge)
     message.author = UnitName("player")
     message.addonVersion = LA.Version
     local strMessage = table.serialize(message)
-    --print("Message created successfully")
+    --PrintMessageToMainChatFrame("Message created successfully")
     return strMessage
 end
 
@@ -30,13 +30,13 @@ end
 --Message router where reveived messages land.
 function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     if LA.DebugMode then
-        print("Message Was Recieved by the Router");
+        PrintMessageToMainChatFrame("Message Was Recieved by the Router");
     end
     local message = table.deserialize(message)
 
-    local lockyversionstub = LA.GetLockyDataByName(message.author)
-    if lockyversionstub ~=nil then
-        lockyversionstub.AddonVersion = message.addonVersion
+    local assignmentVersionStub = LA.GetAssignmentDataByName(message.author)
+    if assignmentVersionStub ~=nil then
+        assignmentVersionStub.AddonVersion = message.addonVersion
     end
 
     if message.addonVersion > LA.Version then
@@ -48,30 +48,30 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     -- process the incoming message
     if message.action == LA.CommAction.SSonCD then
         if LA.DebugMode then
-            print("SS on CD: ", message.data.Name, message.data.SSCooldown, message.data.SSonCD, message.dataAge)
+            PrintMessageToMainChatFrame("SS on CD: ", message.data.Name, message.data.SSCooldown, message.data.SSonCD, message.dataAge)
         end
-        local SendingWarlock = LA.GetLockyDataByName(message.author)
+        local SendingWarlock = LA.GetAssignmentDataByName(message.author)
             if(SendingWarlock ~= nil) then
                 if LA.DebugMode then
-                    print("Updating SS data for", message.author);
+                    PrintMessageToMainChatFrame("Updating SS data for", message.author);
                 end
                 SendingWarlock.LocalTime = message.dataAge
                 SendingWarlock.MyTime = GetTime()
                 SendingWarlock.SSonCD = "true";
                 SendingWarlock.SSCooldown = message.data.SSCooldown
             end
-        --UpdateLockySSCDByName(message.data.Name, message.data.SSCooldown)
+        --UpdateAssignmentSSCDByName(message.data.Name, message.data.SSCooldown)
     elseif message.action == LA.CommAction.BroadcastTable then
 
-        local myData = LA.GetMyLockyData()
+        local myData = LA.GetMyData()
         if (myData~=nil)then
-            for  lockyindex, lockydata in pairs(message.data) do
-                if lockydata.Name == UnitName("player") then
-                    if LA.IsMyDataDirty(lockydata) or LA.DebugMode then
-                        LA.SetLockyCheckFrameAssignments(lockydata.CurseAssignment, lockydata.BanishAssignment, lockydata.SSAssignment)
+            for _, assignmentData in pairs(message.data) do
+                if assignmentData.Name == UnitName("player") then
+                    if LA.IsMyDataDirty(assignmentData) or LA.DebugMode then
+                        LA.SetLockAssignmentCheckFrame(assignmentData.CurseAssignment, assignmentData.BanishAssignment, assignmentData.SSAssignment)
                     else
-                        --print("updating curse macro.")
-                        LockAssignmentAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
+                        --PrintMessageToMainChatFrame("updating curse macro.")
+                        LockAssignmentAssignCheckFrame.activeCurse = assignmentData.CurseAssignment;
                         LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                         LA.SendAssignmentAcknowledgement("true");
                     end
@@ -81,14 +81,14 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
 
         if LA.RaidMode then
             if LA.DebugMode then
-                print("Received message from", message.author);
+                PrintMessageToMainChatFrame("Received message from", message.author);
             end
             if message.author == LA.CommTarget then
                 return;
             end
         end
         if LA.DebugMode then
-            print("Recieved a broadcast message from", message.author)
+            PrintMessageToMainChatFrame("Recieved a broadcast message from", message.author)
         end
 
         
@@ -97,20 +97,20 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             for k, v in pairs(message.data)do
                 if LA.DebugMode then
                     for lk, lv in pairs(v) do
-                        print(lk, lv)                    
+                        PrintMessageToMainChatFrame(lk, lv)
                     end                    
                 end
             end
 
-            local myData = LA.GetMyLockyData()
+            local myData = LA.GetMyData()
             if (myData~=nil)then
-                for  lockyindex, lockydata in pairs(message.data) do
-                    if lockydata.Name == UnitName("player") then
-                        if LA.IsMyDataDirty(lockydata) or LA.DebugMode then
-                            LA.SetLockyCheckFrameAssignments(lockydata.CurseAssignment, lockydata.BanishAssignment, lockydata.SSAssignment)
+                for _, assignmentData in pairs(message.data) do
+                    if assignmentData.Name == UnitName("player") then
+                        if LA.IsMyDataDirty(assignmentData) or LA.DebugMode then
+                            LA.SetLockAssignmentCheckFrame(assignmentData.CurseAssignment, assignmentData.BanishAssignment, assignmentData.SSAssignment)
                         else
-                            print("updating curse macro.")
-                            LockAssignmentAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
+                            PrintMessageToMainChatFrame("updating curse macro.")
+                            LockAssignmentAssignCheckFrame.activeCurse = assignmentData.CurseAssignment;
                             LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                             LA.SendAssignmentAcknowledgement("true");
                         end
@@ -118,26 +118,26 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                 end
             end
 
-            --LockAssignmentFriendsData = message.data
+            --LockAssignmentsData = message.data
             LA.MergeAssignments(message.data);
-            LA.LockAssignmentFriendsData = LA.UpdateWarlocks(LA.LockAssignmentFriendsData);
-            LA.UpdateAllLockyFriendFrames()
+            LA.LockAssignmentsData = LA.UpdateWarlocks(LA.LockAssignmentsData);
+            LA.UpdateAllWarlockFrames()
             if LA.DebugMode then
-                print("UI has been refreshed by request of broadcast message.")
+                PrintMessageToMainChatFrame("UI has been refreshed by request of broadcast message.")
             end               
         end 
         
         if myData.CurseAssignment == "None" and myData.BanishAssignment == "None" and myData.SSAssignment == "None" then
-            LockyPersonalMonitorFrame:Hide();
+            AssignmentPersonalMonitorFrame:Hide();
         else
-            LockyPersonalMonitorFrame:Show();
+            AssignmentPersonalMonitorFrame:Show();
         end
     elseif message.action == LA.CommAction.RequestAssignments then
         if LA.RaidMode then
             if LA.DebugMode then
-                print("Received Assignment Request message from", message.author);
+                PrintMessageToMainChatFrame("Received Assignment Request message from", message.author);
             end
-            local myself = LA.GetMyLockyData()
+            local myself = LA.GetMyData()
             if myself ~= nil then
                 LA.BroadcastSSCooldown(myself)
             end
@@ -151,7 +151,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
         if LA.DebugMode then
             print("Assignment request recieved, sending out assignments.")
         end
-        LA.BroadcastTable(LA.LockAssignmentFriendsData)
+        LA.BroadcastTable(LA.LockAssignmentsData)
         
     elseif message.action == LA.CommAction.AssigmentResponse then
         -- When we recieve an assigment response we should stuff with that.
@@ -159,17 +159,17 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             print("Recieved an Ack message from", message.author);
         end
 
-        local SendingWarlock = LA.GetLockyDataByName(message.author)
+        local SendingWarlock = LA.GetAssignmentDataByName(message.author)
         if SendingWarlock~=nil then
             SendingWarlock.AcceptedAssignments = message.data.acknowledged
-            LA.UpdateLockyFrame(SendingWarlock, LA.GetLockyFriendFrameById(SendingWarlock.LockyFrameLocation))
+            LA.UpdateAssignmentFrame(SendingWarlock, LA.GetWarlockFrameById(SendingWarlock.AssignmentFrameLocation))
         end
 
     elseif message.action == LA.CommAction.AssignmentReset then
         if LA.DebugMode then
             print("Recieved assignment reset from", message.author)
         end
-        LA.ResetAssignmentAcks(LA.LockAssignmentFriendsData);
+        LA.ResetAssignmentAcks(LA.LockAssignmentsData);
         
     else
         if LA.DebugMode then
@@ -178,16 +178,16 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     end
 end
 
---Takes in a table and sends the serialized verion across the wire.
-function LA.BroadcastTable(LockyTable)
+--Takes in a table and sends the serialized version across the wire.
+function LA.BroadcastTable(AssignmentsTable)
     if(LA.IsMyAddonOutOfDate)then
         return;
     end
-    --stringify the locky table
+    --stringify the assignments table
     if LA.DebugMode then
-        print("Sending out the assignment table")
+        PrintMessageToMainChatFrame("Sending out the assignment table")
     end
-    local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, LockyTable, LockAssignmentData_Timestamp)
+    local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, AssignmentsTable, LockAssignmentData_Timestamp)
     if LA.RaidMode then
         LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeRaid)
     else
