@@ -39,7 +39,7 @@ function LA.InitLockAssignmentFrameScrollArea() --parent frame
 		
 	--This is poorly optimized, but it is what it is.
 	for i=0, 39 do
-		table.insert(content.WarlockFrames, LA.CreateAssignmentFrame("Brylack", i, content, i + 1))
+		table.insert(content.WarlockFrames, LA.CreateAssignmentFrame("John Doe", i, content, i + 1))
 	end
 
 	scrollframe.content = content 

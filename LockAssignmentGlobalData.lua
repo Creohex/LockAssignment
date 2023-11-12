@@ -2,7 +2,7 @@
 LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
-LA.Version = 113
+LA.Version = 10
 LA.LockAssignmentWarlockFrameWidth = 500;
 LA.LockAssignmentWarlockFrameHeight = 128
 LA.LockAssignmentFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
@@ -22,34 +22,45 @@ LA.MacroName =  "CurseAssignment";
 
 function  LA.CreateWarlock(name, curse, banish, raidIndex)
 	local Warlock = {}
-			Warlock.Name = name
-			Warlock.CurseAssignment = curse
-			Warlock.BanishAssignment = banish
-			Warlock.SSAssignment = "None"
-			Warlock.SSCooldown=0
-			Warlock.AcceptedAssignments = "nil"
-			Warlock.AssignmentFrameLocation = ""
-			Warlock.SSonCD = "false"
-			Warlock.LocalTime= 0
-			Warlock.MyTime = 0
-			Warlock.AddonVersion = 0
-			Warlock.RaidIndex = raidIndex
+	Warlock.Name = name
+	Warlock.CurseAssignment = curse
+	Warlock.BanishAssignment = banish
+	Warlock.SSAssignment = "None"
+	Warlock.SSCooldown=0
+	Warlock.AcceptedAssignments = "nil"
+	Warlock.AssignmentFrameLocation = ""
+	Warlock.SSonCD = "false"
+	Warlock.LocalTime= 0
+	Warlock.MyTime = 0
+	if name == UnitName("player") then
+		Warlock.AddonVersion = LA.Version
+	else
+		Warlock.AddonVersion = 0
+	end
+	Warlock.RaidIndex = raidIndex
 	return Warlock
 end
 
 --Pulls all of the warlocks in the raid and initilizes thier assignment data.
 function LA.RegisterWarlocks()
+	local myRaidRank = 0
 	local raidInfo = {}
 	for i=1, 40 do
-		local name, _, _, _, _, fileName, _, _, _, _, _ = GetRaidRosterInfo(i);
+		local name, rank, _, _, _, fileName, _, _, _, _, _ = GetRaidRosterInfo(i);
 		if not (name == nil) then
 			if fileName == "WARLOCK" then
+				if name == UnitName("player") then
+					myRaidRank = rank
+				end
 				if LA.DebugMode then
 					LA.print(name .. "-" .. fileName)
 				end
 				table.insert(raidInfo, LA.CreateWarlock(name, "None", "None", i))
 			end
 		end		
+	end
+	if myRaidRank < 1 then
+		LACommit_Button:Disable();
 	end
 	if LA.GetTableLength(raidInfo) == 0 then
 		LA.RaidMode = false;
@@ -98,7 +109,7 @@ function LA.UpdateWarlocks(AssignmentsTable)
 			end
 
 			--Add the newcomer to the data.
-			table.insert(AssignmentsTable, LA.CreateWarlock(v.Name, "None", "None"));
+			table.insert(AssignmentsTable, LA.CreateWarlock(v.Name, "None", "None", v.RaidIndex));
 		end
 	end
 	--De-register deserters

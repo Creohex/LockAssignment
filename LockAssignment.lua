@@ -17,6 +17,7 @@ function LA.LockAssignmentInit()
 		LA.InitLockAssignmentCheckFrame();
 		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
+		LockAssignmentFrame:Hide()
 	end	
 end
 
@@ -86,7 +87,7 @@ function LA.InitLockAssignmentData()
 			return LA.LockAssignmentsData
 		elseif testmode == TestType.remove then
 			LA.print("testing remove")
-			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, "Brylack")
+			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, "John Doe")
 			if not (p==nil) then
 				table.remove(LA.LockAssignmentsData, p)
 			end
@@ -99,7 +100,7 @@ function LA.InitLockAssignmentData()
 			return LA.LockAssignmentsData
 		else
 			return LA.LockAssignmentsData
-		end		
+		end
 	end
 end
 
@@ -125,7 +126,7 @@ end
 function LA.RegisterTestData()
 	local testData = {}
 	for i=1, 5 do
-		table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+		table.insert(testData, LA.CreateWarlock("John Doe", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	end
 	return testData
 end
@@ -133,20 +134,19 @@ end
 --Generates test data that more closly mimics what one could see in an actual raid.
 function LA.RegisterRealisicTestData()
 	local testData = {}
-	--table.insert(testData, AddAWarlock("Brylack", CurseOptions[math.random(1,GetTableLength(CurseOptions))], BanishMarkers[math.random(1,GetTableLength(BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Giandy", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Melon", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Itsyrekt", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Dessian", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Sociopath", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 1", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 2", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 3", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 4", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 5", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("Test Player 6", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	return testData
 end
 
 --Generates just my data and returns it in a table.
 function LA.RegisterMyTestData()
 	local testData = {}
-	table.insert(testData, LA.CreateWarlock("Brylack", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
+	table.insert(testData, LA.CreateWarlock("John Doe", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
 	return testData
 end
 
@@ -173,24 +173,40 @@ function LA.LockAssignment_HideFrame()
 end
 
 function LA.LockAssignment_Commit()
-	LA.LockAssignmentsData = LA.CommitChanges(LA.LockAssignmentsData)
-	LA.UpdateAllWarlockFrames();
-	LA.SendAssignmentReset();
-	LA.BroadcastTable(LA.LockAssignmentsData)
-	--LA.print("Changes were sent out.");
+	if LA.FindMyRaidRank() < 1 then
+		LACommit_Button:Disable();
+	else
+		LA.LockAssignmentsData = LA.CommitChanges(LA.LockAssignmentsData)
+		LA.UpdateAllWarlockFrames();
+		LA.SendAssignmentReset();
+		LA.BroadcastTable(LA.LockAssignmentsData)
 
-	LA.AnnounceAssignments();
-	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
-	--LockAssignmentFrame:Hide()
+		LA.AnnounceAssignments();
+		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+		--LockAssignmentFrame:Hide()
+	end
 end
 
 --At this time this is just a test function.
 function LA.Test()
 	LA.print("Updating a frame....")
 	LA.LockAssignmentsData = LA.InitLockAssignmentData();
-	NLTest_Button.Text:SetText(testmode)
+	LATest_Button.Text:SetText(testmode)
 	--UpdateAllWarlockFrames();
 	LA.BroadcastTable(LA.LockAssignmentsData);
+end
+
+-- Returns my rank to determine whether we should disable commit button
+function LA.FindMyRaidRank()
+	for i=1, 40 do
+		local name, rank, _, _, _, fileName, _, _, _, _, _ = GetRaidRosterInfo(i);
+		if not (name == nil) then
+			if fileName == "WARLOCK" and name == UnitName("player") then
+				return rank
+			end
+		end
+	end
+	return 0
 end
 
 -- Event for handling the frame showing.
@@ -225,6 +241,9 @@ function LA.LockAssignment_OnShowFrame()
 		LA.LockAssignmentsData = LA.RegisterMySoloData();
 	end
 	LA.SetExtraChats();
+	if LA.FindMyRaidRank() >= 1 then
+		LACommit_Button:Enable();
+	end
 end
 
 -- /command for opening the ui.

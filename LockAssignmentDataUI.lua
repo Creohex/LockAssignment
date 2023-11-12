@@ -59,22 +59,21 @@ function LA.UpdateAssignmentFrame(Warlock, AssignmentFrame)
 			local PortraitGraphic = AssignmentFrame.Portrait:CreateTexture(nil, "OVERLAY")
 			PortraitGraphic:SetAllPoints()
 			if Warlock.WarlockName == UnitName("player") then
-				SetPortraitTexture(texture, "player")
+				SetPortraitTexture(PortraitGraphic, "player")
+			elseif Warlock.RaidIndex ~= nil then
+				SetPortraitTexture(PortraitGraphic, string.format("raid%d", Warlock.RaidIndex))
 			else
-				if Warlock.RaidIndex ~= nil then
-					SetPortraitTexture(AssignmentFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
-				end
+				SetPortraitTexture(PortraitGraphic, "player")
 			end
 			AssignmentFrame.Portrait.Texture = PortraitGraphic
 		else
 			if Warlock.WarlockName == UnitName("player") then
-				SetPortraitTexture(texture, "player")
+				SetPortraitTexture(AssignmentFrame.Portrait.Texture, "player")
+			elseif Warlock.RaidIndex ~= nil then
+				SetPortraitTexture(AssignmentFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
 			else
-				if Warlock.RaidIndex ~= nil then
-					SetPortraitTexture(AssignmentFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
-				end
+				SetPortraitTexture(AssignmentFrame.Portrait.Texture, "player")
 			end
-
 		end
 		AssignmentFrame.Portrait:Show()
 	end

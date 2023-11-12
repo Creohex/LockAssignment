@@ -89,7 +89,7 @@
 		
 		Possible ready check style confirmations...
 		-->
-			<Button name="NLTest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
+			<Button name="LATest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
 				<Size>
 					<AbsDimension x="90" y="20" />
 				</Size>
@@ -102,11 +102,11 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LA.NL_Test()
+						LA.Test()
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="NLCancel_Button" inherits="GameMenuButtonTemplate" text="Close">
+			<Button name="LACancel_Button" inherits="GameMenuButtonTemplate" text="Close">
 				<Size>
 					<AbsDimension x="90" y="20" />
 				</Size>
@@ -123,12 +123,12 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="NLCommit_Button" inherits="GameMenuButtonTemplate" text="Send Changes">
+			<Button name="LACommit_Button" inherits="GameMenuButtonTemplate" text="Send Changes">
 				<Size>
 					<AbsDimension x="115" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="NLCancel_Button" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="LACancel_Button" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-5" y="0" />
 						</Offset>
@@ -145,7 +145,7 @@
 					<AbsDimension x="115" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="NLCommit_Button" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="LACommit_Button" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-5" y="0" />
 						</Offset>

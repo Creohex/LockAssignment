@@ -42,7 +42,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     if message.addonVersion > LA.Version then
         LA.IsMyAddonOutOfDate = true;
         LockAssignmentFrame.WarningTextFrame:Show();
-        NLCommit_Button:Disable();
+        LACommit_Button:Disable();
     end
     
     -- process the incoming message
@@ -116,6 +116,12 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                         end
                     end
                 end
+
+                if myData.CurseAssignment == "None" and myData.BanishAssignment == "None" and myData.SSAssignment == "None" then
+                    AssignmentPersonalMonitorFrame:Hide();
+                else
+                    AssignmentPersonalMonitorFrame:Show();
+                end
             end
 
             --LockAssignmentsData = message.data
@@ -125,12 +131,6 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             if LA.DebugMode then
                 LA.print("UI has been refreshed by request of broadcast message.")
             end               
-        end 
-        
-        if myData.CurseAssignment == "None" and myData.BanishAssignment == "None" and myData.SSAssignment == "None" then
-            AssignmentPersonalMonitorFrame:Hide();
-        else
-            AssignmentPersonalMonitorFrame:Show();
         end
     elseif message.action == LA.CommAction.RequestAssignments then
         if LA.RaidMode then
@@ -193,7 +193,7 @@ function LA.BroadcastTable(AssignmentsTable)
     else
         LockAssignment:SendCommMessage("LAComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
     end
-	--LockAssignment:SendCommMessage("LAComms", serializedTable, "WHISPER", "Brylack")
+	--LockAssignment:SendCommMessage("LAComms", serializedTable, "WHISPER", "John Doe")
 end
 
 function LA.BroadcastSSCooldown(myself)
