@@ -2,7 +2,7 @@
 DropdownGroup Container
 Container controlled by a dropdown on the top.
 -------------------------------------------------------------------------------]]
-local Type, Version = "DropdownGroup", 22
+local Type, Version = "DropdownGroup", 21
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -15,11 +15,11 @@ local CreateFrame = CreateFrame
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
-local function SelectedGroup(self, event, value)
+local function SelectedGroup(self, event, _, value)
 	local group = self.parentgroup
 	local status = group.status or group.localstatus
 	status.selected = value
-	self.parentgroup:Fire("OnGroupSelected", value)
+	self.parentgroup:Fire("OnGroupSelected", 1, value)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ local methods = {
 		self.dropdown:SetValue(group)
 		local status = self.status or self.localstatus
 		status.selected = group
-		self:Fire("OnGroupSelected", group)
+		self:Fire("OnGroupSelected", 1, group)
 	end,
 
 	["OnWidthSet"] = function(self, width)
@@ -125,7 +125,7 @@ local function Constructor()
 	dropdown.frame:Show()
 	dropdown:SetLabel("")
 
-	local border = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	local border = CreateFrame("Frame", nil, frame)
 	border:SetPoint("TOPLEFT", 0, -26)
 	border:SetPoint("BOTTOMRIGHT", 0, 3)
 	border:SetBackdrop(PaneBackdrop)

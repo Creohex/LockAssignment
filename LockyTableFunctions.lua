@@ -6,6 +6,14 @@ do
 	   return string.format("%q", s)
 	end
 
+	function GetTableLng(tbl)
+		local getN = 0
+		for n in pairs(tbl) do
+		getN = getN + 1
+		end
+		return getN
+	end
+
  	--Table Serialization stuff pulled from a lua tutorial and modified to work for my needs.
 	--// The Save Function
 	function table.serialize(tbl)
@@ -28,7 +36,7 @@ do
 			 if stype == "table" then
 				if not lookup[v] then
 				   table.insert( tables, v )
-				   lookup[v] = #tables
+				   lookup[v] = GetTableLng(tables)
 				end
 				file= file..( charS.."{"..lookup[v].."},"..charE )
 			 elseif stype == "string" then
@@ -48,7 +56,7 @@ do
 				if stype == "table" then
 				   if not lookup[i] then
 					  table.insert( tables,i )
-					  lookup[i] = #tables
+					  lookup[i] = GetTableLng(tables)
 				   end
 				   str = charS.."[{"..lookup[i].."}]="
 				elseif stype == "string" then
@@ -63,7 +71,7 @@ do
 				   if stype == "table" then
 					  if not lookup[v] then
 						 table.insert( tables,v )
-						 lookup[v] = #tables
+						 lookup[v] = GetTableLng(tables)
 					  end
 					  file= file..( str.."{"..lookup[v].."},"..charE )
 				   elseif stype == "string" then
@@ -85,7 +93,7 @@ do
 	   local ftables,err = loadstring( sfile )
 	   if err then return err end
 	   local tables = ftables()
-	   for idx = 1,#tables do
+	   for idx = 1,GetTableLng(tables) do
 		  local tolinki = {}
 		  for i,v in pairs( tables[idx] ) do
 			 if type( v ) == "table" then

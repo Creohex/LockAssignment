@@ -34,22 +34,26 @@
 -- end
 -- @class file
 -- @name AceBucket-3.0.lua
--- @release $Id: AceBucket-3.0.lua 1202 2019-05-15 23:11:22Z nevcairiel $
+-- @release $Id: AceBucket-3.0.lua 895 2009-12-06 16:28:55Z nevcairiel $
 
-local MAJOR, MINOR = "AceBucket-3.0", 4
+local MAJOR, MINOR = "AceBucket-3.0", 3
 local AceBucket, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceBucket then return end -- No Upgrade needed
 
+local AceCore = LibStub("AceCore-3.0")
+local wipe = AceCore.wipe
+
 AceBucket.buckets = AceBucket.buckets or {}
 AceBucket.embeds = AceBucket.embeds or {}
+AceBucket.bucketCache = AceBucket.bucketCache or setmetatable({}, {__mode='k'})
 
 -- the libraries will be lazyly bound later, to avoid errors due to loading order issues
 local AceEvent, AceTimer
 
 -- Lua APIs
 local tconcat = table.concat
-local type, next, pairs, select = type, next, pairs, select
+local type, next, pairs = type, next, pairs
 local tonumber, tostring, rawset = tonumber, tostring, rawset
 local assert, loadstring, error = assert, loadstring, error
 
@@ -57,44 +61,37 @@ local assert, loadstring, error = assert, loadstring, error
 -- List them here for Mikk's FindGlobals script
 -- GLOBALS: LibStub, geterrorhandler
 
-local bucketCache = setmetatable({}, {__mode='k'})
+local bucketCache = AceBucket.bucketCache
 
 --[[
 	 xpcall safecall implementation
 ]]
-local xpcall = xpcall
-
-local function errorhandler(err)
-	return geterrorhandler()(err)
-end
-
-local function safecall(func, ...)
-	if func then
-		return xpcall(func, errorhandler, ...)
-	end
-end
+local safecall = AceCore.safecall
 
 -- FireBucket ( bucket )
 --
 -- send the bucket to the callback function and schedule the next FireBucket in interval seconds
 local function FireBucket(bucket)
 	local received = bucket.received
-
 	-- we dont want to fire empty buckets
-	if next(received) ~= nil then
+	if next(received) then
 		local callback = bucket.callback
+		local timer = bucket.timer
 		if type(callback) == "string" then
-			safecall(bucket.object[callback], bucket.object, received)
+			safecall(bucket.object[callback], 2, bucket.object, received)
 		else
-			safecall(callback, received)
+			safecall(callback, 1, received)
 		end
-
-		for k in pairs(received) do
-			received[k] = nil
+		-- Ace3v: if the timer becomes different, that means the bucket has been cancelled in the callback
+		-- and the received table was already cleared once, it may also contain the new datas if the
+		-- event/message for the new bucket is also fired in the callback
+		if bucket.timer == timer then
+			for k in pairs(received) do
+				received[k] = nil
+			end
+			-- if the bucket was not empty, schedule another FireBucket in interval seconds
+			bucket.timer = AceTimer.ScheduleTimer(bucket, FireBucket, bucket.interval, 1, bucket)
 		end
-
-		-- if the bucket was not empty, schedule another FireBucket in interval seconds
-		bucket.timer = AceTimer.ScheduleTimer(bucket, FireBucket, bucket.interval, bucket)
 	else -- if it was empty, clear the timer and wait for the next event
 		bucket.timer = nil
 	end
@@ -104,16 +101,17 @@ end
 --
 -- callback func for AceEvent
 -- stores arg1 in the received table, and schedules the bucket if necessary
-local function BucketHandler(self, event, arg1)
-	if arg1 == nil then
-		arg1 = "nil"
+local function BucketHandler(self, a1)
+	if not self.isMessage then a1 = arg1 end
+	if a1 == nil then
+		a1 = "nil"
 	end
 
-	self.received[arg1] = (self.received[arg1] or 0) + 1
+	self.received[a1] = (self.received[a1] or 0) + 1
 
 	-- if we are not scheduled yet, start a timer on the interval for our bucket to be cleared
 	if not self.timer then
-		self.timer = AceTimer.ScheduleTimer(self, FireBucket, self.interval, self)
+		self.timer = AceTimer.ScheduleTimer(self, FireBucket, self.interval, 1, self)
 	end
 end
 
@@ -141,6 +139,7 @@ local function RegisterBucket(self, event, interval, callback, isMessage)
 			error("Usage: RegisterBucket(event, interval, callback): cannot omit callback when event is not a string.", 3)
 		end
 	end
+
 	if not tonumber(interval) then error("Usage: RegisterBucket(event, interval, callback): 'interval' - number expected.", 3) end
 	if type(callback) ~= "string" and type(callback) ~= "function" then error("Usage: RegisterBucket(event, interval, callback): 'callback' - string or function or nil expected.", 3) end
 	if type(callback) == "string" and type(self[callback]) ~= "function" then error("Usage: RegisterBucket(event, interval, callback): 'callback' - method not found on target object.", 3) end
@@ -151,6 +150,7 @@ local function RegisterBucket(self, event, interval, callback, isMessage)
 	else
 		bucket = { handler = BucketHandler, received = {} }
 	end
+	bucket.isMessage = isMessage
 	bucket.object, bucket.callback, bucket.interval = self, callback, tonumber(interval)
 
 	local regFunc = isMessage and AceEvent.RegisterMessage or AceEvent.RegisterEvent
@@ -234,8 +234,6 @@ function AceBucket:UnregisterAllBuckets()
 		end
 	end
 end
-
-
 
 -- embedding and embed handling
 local mixins = {

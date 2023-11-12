@@ -3,7 +3,7 @@
 --
 -- Manages AddOn chat output to keep player from getting kicked off.
 --
--- ChatThrottleLib:SendChatMessage/:SendAddonMessage functions that accept
+-- ChatThrottleLib:SendChatMessage/:SendAddonMessage functions that accept 
 -- a Priority ("BULK", "NORMAL", "ALERT") as well as prefix for SendChatMessage.
 --
 -- Priorities get an equal share of available bandwidth when fully loaded.
@@ -23,16 +23,19 @@
 -- LICENSE: ChatThrottleLib is released into the Public Domain
 --
 
-local CTL_VERSION = 24
+local CTL_VERSION = 23
 
-local _G = _G
+local AceCore = LibStub("AceCore-3.0")
+local _G = AceCore._G
+local hooksecurefunc = AceCore.hooksecurefunc
+local wipe = AceCore.wipe
 
 if _G.ChatThrottleLib then
 	if _G.ChatThrottleLib.version >= CTL_VERSION then
 		-- There's already a newer (or same) version loaded. Buh-bye.
 		return
 	elseif not _G.ChatThrottleLib.securelyHooked then
-		print("ChatThrottleLib: Warning: There's an ANCIENT ChatThrottleLib.lua (pre-wow 2.0, <v16) in an addon somewhere. Get the addon updated or copy in a newer ChatThrottleLib.lua (>=v16) in it!")
+		--print("ChatThrottleLib: Warning: There's an ANCIENT ChatThrottleLib.lua (pre-wow 2.0, <v16) in an addon somewhere. Get the addon updated or copy in a newer ChatThrottleLib.lua (>=v16) in it!")
 		-- ATTEMPT to unhook; this'll behave badly if someone else has hooked...
 		-- ... and if someone has securehooked, they can kiss that goodbye too... >.<
 		_G.SendChatMessage = _G.ChatThrottleLib.ORIG_SendChatMessage
@@ -67,6 +70,7 @@ ChatThrottleLib.MIN_FPS = 20				-- Reduce output CPS to half (and don't burst) i
 
 local setmetatable = setmetatable
 local table_remove = table.remove
+local tinsert = table.insert
 local tostring = tostring
 local GetTime = GetTime
 local math_min = math.min
@@ -118,7 +122,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Recycling bin for pipes
+-- Recycling bin for pipes 
 -- A pipe is a plain integer-indexed queue of messages
 -- Pipes normally live in Rings of pipes  (3 rings total, one per priority)
 
@@ -169,7 +173,7 @@ end
 -- Initialize queues, set up frame for OnUpdate, etc
 
 
-function ChatThrottleLib:Init()
+function ChatThrottleLib:Init()	
 
 	-- Set up queues
 	if not self.Prio then
@@ -209,19 +213,13 @@ function ChatThrottleLib:Init()
 		-- Use secure hooks as of v16. Old regular hook support yanked out in v21.
 		self.securelyHooked = true
 		--SendChatMessage
-		hooksecurefunc("SendChatMessage", function(...)
-			return ChatThrottleLib.Hook_SendChatMessage(...)
+		hooksecurefunc("SendChatMessage", function(text, chattype, language, destination)
+			return ChatThrottleLib.Hook_SendChatMessage(text, chattype, language, destination)
 		end)
 		--SendAddonMessage
-		if _G.C_ChatInfo then
-			hooksecurefunc(_G.C_ChatInfo, "SendAddonMessage", function(...)
-				return ChatThrottleLib.Hook_SendAddonMessage(...)
-			end)
-		else
-			hooksecurefunc("SendAddonMessage", function(...)
-				return ChatThrottleLib.Hook_SendAddonMessage(...)
-			end)
-		end
+		hooksecurefunc("SendAddonMessage", function(prefix, text, chattype, destination)
+			return ChatThrottleLib.Hook_SendAddonMessage(prefix, text, chattype, destination)
+		end)
 	end
 	self.nBypass = 0
 end
@@ -232,7 +230,7 @@ end
 
 local bMyTraffic = false
 
-function ChatThrottleLib.Hook_SendChatMessage(text, chattype, language, destination, ...)
+function ChatThrottleLib.Hook_SendChatMessage(text, chattype, language, destination)
 	if bMyTraffic then
 		return
 	end
@@ -241,13 +239,13 @@ function ChatThrottleLib.Hook_SendChatMessage(text, chattype, language, destinat
 	self.avail = self.avail - size
 	self.nBypass = self.nBypass + size	-- just a statistic
 end
-function ChatThrottleLib.Hook_SendAddonMessage(prefix, text, chattype, destination, ...)
+function ChatThrottleLib.Hook_SendAddonMessage(prefix, text, chattype, destination)
 	if bMyTraffic then
 		return
 	end
 	local self = ChatThrottleLib
-	local size = tostring(text or ""):len() + tostring(prefix or ""):len();
-	size = size + tostring(destination or ""):len() + self.MSG_OVERHEAD
+	local size = strlen(tostring(text or "")) + strlen(tostring(prefix or ""));
+	size = size + strlen(tostring(destination or "")) + self.MSG_OVERHEAD
 	self.avail = self.avail - size
 	self.nBypass = self.nBypass + size	-- just a statistic
 end
@@ -328,7 +326,7 @@ function ChatThrottleLib:Despool(Prio)
 end
 
 
-function ChatThrottleLib.OnEvent(this,event)
+function ChatThrottleLib.OnEvent()
 	-- v11: We know that the rate limiter is touchy after login. Assume that it's touchy after zoning, too.
 	local self = ChatThrottleLib
 	if event == "PLAYER_ENTERING_WORLD" then
@@ -338,10 +336,10 @@ function ChatThrottleLib.OnEvent(this,event)
 end
 
 
-function ChatThrottleLib.OnUpdate(this,delay)
+function ChatThrottleLib.OnUpdate()
 	local self = ChatThrottleLib
 
-	self.OnUpdateDelay = self.OnUpdateDelay + delay
+	self.OnUpdateDelay = self.OnUpdateDelay + arg1
 	if self.OnUpdateDelay < 0.08 then
 		return
 	end
@@ -356,8 +354,8 @@ function ChatThrottleLib.OnUpdate(this,delay)
 	-- See how many of our priorities have queued messages (we only have 3, don't worry about the loop)
 	local n = 0
 	for prioname,Prio in pairs(self.Prio) do
-		if Prio.Ring.pos or Prio.avail < 0 then
-			n = n + 1
+		if Prio.Ring.pos or Prio.avail < 0 then 
+			n = n + 1 
 		end
 	end
 
@@ -406,7 +404,7 @@ function ChatThrottleLib:Enqueue(prioname, pipename, msg)
 		Prio.Ring:Add(pipe)
 	end
 
-	pipe[#pipe + 1] = msg
+	tinsert(pipe,msg)
 
 	self.bQueueing = true
 end
@@ -419,7 +417,7 @@ function ChatThrottleLib:SendChatMessage(prio, prefix,   text, chattype, languag
 		error('ChatThrottleLib:ChatMessage(): callbackFn: expected function, got '..type(callbackFn), 2)
 	end
 
-	local nSize = text:len()
+	local nSize = strlen(text)
 
 	if nSize>255 then
 		error("ChatThrottleLib:SendChatMessage(): message length cannot exceed 255 bytes", 2)
@@ -465,14 +463,14 @@ function ChatThrottleLib:SendAddonMessage(prio, prefix, text, chattype, target, 
 		error('ChatThrottleLib:SendAddonMessage(): callbackFn: expected function, got '..type(callbackFn), 2)
 	end
 
-	local nSize = text:len();
+	local nSize = strlen(text);
 
-	if C_ChatInfo or RegisterAddonMessagePrefix then
+	if RegisterAddonMessagePrefix then
 		if nSize>255 then
 			error("ChatThrottleLib:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
 		end
 	else
-		nSize = nSize + prefix:len() + 1
+		nSize = nSize + strlen(prefix) + 1
 		if nSize>255 then
 			error("ChatThrottleLib:SendAddonMessage(): prefix + message length cannot exceed 254 bytes", 2)
 		end
@@ -484,11 +482,7 @@ function ChatThrottleLib:SendAddonMessage(prio, prefix, text, chattype, target, 
 	if not self.bQueueing and nSize < self:UpdateAvail() then
 		self.avail = self.avail - nSize
 		bMyTraffic = true
-		if _G.C_ChatInfo then
-			_G.C_ChatInfo.SendAddonMessage(prefix, text, chattype, target)
-		else
-			_G.SendAddonMessage(prefix, text, chattype, target)
-		end
+		_G.SendAddonMessage(prefix, text, chattype, target)
 		bMyTraffic = false
 		self.Prio[prio].nTotalSent = self.Prio[prio].nTotalSent + nSize
 		if callbackFn then
@@ -500,7 +494,7 @@ function ChatThrottleLib:SendAddonMessage(prio, prefix, text, chattype, target, 
 
 	-- Message needs to be queued
 	local msg = NewMsg()
-	msg.f = _G.C_ChatInfo and _G.C_ChatInfo.SendAddonMessage or _G.SendAddonMessage
+	msg.f = _G.SendAddonMessage
 	msg[1] = prefix
 	msg[2] = text
 	msg[3] = chattype

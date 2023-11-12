@@ -4,12 +4,12 @@ function NL.NeverLockyInit()
 		--print("Prepping init")
 		NeverLockyFrame:SetBackdrop({
 			bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
-			edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", 
+			edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
 			tile = true,
 			tileSize = 32,
 			edgeSize = 32,
 			insets = { left = 11, right = 12, top = 12, bottom = 11 }
-		})	
+		})
 		NL.InitLockyFrameScrollArea()
 		--print("ScrollFrame initialized successfully.")
 		NL.RegisterForComms()
@@ -21,10 +21,10 @@ function NL.NeverLockyInit()
 		--print("LockyFriendsData Default Assignments Set successfully.")
 		NL.UpdateAllLockyFriendFrames();
 		
-		print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")		
-		print("Use |cff9322B5/nl|cFFFFFFFF or |cff9322B5/neverlocky|cFFFFFFFF to view assignment information.")
+		--print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")
+		--print("Use |cff9322B5/nl|cFFFFFFFF or |cff9322B5/neverlocky|cFFFFFFFF to view assignment information.")
 		--NeverLockyFrame:Show()
-		NL.InitLockyAssignCheckFrame();	
+		NL.InitLockyAssignCheckFrame();
 		NL.InitPersonalMonitorFrame();
 		NL.InitAnnouncerOptionFrame();
 	end	
@@ -83,7 +83,7 @@ function NL.InitLockyFriendData()
 		if NL.DebugMode then
 			print("Initializing Friend Data")
 		end
-
+		DEFAULT_CHAT_FRAME:AddMessage("InitLockyFriendData in raid mode")
 		return NL.RegisterWarlocks()
 	else
 		print("Raid mode is not active, running in Test mode.")			
@@ -176,10 +176,10 @@ end
 function NL.NeverLocky_HideFrame()	
 	if NL.IsUIDirty(NL.LockyFriendsData) then
 		print("Changes were not saved.")
-		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		NeverLockyFrame:Hide()
 	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		NeverLockyFrame:Hide()
 	end
 end
@@ -189,10 +189,10 @@ function NL.NeverLocky_Commit()
 	NL.UpdateAllLockyFriendFrames();
 	NL.SendAssignmentReset();
 	NL.BroadcastTable(NL.LockyFriendsData)
-	print("Changes were sent out.");
+	--print("Changes were sent out.");
 
 	NL.AnnounceAssignments();
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 	--NeverLockyFrame:Hide()
 end
 
@@ -223,7 +223,7 @@ function NL.NeverLocky_OnShowFrame()
 		print("Frame should be showing now.")	
 	end
 	
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
+	--PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 	--print("Updating SS targets")
 	NL.UpdateSSTargets()
 	NL.LockyFriendsData = NL.UpdateWarlocks(NL.LockyFriendsData);
@@ -233,6 +233,7 @@ function NL.NeverLocky_OnShowFrame()
 		print("Found " .. NL.GetTableLength(NL.LockyFriendsData) .. " Warlocks in raid." );
 	end	
 	if NL.GetTableLength(NL.LockyFriendsData) == 0 then
+		DEFAULT_CHAT_FRAME:AddMessage("NL.NeverLocky_OnShowFrame table empty")
 		NL.RaidMode = false;
 		NL.LockyFriendsData = NL.RegisterMySoloData();
 	end

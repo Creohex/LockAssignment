@@ -1,35 +1,19 @@
---[[ $Id: AceGUIWidget-DropDown-Items.lua 1202 2019-05-15 23:11:22Z nevcairiel $ ]]--
+--[[ $Id: AceGUIWidget-DropDown-Items.lua 1137 2016-05-15 10:57:36Z nevcairiel $ ]]--
 
 local AceGUI = LibStub("AceGUI-3.0")
 
+local IsLegion = false
+
 -- Lua APIs
-local select, assert = select, assert
+local assert = assert
+local tgetn = table.getn
 
 -- WoW APIs
 local PlaySound = PlaySound
 local CreateFrame = CreateFrame
 
-local function fixlevels(parent,...)
-	local i = 1
-	local child = select(i, ...)
-	while child do
-		child:SetFrameLevel(parent:GetFrameLevel()+1)
-		fixlevels(child, child:GetChildren())
-		i = i + 1
-		child = select(i, ...)
-	end
-end
-
-local function fixstrata(strata, parent, ...)
-	local i = 1
-	local child = select(i, ...)
-	parent:SetFrameStrata(strata)
-	while child do
-		fixstrata(strata, child, child:GetChildren())
-		i = i + 1
-		child = select(i, ...)
-	end
-end
+local fixlevels = AceGUI.fixlevels
+local fixstrata = AceGUI.fixstrata
 
 -- ItemBase is the base "class" for all dropdown items.
 -- Each item has to use ItemBase.Create(widgetType) to
@@ -45,7 +29,7 @@ local ItemBase = {
 	counter = 0,
 }
 
-function ItemBase.Frame_OnEnter(this)
+function ItemBase.Frame_OnEnter()
 	local self = this.obj
 
 	if self.useHighlight then
@@ -58,7 +42,7 @@ function ItemBase.Frame_OnEnter(this)
 	end
 end
 
-function ItemBase.Frame_OnLeave(this)
+function ItemBase.Frame_OnLeave()
 	local self = this.obj
 
 	self.highlight:Hide()
@@ -91,9 +75,10 @@ function ItemBase.SetPullout(self, pullout)
 	self.pullout = pullout
 
 	self.frame:SetParent(nil)
-	self.frame:SetParent(pullout.itemFrame)
-	self.parent = pullout.itemFrame
-	fixlevels(pullout.itemFrame, pullout.itemFrame:GetChildren())
+	local itemFrame = pullout.itemFrame
+	self.frame:SetParent(itemFrame)
+	self.parent = itemFrame
+	fixlevels(itemFrame)
 end
 
 -- exported
@@ -107,8 +92,8 @@ function ItemBase.GetText(self)
 end
 
 -- exported
-function ItemBase.SetPoint(self, ...)
-	self.frame:SetPoint(...)
+function ItemBase.SetPoint(self, a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+	self.frame:SetPoint(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
 end
 
 -- exported
@@ -169,7 +154,7 @@ function ItemBase.Create(type)
 	self.text = text
 
 	local highlight = frame:CreateTexture(nil, "OVERLAY")
-	highlight:SetTexture(136810) -- Interface\\QuestFrame\\UI-QuestTitleHighlight
+	highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
 	highlight:SetBlendMode("ADD")
 	highlight:SetHeight(14)
 	highlight:ClearAllPoints()
@@ -182,7 +167,7 @@ function ItemBase.Create(type)
 	check:SetWidth(16)
 	check:SetHeight(16)
 	check:SetPoint("LEFT",frame,"LEFT",3,-1)
-	check:SetTexture(130751) -- Interface\\Buttons\\UI-CheckBox-Check
+	check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
 	check:Hide()
 	self.check = check
 
@@ -190,7 +175,7 @@ function ItemBase.Create(type)
 	sub:SetWidth(16)
 	sub:SetHeight(16)
 	sub:SetPoint("RIGHT",frame,"RIGHT",-3,-1)
-	sub:SetTexture(130940) -- Interface\\ChatFrame\\ChatFrameExpandArrow
+	sub:SetTexture("Interface\\ChatFrame\\ChatFrameExpandArrow")
 	sub:Hide()
 	self.sub = sub
 
@@ -257,7 +242,7 @@ do
 		end
 	end
 
-	local function OnLeave(this)
+	local function OnLeave()
 		local self = this.obj
 		self:Fire("OnLeave")
 
@@ -323,7 +308,7 @@ end
 -- Does not close the pullout on click.
 do
 	local widgetType = "Dropdown-Item-Toggle"
-	local widgetVersion = 4
+	local widgetVersion = 3
 
 	local function UpdateToggle(self)
 		if self.value then
@@ -338,17 +323,17 @@ do
 		self:SetValue(nil)
 	end
 
-	local function Frame_OnClick(this, button)
+	local function Frame_OnClick()
 		local self = this.obj
 		if self.disabled then return end
 		self.value = not self.value
 		if self.value then
-			PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
+			PlaySound("igMainMenuOptionCheckBoxOn")
 		else
-			PlaySound(857) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF
+			PlaySound("igMainMenuOptionCheckBoxOff")
 		end
 		UpdateToggle(self)
-		self:Fire("OnValueChanged", self.value)
+		self:Fire("OnValueChanged", 1, self.value)
 	end
 
 	-- exported
@@ -385,7 +370,7 @@ do
 	local widgetType = "Dropdown-Item-Menu"
 	local widgetVersion = 2
 
-	local function OnEnter(this)
+	local function OnEnter()
 		local self = this.obj
 		self:Fire("OnEnter")
 
@@ -400,7 +385,7 @@ do
 		end
 	end
 
-	local function OnHide(this)
+	local function OnHide()
 		local self = this.obj
 		if self.submenu then
 			self.submenu:Close()
@@ -455,7 +440,8 @@ do
 
 		local line = self.frame:CreateTexture(nil, "OVERLAY")
 		line:SetHeight(1)
-		line:SetColorTexture(.5, .5, .5)
+		line:SetTexture(.5, .5, .5)
+
 		line:SetPoint("LEFT", self.frame, "LEFT", 10, 0)
 		line:SetPoint("RIGHT", self.frame, "RIGHT", -10, 0)
 

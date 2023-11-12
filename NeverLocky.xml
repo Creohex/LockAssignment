@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Script file="Libs\LibStub\LibStub.lua" />
-	<include file="Libs\!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.lua" />
 	<Script File="LockyGlobalData.lua" />
 	<Script file="Libs\Ace3.lua" />
 	<Script File="LockyTableFunctions.lua" />
@@ -12,7 +11,7 @@
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
 
 
-	<Frame name="NeverLockyFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false" inherits="BackdropTemplate">
+	<Frame name="NeverLockyFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
 		<Size>
 			<AbsDimension x="500" y="563" />
 		</Size>
@@ -157,17 +156,16 @@
 		<Scripts>
 			<OnLoad>
 				NL.NeverLockyInit()
-				self:RegisterForDrag("LeftButton");
-				
+				this:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnShow>	
 				NL.NeverLocky_OnShowFrame()
 			</OnShow>
 			<OnDragStart>
-				self:StartMoving();
+				this:StartMoving();
 			</OnDragStart>
 			<OnDragStop>
-				self:StopMovingOrSizing();
+				this:StopMovingOrSizing();
 			</OnDragStop>
 			<OnUpdate function="NeverLocky_OnUpdate" />
 		</Scripts>

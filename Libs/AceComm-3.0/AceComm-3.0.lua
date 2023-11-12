@@ -9,7 +9,7 @@
 -- make into AceComm.
 -- @class file
 -- @name AceComm-3.0
--- @release $Id: AceComm-3.0.lua 1202 2019-05-15 23:11:22Z nevcairiel $
+-- @release $Id: AceComm-3.0.lua 1107 2014-02-19 16:40:32Z nevcairiel $
 
 --[[ AceComm-3.0
 
@@ -17,23 +17,21 @@ TODO: Time out old data rotting around from dead senders? Not a HUGE deal since 
 
 ]]
 
-local CallbackHandler = LibStub("CallbackHandler-1.0")
-local CTL = assert(ChatThrottleLib, "AceComm-3.0 requires ChatThrottleLib")
+local MAJOR, MINOR = "AceComm-3.0", 9
 
-local MAJOR, MINOR = "AceComm-3.0", 12
 local AceComm,oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not AceComm then return end
 
+local CallbackHandler = LibStub:GetLibrary("CallbackHandler-1.0")
+local CTL = assert(ChatThrottleLib, "AceComm-3.0 requires ChatThrottleLib")
+
 -- Lua APIs
 local type, next, pairs, tostring = type, next, pairs, tostring
-local strsub, strfind = string.sub, string.find
-local match = string.match
-local tinsert, tconcat = table.insert, table.concat
+local strlen, strsub, strfind = string.len, string.sub, string.find
+local tinsert, tconcat, tgetn, tremove = table.insert, table.concat, table.getn, table.remove
 local error, assert = error, assert
 
--- WoW APIs
-local Ambiguate = Ambiguate
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
@@ -62,13 +60,8 @@ function AceComm:RegisterComm(prefix, method)
 		method = "OnCommReceived"
 	end
 
-	if #prefix > 16 then -- TODO: 15?
+	if strlen(prefix) > 16 then -- TODO: 15?
 		error("AceComm:RegisterComm(prefix,method): prefix length is limited to 16 characters")
-	end
-	if C_ChatInfo then
-		C_ChatInfo.RegisterAddonMessagePrefix(prefix)
-	else
-		RegisterAddonMessagePrefix(prefix)
 	end
 
 	return AceComm._RegisterComm(self, prefix, method)	-- created by CallbackHandler
@@ -89,14 +82,16 @@ function AceComm:SendCommMessage(prefix, text, distribution, target, prio, callb
 	if not( type(prefix)=="string" and
 			type(text)=="string" and
 			type(distribution)=="string" and
-			(target==nil or type(target)=="string" or type(target)=="number") and
+			(target==nil or type(target)=="string") and
 			(prio=="BULK" or prio=="NORMAL" or prio=="ALERT")
 		) then
 		error('Usage: SendCommMessage(addon, "prefix", "text", "distribution"[, "target"[, "prio"[, callbackFn, callbackarg]]])', 2)
 	end
 
-	local textlen = #text
-	local maxtextlen = 255  -- Yes, the max is 255 even if the dev post said 256. I tested. Char 256+ get silently truncated. /Mikk, 20110327
+	local textlen = strlen(text)
+	-- Yes, the max is 255 even if the dev post said 256. I tested. Char 256+ get silently truncated. /Mikk, 20110327
+	-- Ace3v: substract the prefix length
+	local maxtextlen = 254 - strlen(prefix)
 	local queueName = prefix..distribution..(target or "")
 
 	local ctlCallback = nil
@@ -107,7 +102,7 @@ function AceComm:SendCommMessage(prefix, text, distribution, target, prio, callb
 	end
 
 	local forceMultipart
-	if match(text, "^[\001-\009]") then -- 4.1+: see if the first character is a control character
+	if strfind(text, "^[\001-\009]") then -- 4.1+: see if the first character is a control character
 		-- we need to escape the first character with a \004
 		if textlen+1 > maxtextlen then	-- would we go over the size limit?
 			forceMultipart = true	-- just make it multipart, no escape problems then
@@ -152,8 +147,8 @@ do
 		local t = next(compost)
 		if t then
 			compost[t]=nil
-			for i=#t,3,-1 do	-- faster than pairs loop. don't even nil out 1/2 since they'll be overwritten
-				t[i]=nil
+			for i=tgetn(t),3,-1 do	-- faster than pairs loop. don't even nil out 1/2 since they'll be overwritten
+				tremove(t)	-- Ace3v: t[i] = nil wont affect the tgetn return value
 			end
 			return t
 		end
@@ -215,11 +210,11 @@ do
 		if type(olddata) == "table" then
 			-- if we've received a "next", the spooled data will be a table for rapid & garbage-free tconcat
 			tinsert(olddata, message)
-			AceComm.callbacks:Fire(prefix, tconcat(olddata, ""), distribution, sender)
+			AceComm.callbacks:Fire(prefix, 3, tconcat(olddata, ""), distribution, sender)
 			compost[olddata] = true
 		else
 			-- if we've only received a "first", the spooled data will still only be a string
-			AceComm.callbacks:Fire(prefix, olddata..message, distribution, sender)
+			AceComm.callbacks:Fire(prefix, 3, olddata..message, distribution, sender)
 		end
 	end
 end
@@ -243,10 +238,16 @@ end
 AceComm.callbacks.OnUsed = nil
 AceComm.callbacks.OnUnused = nil
 
-local function OnEvent(self, event, prefix, message, distribution, sender)
+-- Ace3v: in vanilla, global vars:
+--   event -> event type
+--   arg1  -> prefix
+--   arg2  -> message
+--   arg3  -> channel
+--   arg4  -> sender
+local function OnEvent()
+	local prefix, message, distribution, sender = arg1, arg2, arg3, arg4
 	if event == "CHAT_MSG_ADDON" then
-		sender = Ambiguate(sender, "none")
-		local control, rest = match(message, "^([\001-\009])(.*)")
+		local _, _, control, rest = strfind(message, "^([\001-\009])(.*)")
 		if control then
 			if control==MSG_MULTI_FIRST then
 				AceComm:OnReceiveMultipartFirst(prefix, rest, distribution, sender)
@@ -255,13 +256,13 @@ local function OnEvent(self, event, prefix, message, distribution, sender)
 			elseif control==MSG_MULTI_LAST then
 				AceComm:OnReceiveMultipartLast(prefix, rest, distribution, sender)
 			elseif control==MSG_ESCAPE then
-				AceComm.callbacks:Fire(prefix, rest, distribution, sender)
+				AceComm.callbacks:Fire(prefix, 3, rest, distribution, sender)
 			else
 				-- unknown control character, ignore SILENTLY (dont warn unnecessarily about future extensions!)
 			end
 		else
 			-- single part: fire it off immediately and let CallbackHandler decide if it's registered or not
-			AceComm.callbacks:Fire(prefix, message, distribution, sender)
+			AceComm.callbacks:Fire(prefix, 3, message, distribution, sender)
 		end
 	else
 		assert(false, "Received "..tostring(event).." event?!")

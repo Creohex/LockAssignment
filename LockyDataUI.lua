@@ -1,5 +1,4 @@
 --All of these functions are related to updating the ui from the data or vice versa.
-local lib = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 --Will take in the string ID and return the appropriate Locky Frame
 function NL.GetLockyFriendFrameById(LockyFrameID)
 	for key, value in pairs(LockyFrame.scrollframe.content.LockyFriendFrames) do
@@ -23,10 +22,10 @@ end
 --Will update a locky friend frame with the warlock data passed in.
 --If the warlock object is null it will clear and hide the data from the screen.
 function NL.UpdateLockyFrame(Warlock, LockyFriendFrame)
-	--print("Updating Locky Frame")	
+	--print("Updating Locky Frame")
 	if(Warlock == nil) then
 		LockyFriendFrame:Hide()
-		Warlock = NL.CreateWarlock("", "None", "None")
+		Warlock = NL.CreateWarlock("", "None", "None", 0)
 	else
 		LockyFriendFrame:Show()
 	end
@@ -37,21 +36,21 @@ function NL.UpdateLockyFrame(Warlock, LockyFriendFrame)
 	--Set the CurseAssignment
 	--print("Updating Curse to: ".. Warlock.CurseAssignment) -- this may need to be done by index.....
 	--GetIndexFromTable(CurseOptions, Warlock.CurseAssignment)
-	lib:UIDropDownMenu_SetSelectedID(LockyFriendFrame.CurseAssignmentMenu, NL.GetIndexFromTable(NL.CurseOptions, Warlock.CurseAssignment))
+	UIDropDownMenu_SetSelectedID(LockyFriendFrame.CurseAssignmentMenu, NL.GetIndexFromTable(NL.CurseOptions, Warlock.CurseAssignment))
 	NL.UpdateCurseGraphic(LockyFriendFrame.CurseAssignmentMenu, NL.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu))
-	LockyFriendFrame.CurseAssignmentMenu.Text:SetText(NL.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu))
-	
+	UIDropDownMenu_SetText(NL.GetCurseValueFromDropDownList(LockyFriendFrame.CurseAssignmentMenu), LockyFriendFrame.CurseAssignmentMenu)
+
 	--Set the BanishAssignmentMenu
 	--print("Updating Banish to: ".. Warlock.BanishAssignment)
-	lib:UIDropDownMenu_SetSelectedID(LockyFriendFrame.BanishAssignmentMenu, NL.GetIndexFromTable(NL.BanishMarkers, Warlock.BanishAssignment))
+	UIDropDownMenu_SetSelectedID(LockyFriendFrame.BanishAssignmentMenu, NL.GetIndexFromTable(NL.BanishMarkers, Warlock.BanishAssignment))
 	NL.UpdateBanishGraphic(LockyFriendFrame.BanishAssignmentMenu, NL.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, NL.BanishMarkers, ""))
-	LockyFriendFrame.BanishAssignmentMenu.Text:SetText(NL.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, NL.BanishMarkers, ""))
+	UIDropDownMenu_SetText(NL.GetValueFromDropDownList(LockyFriendFrame.BanishAssignmentMenu, NL.BanishMarkers, ""), LockyFriendFrame.BanishAssignmentMenu)
 
 	--Set the SS Assignment
 	--print("Updating SS to: ".. Warlock.SSAssignment)
 	NL.UpdateDropDownMenuWithNewOptions(LockyFriendFrame.SSAssignmentMenu, NL.GetSSTargets(), "SSAssignments");
-	lib:UIDropDownMenu_SetSelectedID(LockyFriendFrame.SSAssignmentMenu, NL.GetSSIndexFromTable(NL.GetSSTargets(),Warlock.SSAssignment))
-	LockyFriendFrame.SSAssignmentMenu.Text:SetText(NL.GetValueFromDropDownList(LockyFriendFrame.SSAssignmentMenu, NL.GetSSTargets(), "SSAssignments"))
+	UIDropDownMenu_SetSelectedID(LockyFriendFrame.SSAssignmentMenu, NL.GetSSIndexFromTable(NL.GetSSTargets(),Warlock.SSAssignment))
+	UIDropDownMenu_SetText(NL.GetValueFromDropDownList(LockyFriendFrame.SSAssignmentMenu, NL.GetSSTargets(), "SSAssignments"), LockyFriendFrame.SSAssignmentMenu)
 
 	--Update the Portrait picture	
 	if Warlock.Name=="" then
@@ -62,11 +61,23 @@ function NL.UpdateLockyFrame(Warlock, LockyFriendFrame)
 			--print("The obj never existed")
 			local PortraitGraphic = LockyFriendFrame.Portrait:CreateTexture(nil, "OVERLAY") 
 			PortraitGraphic:SetAllPoints()
-			SetPortraitTexture(PortraitGraphic, Warlock.Name)
+			if Warlock.LockyName == UnitName("player") then
+				SetPortraitTexture(texture, "player")
+			else
+				if Warlock.RaidIndex ~= nil then
+					SetPortraitTexture(LockyFriendFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
+				end
+			end
 			LockyFriendFrame.Portrait.Texture = PortraitGraphic
 		else
-			--print("the obj exists")
-			SetPortraitTexture(LockyFriendFrame.Portrait.Texture, Warlock.Name)
+			if Warlock.LockyName == UnitName("player") then
+				SetPortraitTexture(texture, "player")
+			else
+				if Warlock.RaidIndex ~= nil then
+					SetPortraitTexture(LockyFriendFrame.Portrait.Texture, string.format("raid%d", Warlock.RaidIndex))
+				end
+			end
+
 		end
 		LockyFriendFrame.Portrait:Show()
 	end
@@ -248,26 +259,43 @@ function NL.CheckSSCD(self)
 	end
 end
 
+local function GetBagPosition(itemName)
+	for bag = 0, NUM_BAG_SLOTS do
+		for slot = 1, GetContainerNumSlots(bag) do
+			local containerLink = GetContainerItemLink(bag, slot)
+			if containerLink ~= nil then
+				if string.find(containerLink, itemName) then
+					return bag, slot
+				end
+			end
+		end
+	end
+end
+
 function NL.ForceUpdateSSCD()
 	if NL.DebugMode then
 		print("Forcing SSCD cache update.")
 	end
 
-	local startTime, duration, enable = GetItemCooldown(16896)
-    --if my CD in never locky is different from the what I am aware of then I need to update.
-	local myself = NL.GetMyLockyData()
-	if myself ~= nil then
-		if(myself.SSCooldown~=startTime) then
-			if NL.DebugMode then
-				print("Personal SSCD detected.")
+	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
+	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(16896)
+	local bag, slot = GetBagPosition(itemName)
+	if bag ~= nil and slot ~= nil then
+		local startTime, duration, enable = GetContainerItemCooldown(bag, slot)
+		local myself = NL.GetMyLockyData()
+		if myself ~= nil then
+			if(myself.SSCooldown~=startTime) then
+				if NL.DebugMode then
+					print("Personal SSCD detected.")
+				end
+				myself.SSCooldown = startTime
+				myself.LocalTime = GetTime()
+				myself.SSonCD = "true"
 			end
-			myself.SSCooldown = startTime
-			myself.LocalTime = GetTime()
-			myself.SSonCD = "true"
-		end    	
-	else
-		if NL.DebugMode then
-			print("Something went horribly wrong.")
+		else
+			if NL.DebugMode then
+				print("Something went horribly wrong.")
+			end
 		end
 	end
 end

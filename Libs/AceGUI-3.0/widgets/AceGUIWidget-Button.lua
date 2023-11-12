@@ -2,32 +2,35 @@
 Button Widget
 Graphical Button.
 -------------------------------------------------------------------------------]]
-local Type, Version = "Button", 24
+local Type, Version = "Button", 23
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
+
+local AceCore = LibStub("AceCore-3.0")
 
 -- Lua APIs
 local pairs = pairs
 
 -- WoW APIs
-local _G = _G
+local _G = AceCore._G
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
-local function Button_OnClick(frame, ...)
+-- arg1 is the button for OnClick event
+local function Button_OnClick()
 	AceGUI:ClearFocus()
-	PlaySound(852) -- SOUNDKIT.IG_MAINMENU_OPTION
-	frame.obj:Fire("OnClick", ...)
+	PlaySound("igMainMenuOption")
+	this.obj:Fire("OnClick", 1, arg1)
 end
 
-local function Control_OnEnter(frame)
-	frame.obj:Fire("OnEnter")
+local function Control_OnEnter()
+	this.obj:Fire("OnEnter")
 end
 
-local function Control_OnLeave(frame)
-	frame.obj:Fire("OnLeave")
+local function Control_OnLeave()
+	this.obj:Fire("OnLeave")
 end
 
 --[[-----------------------------------------------------------------------------
@@ -51,7 +54,7 @@ local methods = {
 			self:SetWidth(self.text:GetStringWidth() + 30)
 		end
 	end,
-
+	
 	["SetAutoWidth"] = function(self, autoWidth)
 		self.autoWidth = autoWidth
 		if self.autoWidth then
@@ -74,7 +77,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
 	local name = "AceGUI30Button" .. AceGUI:GetNextWidgetNum(Type)
-	local frame = CreateFrame("Button", name, UIParent, "UIPanelButtonTemplate")
+	local frame = CreateFrame("Button", name, UIParent, "UIPanelButtonTemplate2")
 	frame:Hide()
 
 	frame:EnableMouse(true)

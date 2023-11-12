@@ -20,7 +20,7 @@ NL.IsMyAddonOutOfDate=false;
 NL.MacroName =  "CurseAssignment";
 
 
-function  NL.CreateWarlock(name, curse, banish)
+function  NL.CreateWarlock(name, curse, banish, raidIndex)
 	local Warlock = {}
 			Warlock.Name = name
 			Warlock.CurseAssignment = curse
@@ -33,6 +33,7 @@ function  NL.CreateWarlock(name, curse, banish)
 			Warlock.LocalTime= 0
 			Warlock.MyTime = 0
 			Warlock.AddonVersion = 0
+			Warlock.RaidIndex = raidIndex
 	return Warlock
 end
 
@@ -47,7 +48,7 @@ function NL.RegisterWarlocks()
 				if NL.DebugMode then
 					print(name .. "-" .. fileName)
 				end
-				table.insert(raidInfo, NL.CreateWarlock(name, "None", "None"))
+				table.insert(raidInfo, NL.CreateWarlock(name, "None", "None", i))
 			end
 		end		
 	end
@@ -184,6 +185,11 @@ NL.SSTargetFlipperTester = true;
 
 --Function will find main healers in the raid and add them to the SS target dropdown
 --Need to make test mode dynamic.
+
+function NL.GetClassColor(fileName)
+return 1, 1, 1, "ffffffff"
+end
+
 function NL.GetSSTargetsFromRaid()
 	if NL.RaidMode then
 		--print("Raid MODE!!")
@@ -193,7 +199,7 @@ function NL.GetSSTargetsFromRaid()
 			local name, rank, subgroup, level, class, fileName, 
 				zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i);
 
-			local rPerc, gPerc, bPerc, argbHex = GetClassColor(fileName);	
+			local rPerc, gPerc, bPerc, argbHex = NL.GetClassColor(fileName);
 			if not (name == nil) then
 				--print(name .. "-" .. fileName .. "-" .. rank .. role)
 				--if fileName == "PRIEST" or fileName == "PALADIN" or fileName == "SHAMAN" or role == "MAINTANK" then
@@ -303,7 +309,7 @@ function NL.SetupAssignmentMacro(CurseAssignment)
 	-- If macro exists?
 	local macroIndex = GetMacroIndexByName(NL.MacroName)
 	if (macroIndex == 0) then
-		macroIndex = CreateMacro(NL.MacroName, "INV_MISC_QUESTIONMARK", "/stopcast;", 1);
+		macroIndex = CreateMacro(NL.MacroName, 1, nil, nil, true);
 		if NL.DebugMode then
 			print("Never Locky macro did not exist, creating a new one with ID" .. macroIndex);
 		end
@@ -321,7 +327,7 @@ function NL.SetupAssignmentMacro(CurseAssignment)
 			print("Updating macro ".. macroIndex .. " to the new assigment " .. curseName);
 		end
 
-		EditMacro(macroIndex, NL.MacroName, GetSpellTexture(NL.GetSpellIdFromDropDownList(CurseAssignment)), NL.BuildMacroTexe(curseName), 1, 1);
+		EditMacro(macroIndex, NL.MacroName, NL.GetSpellTextureFromDropDownList(CurseAssignment), NL.BuildMacroTexe(curseName), 1, 1);
 		
 		if NL.DebugMode then
 			print("Update success!!!!!");
@@ -334,7 +340,5 @@ end
 function  NL.BuildMacroTexe(curseName)
 	return "#showtooltip "..
 	 curseName ..
-	 "\n/stopcasting" ..
-	 "\n/Cast [@mouseover,exists,harm,nodead][]"..
-	 curseName ..";"
+	 "\n/run CastSpellByName(\""..curseName.."\");"
 end
