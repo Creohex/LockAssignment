@@ -1,8 +1,8 @@
 --Initialization logic for setting up the entire addon
-function LA.NeverLockyInit()
+function LA.LockAssignmentInit()
 	if not LockAssignmentFrame_HasInitialized then
 		--print("Prepping init")
-		NeverLockyFrame:SetBackdrop({
+		LockAssignmentFrame:SetBackdrop({
 			bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
 			edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
 			tile = true,
@@ -23,7 +23,7 @@ function LA.NeverLockyInit()
 		
 		--print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")
 		--print("Use |cff9322B5/nl|cFFFFFFFF or |cff9322B5/neverlocky|cFFFFFFFF to view assignment information.")
-		--NeverLockyFrame:Show()
+		--LockAssignmentFrame:Show()
 		LA.InitLockyAssignCheckFrame();
 		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
@@ -31,7 +31,7 @@ function LA.NeverLockyInit()
 end
 
 -- Update handler to be used for any animations, is called once per frame, but can be throttled using an update interval.
-function NeverLocky_OnUpdate(self, elapsed)
+function LockAssignment_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastClockUpdate == nil) then self.TimeSinceLastClockUpdate = 0; end
 	if (self.TimeSinceLastSSCDUpdate == nil) then self.TimeSinceLastSSCDUpdate = 0; end
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
@@ -173,18 +173,18 @@ function LA.RegisterMySoloData()
 end
 
 --This is wired to a button click at present.
-function LA.NeverLocky_HideFrame()
+function LA.LockAssignment_HideFrame()
 	if LA.IsUIDirty(LA.LockAssignmentFriendsData) then
 		print("Changes were not saved.")
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
-		NeverLockyFrame:Hide()
+		LockAssignmentFrame:Hide()
 	else
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
-		NeverLockyFrame:Hide()
+		LockAssignmentFrame:Hide()
 	end
 end
 
-function LA.NeverLocky_Commit()
+function LA.LockAssignment_Commit()
 	LA.LockAssignmentFriendsData = LA.CommitChanges(LA.LockAssignmentFriendsData)
 	LA.UpdateAllLockyFriendFrames();
 	LA.SendAssignmentReset();
@@ -193,7 +193,7 @@ function LA.NeverLocky_Commit()
 
 	LA.AnnounceAssignments();
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
-	--NeverLockyFrame:Hide()
+	--LockAssignmentFrame:Hide()
 end
 
 --At this time this is just a test function.
@@ -206,7 +206,7 @@ function LA.Test()
 end
 
 -- Event for handling the frame showing.
-function LA.NeverLocky_OnShowFrame()
+function LA.LockAssignment_OnShowFrame()
 	if not LockAssignmentData_HasInitialized then
 		LA.LockAssignmentFriendsData = LA.InitLockyFriendData()
 		
@@ -233,7 +233,6 @@ function LA.NeverLocky_OnShowFrame()
 		print("Found " .. LA.GetTableLength(LA.LockAssignmentFriendsData) .. " Warlocks in raid." );
 	end	
 	if LA.GetTableLength(LA.LockAssignmentFriendsData) == 0 then
-		DEFAULT_CHAT_FRAME:AddMessage("LA.NeverLocky_OnShowFrame table empty")
 		LA.RaidMode = false;
 		LA.LockAssignmentFriendsData = LA.RegisterMySoloData();
 	end
@@ -241,8 +240,8 @@ function LA.NeverLocky_OnShowFrame()
 end
 
 -- /command for opening the ui.
-SLASH_NL1 = "/nl"
-SLASH_NL2 = "/neverlocky"
+SLASH_LA1 = "/la"
+SLASH_LA2 = "/lockassignment"
 SlashCmdList["LA"] = function(msg)
 
 	if msg == "debug" then
@@ -256,7 +255,7 @@ SlashCmdList["LA"] = function(msg)
 	elseif msg == "test" then
 		LockAssignmentAssignCheckFrame:Show();
 	else
-		NeverLockyFrame:Show()
+		LockAssignmentFrame:Show()
 	end	
 end
 

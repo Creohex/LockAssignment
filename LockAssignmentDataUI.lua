@@ -1,7 +1,7 @@
 --All of these functions are related to updating the ui from the data or vice versa.
 --Will take in the string ID and return the appropriate Locky Frame
 function LA.GetLockyFriendFrameById(LockyFrameID)
-	for key, value in pairs(LockyFrame.scrollframe.content.LockyFriendFrames) do
+	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
 		--print(key, " -- ", value["LockyFrameID"])
 		if value["LockyFrameID"] == LockyFrameID then
 			return value
@@ -11,7 +11,7 @@ end
 
 --Will take in a string name and return the appropriate Locky Frame.
 function LA.GetLockyFriendFrameByName(LockyName)
-	for key, value in pairs(LockyFrame.scrollframe.content.LockyFriendFrames) do
+	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
 		--print(key, " -- ", value["LockyFrameID"])
 		if value["LockyName"] == LockyName then
 			return value
@@ -119,7 +119,7 @@ function LA.UpdateAllLockyFriendFrames()
 	if LA.DebugMode then
 		print("Frames updated successfully.")
 	end
-    LockyFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentFriendsData))
+    AssignmentFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentFriendsData))
   --  print("ScrollRegion size updated successfully")
 end
 
@@ -127,7 +127,7 @@ end
 --Loops through and clears all of the data currently loaded.
 function  LA.ClearAllLockyFrames()
 	--print("Clearing the frames")
-	for key, value in pairs(LockyFrame.scrollframe.content.LockyFriendFrames) do
+	for key, value in pairs(AssignmentFrame.scrollframe.content.LockyFriendFrames) do
 
 		LA.UpdateLockyFrame(nil, value)
 		--print(value.LockyFrameID, "successfully cleared.")
@@ -140,7 +140,7 @@ function  LA.ConsolidateFrameLocations()
 	--print("Setting up FrameLocations for the locky friend data.")
 	for key, value in pairs(LA.LockAssignmentFriendsData) do
 		--print(value.Name, "will be assigned a frame.")
-		value.LockyFrameLocation = LockyFrame.scrollframe.content.LockyFriendFrames[key].LockyFrameID;
+		value.LockyFrameLocation = AssignmentFrame.scrollframe.content.LockyFriendFrames[key].LockyFrameID;
 		--print("Assigned Frame:",value.LockyFrameLocation)
 	end
 end
@@ -314,7 +314,7 @@ function LA.UpdateLockySSCDByName(name, cd)
 	--end
 end
 
---Returns a warlock table object from the LockyFrame
+--Returns a warlock table object from the AssignmentFrame
 --This function is used to determine if unsaved UI changes have been made.
 --This will be used by the is dirty function to determine if the frame is dirty.
 function LA.GetWarlockFromLockyFrame(LockyName)

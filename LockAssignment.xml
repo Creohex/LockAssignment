@@ -11,7 +11,7 @@
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
 
 
-	<Frame name="NeverLockyFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
+	<Frame name="LockAssignmentFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
 		<Size>
 			<AbsDimension x="500" y="563" />
 		</Size>
@@ -94,7 +94,7 @@
 					<AbsDimension x="90" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMLEFT">
+					<Anchor point="BOTTOMLEFT" relativeTo="LockAssignmentFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="10" y="16" />
 						</Offset>
@@ -111,7 +111,7 @@
 					<AbsDimension x="90" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMRIGHT">
+					<Anchor point="BOTTOMRIGHT" relativeTo="LockAssignmentFrame" relativePoint="BOTTOMRIGHT">
 						<Offset>
 							<AbsDimension x="-10" y="16" />
 						</Offset>
@@ -119,7 +119,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LA.NeverLocky_HideFrame()
+						LA.LockAssignment_HideFrame()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -136,7 +136,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						LA.NeverLocky_Commit()
+						LA.LockAssignment_Commit()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -155,11 +155,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				LA.NeverLockyInit()
+				LA.LockAssignmentInit()
 				this:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnShow>	
-				LA.NeverLocky_OnShowFrame()
+				LA.LockAssignment_OnShowFrame()
 			</OnShow>
 			<OnDragStart>
 				this:StartMoving();
@@ -167,7 +167,7 @@
 			<OnDragStop>
 				this:StopMovingOrSizing();
 			</OnDragStop>
-			<OnUpdate function="NeverLocky_OnUpdate" />
+			<OnUpdate function="LockAssignment_OnUpdate" />
 		</Scripts>
 	</Frame>
 

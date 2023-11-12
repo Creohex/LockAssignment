@@ -4,22 +4,22 @@
 function LA.InitLockyFrameScrollArea()
 
 	--parent frame 	
-	LockyFrame = CreateFrame("Frame", nil, NeverLockyFrame)
-	LockyFrame:SetWidth(LA.LockAssignmentFriendFrameWidth-52)
-	LockyFrame:SetHeight(500)
-	LockyFrame:SetPoint("CENTER", NeverLockyFrame, "CENTER", -9, 6)
+	AssignmentFrame = CreateFrame("Frame", nil, LockAssignmentFrame)
+	AssignmentFrame:SetWidth(LA.LockAssignmentFriendFrameWidth-52)
+	AssignmentFrame:SetHeight(500)
+	AssignmentFrame:SetPoint("CENTER", LockAssignmentFrame, "CENTER", -9, 6)
 	
 	--scrollframe 
-	local scrollframe = CreateFrame("ScrollFrame", "LockyFriendsScroller_ScrollFrame", LockyFrame) 
+	local scrollframe = CreateFrame("ScrollFrame", "LockyFriendsScroller_ScrollFrame", AssignmentFrame)
 	scrollframe:SetPoint("TOPLEFT", 2, -2) 
 	scrollframe:SetPoint("BOTTOMRIGHT", -2, 2) 
 	
-	LockyFrame.scrollframe = scrollframe 
+	AssignmentFrame.scrollframe = scrollframe
 	
 	--scrollbar 
 	local scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate") 
-	scrollbar:SetPoint("TOPLEFT", LockyFrame, "TOPRIGHT", 4, -16) 
-	scrollbar:SetPoint("BOTTOMLEFT", LockyFrame, "BOTTOMRIGHT", 4, 16) 
+	scrollbar:SetPoint("TOPLEFT", AssignmentFrame, "TOPRIGHT", 4, -16)
+	scrollbar:SetPoint("BOTTOMLEFT", AssignmentFrame, "BOTTOMRIGHT", 4, 16)
 	scrollbar:SetMinMaxValues(1, 200) 
 	scrollbar:SetValueStep(1) 
 	scrollbar.scrollStep = 1 
@@ -32,7 +32,7 @@ function LA.InitLockyFrameScrollArea()
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND") 
 	scrollbg:SetAllPoints(scrollbar) 
 	scrollbg:SetTexture(0, 0, 0, 0.8) 
-	LockyFrame.scrollbar = scrollbar 
+	AssignmentFrame.scrollbar = scrollbar
 	--print("Created a Scroll Bar")
 	
 	--content frame 	
@@ -59,14 +59,14 @@ function LA.InitLockyFrameScrollArea()
 	scrollframe:SetScrollChild(content)
 
 	--UpdateAllLockyFriendFrames()
-	NeverLockyFrame.WarningTextFrame = CreateFrame("Frame", nil, NeverLockyFrame);
-	NeverLockyFrame.WarningTextFrame:SetWidth(250);
-	NeverLockyFrame.WarningTextFrame:SetHeight(30);
-	NeverLockyFrame.WarningTextFrame:SetPoint("BOTTOMLEFT", NeverLockyFrame, "BOTTOMLEFT", 0, 0)
+	LockAssignmentFrame.WarningTextFrame = CreateFrame("Frame", nil, LockAssignmentFrame);
+	LockAssignmentFrame.WarningTextFrame:SetWidth(250);
+	LockAssignmentFrame.WarningTextFrame:SetHeight(30);
+	LockAssignmentFrame.WarningTextFrame:SetPoint("BOTTOMLEFT", LockAssignmentFrame, "BOTTOMLEFT", 0, 0)
 	
-	NeverLockyFrame.WarningTextFrame.value = LA.AddTextToFrame(NeverLockyFrame.WarningTextFrame, "Warning your addon is out of date!", 240)
-	NeverLockyFrame.WarningTextFrame.value:SetPoint("LEFT", NeverLockyFrame.WarningTextFrame, "LEFT", 0, 0);
-	NeverLockyFrame.WarningTextFrame:Hide();
+	LockAssignmentFrame.WarningTextFrame.value = LA.AddTextToFrame(LockAssignmentFrame.WarningTextFrame, "Warning your addon is out of date!", 240)
+	LockAssignmentFrame.WarningTextFrame.value:SetPoint("LEFT", LockAssignmentFrame.WarningTextFrame, "LEFT", 0, 0);
+	LockAssignmentFrame.WarningTextFrame:Hide();
 end
 
 function LA.modf(f)
@@ -111,33 +111,33 @@ end
 ]]--
 function LA.CreateLockyFriendFrame(LockyName, number, scrollframe)
     --Draws the Locky Friend Component Frame, adds the border, and positions it relative to the number of frames created.
-    local LockyFrame = LA.CreateLockyFriendContainer(scrollframe, number)
-    LockyFrame.LockyFrameID  = "LockyFriendFrame_0"..tostring(number)
-    LockyFrame.LockyName = LockyName
+    local AssignmentFrame = LA.CreateLockyFriendContainer(scrollframe, number)
+    AssignmentFrame.LockyFrameID  = "LockyFriendFrame_0"..tostring(number)
+    AssignmentFrame.LockyName = LockyName
     
     --Creates a portrait to assist in identifying units.
-    LockyFrame.Portrait = LA.CreateLockyFriendPortrait(LockyFrame, LockyName, number)
+    AssignmentFrame.Portrait = LA.CreateLockyFriendPortrait(AssignmentFrame, LockyName, number)
     
     -- Draws the name in the frame.
-    LockyFrame.NamePlate = LA.CreateNamePlate(LockyFrame, LockyName)
+    AssignmentFrame.NamePlate = LA.CreateNamePlate(AssignmentFrame, LockyName)
 
     --Draws the curse dropdown.
-    LockyFrame.CurseAssignmentMenu = LA.CreateCurseAssignmentMenu(LockyFrame)
+    AssignmentFrame.CurseAssignmentMenu = LA.CreateCurseAssignmentMenu(AssignmentFrame)
 
     --Draw a BanishAssignment DropDownMenu
-    LockyFrame.BanishAssignmentMenu = LA.CreateBanishAssignmentMenu(LockyFrame)
+    AssignmentFrame.BanishAssignmentMenu = LA.CreateBanishAssignmentMenu(AssignmentFrame)
 
     --Draw a SS Assignment Menu.
-    LockyFrame.SSAssignmentMenu = LA.CreateSSAssignmentMenu(LockyFrame)
+    AssignmentFrame.SSAssignmentMenu = LA.CreateSSAssignmentMenu(AssignmentFrame)
 
     --Draw the SSCooldownTracker
-    LockyFrame.SSCooldownTracker = LA.CreateSSCooldownTracker(LockyFrame.SSAssignmentMenu)
+    AssignmentFrame.SSCooldownTracker = LA.CreateSSCooldownTracker(AssignmentFrame.SSAssignmentMenu)
 	
-	LockyFrame.AssignmentAcknowledgement = LA.CreateAckFrame(LockyFrame);
+	AssignmentFrame.AssignmentAcknowledgement = LA.CreateAckFrame(AssignmentFrame);
 
-	LockyFrame.Warning = LA.CreateWarningFrame(LockyFrame);
+	AssignmentFrame.Warning = LA.CreateWarningFrame(AssignmentFrame);
 
-    return LockyFrame
+    return AssignmentFrame
 end
 
 --Creates a textframe to display the SS cooldown.
