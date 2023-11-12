@@ -12,8 +12,8 @@ LA.LockAssignmentFriendsData = {}; -- Global for storing the warlocks and thier 
 LA.LockAssignmentClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
 LA.LockAssignmentSSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
 LA.LockAssignmentSSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
-if NeverLocky == nil then
-	NeverLocky = LibStub("AceAddon-3.0"):NewAddon("NeverLocky", "AceComm-3.0")
+if LockAssignment == nil then
+	LockAssignment = LibStub("AceAddon-3.0"):NewAddon("LockAssignment", "AceComm-3.0")
 end
 LA.LockAssignmentAssignCheckFrame={}
 LA.IsMyAddonOutOfDate=false;

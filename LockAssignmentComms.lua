@@ -24,11 +24,11 @@ function LA.CreateMessageFromTable(action, data, dataAge)
 end
 
 function LA.RegisterForComms()
-    NeverLocky:RegisterComm("NeverLockyComms")    
+    LockAssignment:RegisterComm("NeverLockyComms")
 end
 
 --Message router where reveived messages land.
-function NeverLocky:OnCommReceived(prefix, message, distribution, sender)
+function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     if LA.DebugMode then
         print("Message Was Recieved by the Router");
     end
@@ -189,20 +189,20 @@ function LA.BroadcastTable(LockyTable)
     end
     local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, LockyTable, LockAssignmentData_Timestamp)
     if LA.RaidMode then
-        NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeRaid)
+        LockAssignment:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeRaid)
     else
-        NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
     end
-	--NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, "WHISPER", "Brylack")
+	--LockAssignment:SendCommMessage("NeverLockyComms", serializedTable, "WHISPER", "Brylack")
 end
 
 function LA.BroadcastSSCooldown(myself)
     LA.ForceUpdateSSCD();
     local serializedTable = LA.CreateMessageFromTable(LA.CommAction.SSonCD, myself, GetTime())
     if LA.RaidMode then
-        NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeRaid)
+        LockAssignment:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeRaid)
     else
-        NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeWhisper, LA.CommTarget)
     end
 end
 
@@ -212,9 +212,9 @@ function LA.RequestAssignments()
     end
     local message = LA.CreateMessageFromTable(LA.CommAction.RequestAssignments, {},GetTime() )
     if LA.RaidMode then
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
     else
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
     end
 end
 
@@ -229,9 +229,9 @@ function  LA.SendAssignmentAcknowledgement(answer)
 
     local message = LA.CreateMessageFromTable(LA.CommAction.AssigmentResponse, {acknowledged = answer}, GetTime());
     if LA.RaidMode then
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
     else
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
     end
 end
 
@@ -241,9 +241,9 @@ function LA.SendAssignmentReset()
     end    
     local message = LA.CreateMessageFromTable(LA.CommAction.AssignmentReset, {}, GetTime());
     if LA.RaidMode then
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeRaid)
     else
-        NeverLocky:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
+        LockAssignment:SendCommMessage("NeverLockyComms", message, LA.CommModeWhisper, LA.CommTarget)
     end
 end
 

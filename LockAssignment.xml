@@ -6,7 +6,7 @@
 	<Script File="LockyDataUI.lua" />
 	<Script File="LockyUI.lua" />
 	<Script File="LockyComms.lua" />
-	<Script File="NeverLocky.lua" />
+	<Script File="LockAssignment.lua" />
 	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml" />
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
 

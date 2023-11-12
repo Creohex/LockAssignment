@@ -410,21 +410,21 @@ end
 -- E.X. Converts "Star" to - Interface\\TargetingFrame\\UI-RaidTargetingIcon_1
 function LA.GetAssetLocationFromRaidMarker(raidMarker)
 	if(raidMarker == "Skull") then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_8"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_8"
 	elseif raidMarker == "Star" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_1"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_1"
 	elseif raidMarker == "Circle" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_2"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_2"
 	elseif raidMarker == "Diamond" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_3"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_3"
 	elseif raidMarker == "Triangle" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_4"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_4"
 	elseif raidMarker == "Moon" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_5"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_5"
 	elseif raidMarker == "Square" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_6"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_6"
 	elseif raidMarker == "Cross" then
-		return "Interface\\Addons\\NeverLocky\\assets\\UI-RaidTargetingIcon_7"
+		return "Interface\\Addons\\LockAssignment\\assets\\UI-RaidTargetingIcon_7"
 	end
 	return nil
 end
