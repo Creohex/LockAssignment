@@ -1,17 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Script file="Libs\LibStub\LibStub.lua" />
-	<Script File="LockyGlobalData.lua" />
+	<Script File="LockAssignmentData.lua" />
 	<Script file="Libs\Ace3.lua" />
-	<Script File="LockyTableFunctions.lua" />
-	<Script File="LockyDataUI.lua" />
-	<Script File="LockyUI.lua" />
-	<Script File="LockyComms.lua" />
-	<Script File="NeverLocky.lua" />
+	<Script File="LockAssignmentTableFunctions.lua" />
+	<Script File="LockAssignmentDataUI.lua" />
+	<Script File="LockAssignmentUI.lua" />
+	<Script File="LockAssignmentComms.lua" />
+	<Script File="LockAssignment.lua" />
 	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml" />
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
 
 
-	<Frame name="NeverLockyFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
+	<Frame name="LockAssignmentFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
 		<Size>
 			<AbsDimension x="500" y="563" />
 		</Size>
@@ -51,7 +51,7 @@
 					</Anchors>
 					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
 				</Texture>
-				<FontString inherits="GameFontNormal" text="Never Locky">
+				<FontString inherits="GameFontNormal" text="Lock Assignment">
 					<Size>
 						<AbsDimension x="140" y="0" />
 					</Size>
@@ -89,12 +89,12 @@
 		
 		Possible ready check style confirmations...
 		-->
-			<Button name="NLTest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
+			<Button name="LATest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
 				<Size>
 					<AbsDimension x="90" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMLEFT">
+					<Anchor point="BOTTOMLEFT" relativeTo="LockAssignmentFrame" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="10" y="16" />
 						</Offset>
@@ -102,16 +102,16 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						NL.NL_Test()
+						LA.Test()
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="NLCancel_Button" inherits="GameMenuButtonTemplate" text="Close">
+			<Button name="LACancel_Button" inherits="GameMenuButtonTemplate" text="Close">
 				<Size>
 					<AbsDimension x="90" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="NeverLockyFrame" relativePoint="BOTTOMRIGHT">
+					<Anchor point="BOTTOMRIGHT" relativeTo="LockAssignmentFrame" relativePoint="BOTTOMRIGHT">
 						<Offset>
 							<AbsDimension x="-10" y="16" />
 						</Offset>
@@ -119,16 +119,16 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						NL.NeverLocky_HideFrame()
+						LA.LockAssignment_HideFrame()
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="NLCommit_Button" inherits="GameMenuButtonTemplate" text="Send Changes">
+			<Button name="LACommit_Button" inherits="GameMenuButtonTemplate" text="Send Changes">
 				<Size>
 					<AbsDimension x="115" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="NLCancel_Button" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="LACancel_Button" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-5" y="0" />
 						</Offset>
@@ -136,7 +136,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						NL.NeverLocky_Commit()
+						LA.LockAssignment_Commit()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -145,7 +145,7 @@
 					<AbsDimension x="115" y="20" />
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT" relativeTo="NLCommit_Button" relativePoint="LEFT">
+					<Anchor point="RIGHT" relativeTo="LACommit_Button" relativePoint="LEFT">
 						<Offset>
 							<AbsDimension x="-5" y="0" />
 						</Offset>
@@ -155,11 +155,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				NL.NeverLockyInit()
+				LA.LockAssignmentInit()
 				this:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnShow>	
-				NL.NeverLocky_OnShowFrame()
+				LA.LockAssignment_OnShowFrame()
 			</OnShow>
 			<OnDragStart>
 				this:StartMoving();
@@ -167,7 +167,7 @@
 			<OnDragStop>
 				this:StopMovingOrSizing();
 			</OnDragStop>
-			<OnUpdate function="NeverLocky_OnUpdate" />
+			<OnUpdate function="LockAssignment_OnUpdate" />
 		</Scripts>
 	</Frame>
 
