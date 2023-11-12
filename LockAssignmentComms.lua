@@ -71,8 +71,8 @@ function NeverLocky:OnCommReceived(prefix, message, distribution, sender)
                         LA.SetLockyCheckFrameAssignments(lockydata.CurseAssignment, lockydata.BanishAssignment, lockydata.SSAssignment)
                     else
                         --print("updating curse macro.")
-                        LockyAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
-                        LA.SetupAssignmentMacro(LockyAssignCheckFrame.activeCurse);
+                        LockAssignmentAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
+                        LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                         LA.SendAssignmentAcknowledgement("true");
                     end
                 end
@@ -110,17 +110,17 @@ function NeverLocky:OnCommReceived(prefix, message, distribution, sender)
                             LA.SetLockyCheckFrameAssignments(lockydata.CurseAssignment, lockydata.BanishAssignment, lockydata.SSAssignment)
                         else
                             print("updating curse macro.")
-                            LockyAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
-                            LA.SetupAssignmentMacro(LockyAssignCheckFrame.activeCurse);
+                            LockAssignmentAssignCheckFrame.activeCurse = lockydata.CurseAssignment;
+                            LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                             LA.SendAssignmentAcknowledgement("true");
                         end
                     end
                 end
             end
 
-            --LockyFriendsData = message.data            
+            --LockAssignmentFriendsData = message.data
             LA.MergeAssignments(message.data);
-            LA.LockyFriendsData = LA.UpdateWarlocks(LA.LockyFriendsData);
+            LA.LockAssignmentFriendsData = LA.UpdateWarlocks(LA.LockAssignmentFriendsData);
             LA.UpdateAllLockyFriendFrames()
             if LA.DebugMode then
                 print("UI has been refreshed by request of broadcast message.")
@@ -151,7 +151,7 @@ function NeverLocky:OnCommReceived(prefix, message, distribution, sender)
         if LA.DebugMode then
             print("Assignment request recieved, sending out assignments.")
         end
-        LA.BroadcastTable(LA.LockyFriendsData)
+        LA.BroadcastTable(LA.LockAssignmentFriendsData)
         
     elseif message.action == LA.CommAction.AssigmentResponse then
         -- When we recieve an assigment response we should stuff with that.
@@ -169,7 +169,7 @@ function NeverLocky:OnCommReceived(prefix, message, distribution, sender)
         if LA.DebugMode then
             print("Recieved assignment reset from", message.author)
         end
-        LA.ResetAssignmentAcks(LA.LockyFriendsData);
+        LA.ResetAssignmentAcks(LA.LockAssignmentFriendsData);
         
     else
         if LA.DebugMode then
@@ -187,7 +187,7 @@ function LA.BroadcastTable(LockyTable)
     if LA.DebugMode then
         print("Sending out the assignment table")
     end
-    local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, LockyTable, LockyData_Timestamp)
+    local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, LockyTable, LockAssignmentData_Timestamp)
     if LA.RaidMode then
         NeverLocky:SendCommMessage("NeverLockyComms", serializedTable, LA.CommModeRaid)
     else

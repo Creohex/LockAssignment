@@ -1,6 +1,6 @@
 --Initialization logic for setting up the entire addon
 function LA.NeverLockyInit()
-	if not LockyFrame_HasInitialized then
+	if not LockAssignmentFrame_HasInitialized then
 		--print("Prepping init")
 		NeverLockyFrame:SetBackdrop({
 			bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -14,11 +14,11 @@ function LA.NeverLockyInit()
 		--print("ScrollFrame initialized successfully.")
 		LA.RegisterForComms()
 		--print("Comms initialized successfully.")
-		LockyFrame_HasInitialized = true
-		--LockyFriendsData = InitLockyFriendData()
-		--print("LockyFriendsData initialized successfully.")
-		--LockyFriendsData = SetDefaultAssignments(LockyFriendsData)
-		--print("LockyFriendsData Default Assignments Set successfully.")
+		LockAssignmentFrame_HasInitialized = true
+		--LockAssignmentFriendsData = InitLockyFriendData()
+		--print("LockAssignmentFriendsData initialized successfully.")
+		--LockAssignmentFriendsData = SetDefaultAssignments(LockAssignmentFriendsData)
+		--print("LockAssignmentFriendsData Default Assignments Set successfully.")
 		LA.UpdateAllLockyFriendFrames();
 		
 		--print("|cff9322B5Never Locky|cFFFFFFFF has been registered to the WOW UI.")
@@ -37,7 +37,7 @@ function NeverLocky_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
 
 	self.TimeSinceLastClockUpdate = self.TimeSinceLastClockUpdate + elapsed; 	
-	if (self.TimeSinceLastClockUpdate > LA.NeverLockyClocky_UpdateInterval) then
+	if (self.TimeSinceLastClockUpdate > LA.LockAssignmentClocky_UpdateInterval) then
 		self.TimeSinceLastClockUpdate = 0;
 		if LA.DebugMode then
 			--print("Updating the UI");
@@ -47,7 +47,7 @@ function NeverLocky_OnUpdate(self, elapsed)
 
 	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
 	self.TimeSinceLastSSCDBroadcast = self.TimeSinceLastSSCDBroadcast + elapsed;
-	if(self.TimeSinceLastSSCDUpdate > LA.NeverLockySSCD_UpdateInterval) then
+	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval) then
 		self.TimeSinceLastSSCDUpdate = 0;
 		if LA.DebugMode then
 			print("Checking SSCD");
@@ -93,24 +93,24 @@ function LA.InitLockyFriendData()
 			return LA.RegisterMyTestData()
 		elseif testmode == TestType.add then
 			print("testing add")
-			table.insert(LA.LockyFriendsData, LA.RegisterMyTestData()[1])
+			table.insert(LA.LockAssignmentFriendsData, LA.RegisterMyTestData()[1])
 			testmode = TestType.remove
-			return LA.LockyFriendsData
+			return LA.LockAssignmentFriendsData
 		elseif testmode == TestType.remove then
 			print("testing remove")
-			local p = LA.GetLockyFriendIndexByName(LA.LockyFriendsData, "Brylack")
+			local p = LA.GetLockyFriendIndexByName(LA.LockAssignmentFriendsData, "Brylack")
 			if not (p==nil) then
-				table.remove(LA.LockyFriendsData, p)
+				table.remove(LA.LockAssignmentFriendsData, p)
 			end
 			testmode = TestType.setDefault
-			return LA.LockyFriendsData
+			return LA.LockAssignmentFriendsData
 		elseif testmode == TestType.setDefault then
 			print ("Setting default selection")
-			LA.LockyFriendsData = LA.SetDefaultAssignments(LA.LockyFriendsData)
+			LA.LockAssignmentFriendsData = LA.SetDefaultAssignments(LA.LockAssignmentFriendsData)
 			testmode = TestType.init
-			return LA.LockyFriendsData
+			return LA.LockAssignmentFriendsData
 		else
-			return LA.LockyFriendsData
+			return LA.LockAssignmentFriendsData
 		end		
 	end
 end
@@ -174,7 +174,7 @@ end
 
 --This is wired to a button click at present.
 function LA.NeverLocky_HideFrame()
-	if LA.IsUIDirty(LA.LockyFriendsData) then
+	if LA.IsUIDirty(LA.LockAssignmentFriendsData) then
 		print("Changes were not saved.")
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		NeverLockyFrame:Hide()
@@ -185,10 +185,10 @@ function LA.NeverLocky_HideFrame()
 end
 
 function LA.NeverLocky_Commit()
-	LA.LockyFriendsData = LA.CommitChanges(LA.LockyFriendsData)
+	LA.LockAssignmentFriendsData = LA.CommitChanges(LA.LockAssignmentFriendsData)
 	LA.UpdateAllLockyFriendFrames();
 	LA.SendAssignmentReset();
-	LA.BroadcastTable(LA.LockyFriendsData)
+	LA.BroadcastTable(LA.LockAssignmentFriendsData)
 	--print("Changes were sent out.");
 
 	LA.AnnounceAssignments();
@@ -199,23 +199,23 @@ end
 --At this time this is just a test function.
 function LA.Test()
 	print("Updating a frame....")				
-	LA.LockyFriendsData = LA.InitLockyFriendData();
+	LA.LockAssignmentFriendsData = LA.InitLockyFriendData();
 	NLTest_Button.Text:SetText(testmode)
 	--UpdateAllLockyFriendFrames();	
-	LA.BroadcastTable(LA.LockyFriendsData);
+	LA.BroadcastTable(LA.LockAssignmentFriendsData);
 end
 
 -- Event for handling the frame showing.
 function LA.NeverLocky_OnShowFrame()
-	if not LockyData_HasInitialized then
-		LA.LockyFriendsData = LA.InitLockyFriendData()
+	if not LockAssignmentData_HasInitialized then
+		LA.LockAssignmentFriendsData = LA.InitLockyFriendData()
 		
-		--LockyData_Timestamp = 0
-		LockyData_HasInitialized = true
+		--LockAssignmentData_Timestamp = 0
+		LockAssignmentData_HasInitialized = true
 		if LA.DebugMode then
 			print("Initialization complete");
 			
-			print("Found " .. LA.GetTableLength(LA.LockyFriendsData) .. " Warlocks in raid." );
+			print("Found " .. LA.GetTableLength(LA.LockAssignmentFriendsData) .. " Warlocks in raid." );
 		end		
 	end
 
@@ -226,16 +226,16 @@ function LA.NeverLocky_OnShowFrame()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 	--print("Updating SS targets")
 	LA.UpdateSSTargets()
-	LA.LockyFriendsData = LA.UpdateWarlocks(LA.LockyFriendsData);
+	LA.LockAssignmentFriendsData = LA.UpdateWarlocks(LA.LockAssignmentFriendsData);
 	LA.UpdateAllLockyFriendFrames();
 	LA.RequestAssignments()
 	if LA.DebugMode then
-		print("Found " .. LA.GetTableLength(LA.LockyFriendsData) .. " Warlocks in raid." );
+		print("Found " .. LA.GetTableLength(LA.LockAssignmentFriendsData) .. " Warlocks in raid." );
 	end	
-	if LA.GetTableLength(LA.LockyFriendsData) == 0 then
+	if LA.GetTableLength(LA.LockAssignmentFriendsData) == 0 then
 		DEFAULT_CHAT_FRAME:AddMessage("LA.NeverLocky_OnShowFrame table empty")
 		LA.RaidMode = false;
-		LA.LockyFriendsData = LA.RegisterMySoloData();
+		LA.LockAssignmentFriendsData = LA.RegisterMySoloData();
 	end
 	LA.SetExtraChats();
 end
@@ -254,7 +254,7 @@ SlashCmdList["LA"] = function(msg)
 			print("Never Locky Debug Mode ON")
 		end		
 	elseif msg == "test" then
-		LockyAssignCheckFrame:Show();
+		LockAssignmentAssignCheckFrame:Show();
 	else
 		NeverLockyFrame:Show()
 	end	

@@ -5,7 +5,7 @@ function LA.InitLockyFrameScrollArea()
 
 	--parent frame 	
 	LockyFrame = CreateFrame("Frame", nil, NeverLockyFrame)
-	LockyFrame:SetWidth(LA.LockyFriendFrameWidth-52)
+	LockyFrame:SetWidth(LA.LockAssignmentFriendFrameWidth-52)
 	LockyFrame:SetHeight(500)
 	LockyFrame:SetPoint("CENTER", NeverLockyFrame, "CENTER", -9, 6)
 	
@@ -37,7 +37,7 @@ function LA.InitLockyFrameScrollArea()
 	
 	--content frame 	
 	local content = CreateFrame("Frame", nil, scrollframe) 
-	content:SetWidth(LA.LockyFriendFrameWidth-77)
+	content:SetWidth(LA.LockAssignmentFriendFrameWidth-77)
 	content:SetHeight(500)
 	
 	content.LockyFriendFrames = {}
@@ -81,17 +81,17 @@ end
 function LA.GetMaxValueForScrollBar(LockyFrames)
 	local numberOfFrames = LA.GetTableLength(LockyFrames)
 	--total frame height is 500 we can probably survive with hardcoding this.
-	local _, mod = LA.modf(500/LA.LockyFriendFrameHeight)
-	local shiftFactor = ((1-mod)*LA.LockyFriendFrameHeight) + 13 --There is roughly a 13 pixel spacer somewhere but I am having a hard time nailing it down.
-	local FrameSupports = math.floor(500/LA.LockyFriendFrameHeight)
-	local FirstClippedFrame = math.ceil(500/LA.LockyFriendFrameHeight)
+	local _, mod = LA.modf(500/LA.LockAssignmentFriendFrameHeight)
+	local shiftFactor = ((1-mod)*LA.LockAssignmentFriendFrameHeight) + 13 --There is roughly a 13 pixel spacer somewhere but I am having a hard time nailing it down.
+	local FrameSupports = math.floor(500/LA.LockAssignmentFriendFrameHeight)
+	local FirstClippedFrame = math.ceil(500/LA.LockAssignmentFriendFrameHeight)
 
 	if numberOfFrames <= FrameSupports then
 		return 1
 	elseif numberOfFrames == FirstClippedFrame then --this is like a partial frame that wont render all the way.
 		return shiftFactor
 	elseif numberOfFrames > FirstClippedFrame then
-		return (numberOfFrames-FirstClippedFrame)*LA.LockyFriendFrameHeight + shiftFactor
+		return (numberOfFrames-FirstClippedFrame)*LA.LockAssignmentFriendFrameHeight + shiftFactor
 	end
 end
 
@@ -150,8 +150,8 @@ end
 --Creates the frame that will act as teh container for the component control.
 function LA.CreateLockyFriendContainer(ParentFrame, number)
 	local LockyFriendFrame = CreateFrame("Frame", nil, ParentFrame, BackdropTemplateMixin and "BackdropTemplate") 
-	LockyFriendFrame:SetWidth(LA.LockyFriendFrameWidth-67)
-	LockyFriendFrame:SetHeight(LA.LockyFriendFrameHeight)
+	LockyFriendFrame:SetWidth(LA.LockAssignmentFriendFrameWidth-67)
+	LockyFriendFrame:SetHeight(LA.LockAssignmentFriendFrameHeight)
 	--Set up the border around the locky frame.
 	LockyFriendFrame:SetBackdrop({
 		bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -162,7 +162,7 @@ function LA.CreateLockyFriendContainer(ParentFrame, number)
 		insets = { left = 0, right = 0, top = 0, bottom = 0 }
 	})	
 	--Calculate where to draw the frame on the screen.
-	local yVal = (number*(-LA.LockyFriendFrameHeight))-10
+	local yVal = (number*(-LA.LockAssignmentFriendFrameHeight))-10
 	LockyFriendFrame:SetPoint("TOPLEFT", ParentFrame, "TOPLEFT", 8, yVal)
 	
 	return LockyFriendFrame
@@ -568,12 +568,12 @@ function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownT
 end
 
 function LA.InitLockyAssignCheckFrame()
-	LockyAssignCheckFrame =  CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate");
+	LockAssignmentAssignCheckFrame =  CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate");
 
-	LockyAssignCheckFrame:SetWidth(200)
-	LockyAssignCheckFrame:SetHeight(175)
-	LockyAssignCheckFrame:SetPoint("CENTER", UIParent, "CENTER",0,0) 
-	LockyAssignCheckFrame:SetBackdrop({
+	LockAssignmentAssignCheckFrame:SetWidth(200)
+	LockAssignmentAssignCheckFrame:SetHeight(175)
+	LockAssignmentAssignCheckFrame:SetPoint("CENTER", UIParent, "CENTER",0,0)
+	LockAssignmentAssignCheckFrame:SetBackdrop({
 		bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
 		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", 
 		tile = true,
@@ -582,82 +582,82 @@ function LA.InitLockyAssignCheckFrame()
 		insets = { left = 5, right = 5, top = 5, bottom = 5 }
 	});
 
-	LockyAssignCheckFrame:RegisterForDrag("LeftButton");
-	LockyAssignCheckFrame:SetMovable(true);
-	LockyAssignCheckFrame:EnableMouse(true);
+	LockAssignmentAssignCheckFrame:RegisterForDrag("LeftButton");
+	LockAssignmentAssignCheckFrame:SetMovable(true);
+	LockAssignmentAssignCheckFrame:EnableMouse(true);
 
-	LockyAssignCheckFrame:SetScript("OnDragStart", LockyAssignCheckFrame.StartMoving);
-	LockyAssignCheckFrame:SetScript("OnDragStop", LockyAssignCheckFrame.StopMovingOrSizing);
+	LockAssignmentAssignCheckFrame:SetScript("OnDragStart", LockAssignmentAssignCheckFrame.StartMoving);
+	LockAssignmentAssignCheckFrame:SetScript("OnDragStop", LockAssignmentAssignCheckFrame.StopMovingOrSizing);
 
-	LockyAssignRejectButton = CreateFrame("Button", nil, LockyAssignCheckFrame, "GameMenuButtonTemplate");
+	LockyAssignRejectButton = CreateFrame("Button", nil, LockAssignmentAssignCheckFrame, "GameMenuButtonTemplate");
 	LockyAssignRejectButton:SetWidth(70);
 	LockyAssignRejectButton:SetHeight(20);
-	LockyAssignRejectButton:SetPoint("BOTTOMRIGHT", LockyAssignCheckFrame, "BOTTOMRIGHT",-15,15)
+	LockyAssignRejectButton:SetPoint("BOTTOMRIGHT", LockAssignmentAssignCheckFrame, "BOTTOMRIGHT",-15,15)
 	LockyAssignRejectButton:SetText("No");
 	LockyAssignRejectButton:SetScript("OnClick", LA.LockyAssignRejectClick);
 
-	LockyAssignAcceptButton = CreateFrame("Button", nil, LockyAssignCheckFrame, "GameMenuButtonTemplate");
+	LockyAssignAcceptButton = CreateFrame("Button", nil, LockAssignmentAssignCheckFrame, "GameMenuButtonTemplate");
 	LockyAssignAcceptButton:SetWidth(70);
 	LockyAssignAcceptButton:SetHeight(20);
 	LockyAssignAcceptButton:SetPoint("RIGHT", LockyAssignRejectButton, "LEFT",-5,0)
 	LockyAssignAcceptButton:SetText("Yes");
 	LockyAssignAcceptButton:SetScript("OnClick", LA.LockyAssignAcceptClick);
 
-	LockyAssignCheckFrame.AcceptButton = LockyAssignAcceptButton;
-	LockyAssignCheckFrame.RejectButton = LockyAssignRejectButton;
+	LockAssignmentAssignCheckFrame.AcceptButton = LockyAssignAcceptButton;
+	LockAssignmentAssignCheckFrame.RejectButton = LockyAssignRejectButton;
 
-	LockyAssignCheckFrame.Label = LA.AddTextToFrame(LockyAssignCheckFrame, "Your new assignments:", 140)
-	LockyAssignCheckFrame.Label:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 10, -15)
+	LockAssignmentAssignCheckFrame.Label = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "Your new assignments:", 140)
+	LockAssignmentAssignCheckFrame.Label:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", 10, -15)
 
-	LockyAssignCheckFrame.CurseLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "Curse:", 130)
-	LockyAssignCheckFrame.CurseLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -37)
+	LockAssignmentAssignCheckFrame.CurseLabel = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "Curse:", 130)
+	LockAssignmentAssignCheckFrame.CurseLabel:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", 0, -37)
 
 
-	local CurseGraphicFrame = CreateFrame("Frame", nil, LockyAssignCheckFrame)
+	local CurseGraphicFrame = CreateFrame("Frame", nil, LockAssignmentAssignCheckFrame)
 	CurseGraphicFrame:SetWidth(30)
 	CurseGraphicFrame:SetHeight(30)
-	CurseGraphicFrame:SetPoint("CENTER", LockyAssignCheckFrame, "LEFT", 105, 42)
+	CurseGraphicFrame:SetPoint("CENTER", LockAssignmentAssignCheckFrame, "LEFT", 105, 42)
 	
-	LockyAssignCheckFrame.CurseGraphicFrame = CurseGraphicFrame
+	LockAssignmentAssignCheckFrame.CurseGraphicFrame = CurseGraphicFrame
 
-	LockyAssignCheckFrame.BanishLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "Banish:", 130)
-	LockyAssignCheckFrame.BanishLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -67)
+	LockAssignmentAssignCheckFrame.BanishLabel = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "Banish:", 130)
+	LockAssignmentAssignCheckFrame.BanishLabel:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", 0, -67)
 
-	local BanishGraphicFrame = CreateFrame("Frame", nil, LockyAssignCheckFrame)
+	local BanishGraphicFrame = CreateFrame("Frame", nil, LockAssignmentAssignCheckFrame)
 	BanishGraphicFrame:SetWidth(30)
 	BanishGraphicFrame:SetHeight(30)
-	BanishGraphicFrame:SetPoint("CENTER", LockyAssignCheckFrame, "LEFT", 105, 12)
-	LockyAssignCheckFrame.BanishGraphicFrame = BanishGraphicFrame;
+	BanishGraphicFrame:SetPoint("CENTER", LockAssignmentAssignCheckFrame, "LEFT", 105, 12)
+	LockAssignmentAssignCheckFrame.BanishGraphicFrame = BanishGraphicFrame;
 
-	LockyAssignCheckFrame.SoulStoneLabel = LA.AddTextToFrame(LockyAssignCheckFrame, "SoulStone:", 130)
-	LockyAssignCheckFrame.SoulStoneLabel:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", -8, -97)
+	LockAssignmentAssignCheckFrame.SoulStoneLabel = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "SoulStone:", 130)
+	LockAssignmentAssignCheckFrame.SoulStoneLabel:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", -8, -97)
 
-	LockyAssignCheckFrame.SoulStoneAssignment = LA.AddTextToFrame(LockyAssignCheckFrame, "", 130)
-	LockyAssignCheckFrame.SoulStoneAssignment:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 65, -97)
+	LockAssignmentAssignCheckFrame.SoulStoneAssignment = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "", 130)
+	LockAssignmentAssignCheckFrame.SoulStoneAssignment:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", 65, -97)
 
-	LockyAssignCheckFrame.Prompt = LA.AddTextToFrame(LockyAssignCheckFrame, "Do you accept?", 130)
-	LockyAssignCheckFrame.Prompt:SetPoint("TOPLEFT", LockyAssignCheckFrame, "TOPLEFT", 0, -120)
+	LockAssignmentAssignCheckFrame.Prompt = LA.AddTextToFrame(LockAssignmentAssignCheckFrame, "Do you accept?", 130)
+	LockAssignmentAssignCheckFrame.Prompt:SetPoint("TOPLEFT", LockAssignmentAssignCheckFrame, "TOPLEFT", 0, -120)
 	
 	
-	LockyAssignCheckFrame:SetScript("OnShow", LA.LockyAssignFrameOnShow);
+	LockAssignmentAssignCheckFrame:SetScript("OnShow", LA.LockyAssignFrameOnShow);
 
 	
-	LockyAssignCheckFrame:Hide();
+	LockAssignmentAssignCheckFrame:Hide();
 
 	
 	--This needs to be removed.	
-	--LockyAssignCheckFrame:Show();
+	--LockAssignmentAssignCheckFrame:Show();
 end
 
 function LA.SetLockyCheckFrameAssignments(curse, banish, sstarget)
 	if LA.DebugMode then
 		print(curse,banish, sstarget);
 	end
-	LA.UpdateCurseGraphic(LockyAssignCheckFrame, curse)
-	LockyAssignCheckFrame.pendingCurse = curse;
-	LA.UpdateBanishGraphic(LockyAssignCheckFrame, banish)
+	LA.UpdateCurseGraphic(LockAssignmentAssignCheckFrame, curse)
+	LockAssignmentAssignCheckFrame.pendingCurse = curse;
+	LA.UpdateBanishGraphic(LockAssignmentAssignCheckFrame, banish)
 	LA.UpdateSoulStoneAssignment(sstarget)
-	LockyAssignCheckFrame:Show();
+	LockAssignmentAssignCheckFrame:Show();
 end
 
 function LA.LockyAssignFrameOnShow()
@@ -669,23 +669,23 @@ end
 
 function LA.LockyAssignAcceptClick()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-	LockyAssignCheckFrame:Hide()
+	LockAssignmentAssignCheckFrame:Hide()
 	
 	if LA.DebugMode then
 		print("You clicked Yes.")
 	end
-	LockyAssignCheckFrame.activeCurse = LockyAssignCheckFrame.pendingCurse;
+	LockAssignmentAssignCheckFrame.activeCurse = LockAssignmentAssignCheckFrame.pendingCurse;
 	if LA.DebugMode then
-		print("Attempting to create macro for curse: ".. LockyAssignCheckFrame.activeCurse);		
+		print("Attempting to create macro for curse: ".. LockAssignmentAssignCheckFrame.activeCurse);
 	end
 
-	LA.SetupAssignmentMacro(LockyAssignCheckFrame.activeCurse);
+	LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
 	LA.SendAssignmentAcknowledgement("true");
 end
 
 function LA.LockyAssignRejectClick()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-	LockyAssignCheckFrame:Hide()
+	LockAssignmentAssignCheckFrame:Hide()
 	if LA.DebugMode then
 		print("You clicked No.")
 	end
@@ -693,7 +693,7 @@ function LA.LockyAssignRejectClick()
 end
 
 function LA.UpdateSoulStoneAssignment(Assignment)
-	LockyAssignCheckFrame.SoulStoneAssignment:SetText(Assignment);
+	LockAssignmentAssignCheckFrame.SoulStoneAssignment:SetText(Assignment);
 end
 
 

@@ -3,19 +3,19 @@ LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
 LA.Version = 113
-LA.LockyFriendFrameWidth = 500;
-LA.LockyFriendFrameHeight = 128
-LA.LockyFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
-LA.LockyData_HasInitialized = false;
-LA.LockyData_Timestamp = 0.0;
-LA.LockyFriendsData = {}; -- Global for storing the warlocks and thier assignements.
-LA.NeverLockyClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
-LA.NeverLockySSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
-LA.NeverLockySSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
+LA.LockAssignmentFriendFrameWidth = 500;
+LA.LockAssignmentFriendFrameHeight = 128
+LA.LockAssignmentFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
+LA.LockAssignmentData_HasInitialized = false;
+LA.LockAssignmentData_Timestamp = 0.0;
+LA.LockAssignmentFriendsData = {}; -- Global for storing the warlocks and thier assignements.
+LA.LockAssignmentClocky_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
+LA.LockAssignmentSSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
+LA.LockAssignmentSSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
 if NeverLocky == nil then
 	NeverLocky = LibStub("AceAddon-3.0"):NewAddon("NeverLocky", "AceComm-3.0")
 end
-LA.LockyAssignCheckFrame={}
+LA.LockAssignmentAssignCheckFrame={}
 LA.IsMyAddonOutOfDate=false;
 LA.MacroName =  "CurseAssignment";
 
@@ -111,9 +111,9 @@ function LA.UpdateWarlocks(LockyTable)
 			if LA.DebugMode then
 				print("Deserter detected")
 			end
-			local p = LA.GetLockyFriendIndexByName(LA.LockyFriendsData, v.Name)
+			local p = LA.GetLockyFriendIndexByName(LA.LockAssignmentFriendsData, v.Name)
 			if not (p==nil) then
-				table.remove(LA.LockyFriendsData, p)
+				table.remove(LA.LockAssignmentFriendsData, p)
 			end
 		end
 	end
@@ -275,7 +275,7 @@ function LA.UpdateSSTargets()
 end
 
 function LA.GetMyLockyData()
-	for k, v in pairs(LA.LockyFriendsData) do
+	for k, v in pairs(LA.LockAssignmentFriendsData) do
 		if LA.DebugMode then
 			--print(v.Name, " vs ", UnitName("player"));
 		end
@@ -297,7 +297,7 @@ function LA.GetMyLockyDataFromTable(lockyDataTable)
 end
 
 function  LA.GetLockyDataByName(name)
-    for k, v in pairs(LA.LockyFriendsData) do
+    for k, v in pairs(LA.LockAssignmentFriendsData) do
         if v.Name == name then
             return v
         end

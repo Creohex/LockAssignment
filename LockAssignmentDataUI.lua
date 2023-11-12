@@ -113,13 +113,13 @@ function LA.UpdateAllLockyFriendFrames()
    -- print("All frames Cleared")
     LA.ConsolidateFrameLocations()
     --print("Frame Locations Consolidated")
-	for key, value in pairs(LA.LockyFriendsData) do
+	for key, value in pairs(LA.LockAssignmentFriendsData) do
 		LA.UpdateLockyFrame(value, LA.GetLockyFriendFrameById(value.LockyFrameLocation))
 	end
 	if LA.DebugMode then
 		print("Frames updated successfully.")
 	end
-    LockyFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockyFriendsData))
+    LockyFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentFriendsData))
   --  print("ScrollRegion size updated successfully")
 end
 
@@ -138,7 +138,7 @@ end
 function  LA.ConsolidateFrameLocations()
 	--Need to loop through and assign a locky frame id to a locky friend.
 	--print("Setting up FrameLocations for the locky friend data.")
-	for key, value in pairs(LA.LockyFriendsData) do
+	for key, value in pairs(LA.LockAssignmentFriendsData) do
 		--print(value.Name, "will be assigned a frame.")
 		value.LockyFrameLocation = LockyFrame.scrollframe.content.LockyFriendFrames[key].LockyFrameID;
 		--print("Assigned Frame:",value.LockyFrameLocation)
@@ -152,7 +152,7 @@ end
 	else do nothing.
 	]]--
 function LA.UpdateLockyClockys()
-	for k,v in pairs(LA.LockyFriendsData) do
+	for k,v in pairs(LA.LockAssignmentFriendsData) do
 		if (LA.DebugMode) then
 			--print(v.Name, "on cooldown =", v.SSonCD)
 		end
@@ -248,7 +248,7 @@ function LA.CheckSSCD(self)
 		--If the SS is on CD then we broadcast that.
 		
 		--If the CD is on cooldown AND we have not broadcast in the last minute we will broadcast.
-		if(startTime > 0 and self.TimeSinceLastSSCDBroadcast > LA.NeverLockySSCD_BroadcastInterval) then
+		if(startTime > 0 and self.TimeSinceLastSSCDBroadcast > LA.LockAssignmentSSCD_BroadcastInterval) then
 			self.TimeSinceLastSSCDBroadcast=0
 			LA.BroadcastSSCooldown(myself)
 		end
@@ -329,9 +329,9 @@ end
 
 --Returns true if changes have been made but have not been saved.
 function LA.IsUIDirty(LockyData)
-	if(not LockyData_HasInitialized) then	
-		LA.LockyFriendsData = LA.InitLockyFriendData();
-		LockyData_HasInitialized = true;
+	if(not LockAssignmentData_HasInitialized) then
+		LA.LockAssignmentFriendsData = LA.InitLockyFriendData();
+		LockAssignmentData_HasInitialized = true;
 		return true;
 	end
     for k, v in pairs(LockyData) do
@@ -346,9 +346,9 @@ function LA.IsUIDirty(LockyData)
 end
 
 --Commits any UI changes to the global LockyFriendsDataModel
-function LA.CommitChanges(LockyFriendsData)
+function LA.CommitChanges(LockAssignmentFriendsData)
     
-    for k, v in pairs(LockyFriendsData) do
+    for k, v in pairs(LockAssignmentFriendsData) do
         local uiLock = LA.GetWarlockFromLockyFrame(v.Name)
         if LA.DebugMode then
 			print("Old: ", v.CurseAssignment, "New: ", uiLock.CurseAssignment)
@@ -360,13 +360,13 @@ function LA.CommitChanges(LockyFriendsData)
 		v.SSAssignment = uiLock.SSAssignment
 		v.AcceptedAssignments = "nil"
     end
-    LockyData_Timestamp = GetTime()
-    return LockyFriendsData
+    LockAssignmentData_Timestamp = GetTime()
+    return LockAssignmentFriendsData
 end
 
 function LA.AnnounceAssignments()
 	local AnnounceOption = 	LA.GetValueFromDropDownList(LockyAnnouncerOptionMenu, LA.AnnouncerOptions, "");
-	for k, v in pairs(LA.LockyFriendsData) do
+	for k, v in pairs(LA.LockAssignmentFriendsData) do
 		local message = ""
 		if v.CurseAssignme1nt ~= "None"  or v.BanishAssignment ~= "None" or v.SSAssignment~="None" then
 			message = v.Name .. ": ";
