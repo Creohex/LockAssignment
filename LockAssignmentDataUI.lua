@@ -2,7 +2,7 @@
 --Will take in the string ID and return the appropriate Lock Frame
 function LA.GetWarlockFrameById(LockFrameID)
 	for key, value in pairs(AssignmentFrame.scrollframe.content.WarlockFrames) do
-		--PrintMessageToMainChatFrame(key, " -- ", value["LockFrameID"])
+		--LA.print(key, " -- ", value["LockFrameID"])
 		if value["LockFrameID"] == LockFrameID then
 			return value
 		end
@@ -12,7 +12,7 @@ end
 --Will take in a string name and return the appropriate frame.
 function LA.GetWarlockFrameByName(WarlockName)
 	for key, value in pairs(AssignmentFrame.scrollframe.content.WarlockFrames) do
-		--PrintMessageToMainChatFrame(key, " -- ", value["LockFrameID"])
+		--LA.print(key, " -- ", value["LockFrameID"])
 		if value["WarlockName"] == WarlockName then
 			return value
 		end
@@ -29,24 +29,24 @@ function LA.UpdateAssignmentFrame(Warlock, AssignmentFrame)
 		AssignmentFrame:Show()
 	end
 	--Set the nametag
-    --PrintMessageToMainChatFrame("Updating Nameplate Text to: ".. Warlock.Name)
+    --LA.print("Updating Nameplate Text to: ".. Warlock.Name)
     AssignmentFrame.WarlockName = Warlock.Name
 	AssignmentFrame.NamePlate.TextFrame:SetText(Warlock.Name)
 	--Set the CurseAssignment
-	--print("Updating Curse to: ".. Warlock.CurseAssignment) -- this may need to be done by index.....
+	--LA.print("Updating Curse to: ".. Warlock.CurseAssignment) -- this may need to be done by index.....
 	--GetIndexFromTable(CurseOptions, Warlock.CurseAssignment)
 	UIDropDownMenu_SetSelectedID(AssignmentFrame.CurseAssignmentMenu, LA.GetIndexFromTable(LA.CurseOptions, Warlock.CurseAssignment))
 	LA.UpdateCurseGraphic(AssignmentFrame.CurseAssignmentMenu, LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu))
 	UIDropDownMenu_SetText(LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu), AssignmentFrame.CurseAssignmentMenu)
 
 	--Set the BanishAssignmentMenu
-	--print("Updating Banish to: ".. Warlock.BanishAssignment)
+	--LA.print("Updating Banish to: ".. Warlock.BanishAssignment)
 	UIDropDownMenu_SetSelectedID(AssignmentFrame.BanishAssignmentMenu, LA.GetIndexFromTable(LA.BanishMarkers, Warlock.BanishAssignment))
 	LA.UpdateBanishGraphic(AssignmentFrame.BanishAssignmentMenu, LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
 	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""), AssignmentFrame.BanishAssignmentMenu)
 
 	--Set the SS Assignment
-	--print("Updating SS to: ".. Warlock.SSAssignment)
+	--LA.print("Updating SS to: ".. Warlock.SSAssignment)
 	LA.UpdateDropDownMenuWithNewOptions(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments");
 	UIDropDownMenu_SetSelectedID(AssignmentFrame.SSAssignmentMenu, LA.GetSSIndexFromTable(LA.GetSSTargets(),Warlock.SSAssignment))
 	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments"), AssignmentFrame.SSAssignmentMenu)
@@ -104,17 +104,17 @@ end
 --This will use the global warlocks data.
 function LA.UpdateAllWarlockFrames()
 	if LA.DebugMode then
-		PrintMessageToMainChatFrame("Updating all frames.")
+		LA.print("Updating all frames.")
 	end
     LA.ClearAllAssignmentFrames()
-   -- print("All frames Cleared")
+   -- LA.print("All frames Cleared")
     LA.ConsolidateFrameLocations()
-    --print("Frame Locations Consolidated")
+    --LA.print("Frame Locations Consolidated")
 	for key, value in pairs(LA.LockAssignmentsData) do
 		LA.UpdateAssignmentFrame(value, LA.GetWarlockFrameById(value.AssignmentFrameLocation))
 	end
 	if LA.DebugMode then
-		print("Frames updated successfully.")
+		LA.print("Frames updated successfully.")
 	end
     AssignmentFrame.scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(LA.LockAssignmentsData))
   --  print("ScrollRegion size updated successfully")
@@ -271,7 +271,7 @@ end
 
 function LA.ForceUpdateSSCD()
 	if LA.DebugMode then
-		print("Forcing SSCD cache update.")
+		LA.print("Forcing SSCD cache update.")
 	end
 
 	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
@@ -283,7 +283,7 @@ function LA.ForceUpdateSSCD()
 		if myself ~= nil then
 			if(myself.SSCooldown~=startTime) then
 				if LA.DebugMode then
-					print("Personal SSCD detected.")
+					LA.print("Personal SSCD detected.")
 				end
 				myself.SSCooldown = startTime
 				myself.LocalTime = GetTime()
@@ -291,7 +291,7 @@ function LA.ForceUpdateSSCD()
 			end
 		else
 			if LA.DebugMode then
-				print("Something went horribly wrong.")
+				LA.print("Something went horribly wrong.")
 			end
 		end
 	end
@@ -301,12 +301,12 @@ end
 function LA.UpdateAssignmentSSCDByName(name, cd)
 	local warlock = LA.GetAssignmentDataByName(name)
 	if LA.DebugMode then
-		print("Attempting to update SS CD for", name);
+		LA.print("Attempting to update SS CD for", name);
 	end
     --if warlock.SSCooldown~=cd then
 		warlock.SSCooldown = cd      
 		if LA.DebugMode then
-			print("Updated SS CD for", name,"successfully.");
+			LA.print("Updated SS CD for", name,"successfully.");
 		end  
 	--end
 end
@@ -348,9 +348,9 @@ function LA.CommitChanges(LockAssignmentsData)
     for k, v in pairs(LockAssignmentsData) do
         local uiLock = LA.GetWarlockFromAssignmentFrame(v.Name)
         if LA.DebugMode then
-			print("Old: ", v.CurseAssignment, "New: ", uiLock.CurseAssignment)
-			print("Old: ", v.BanishAssignment, "New: ", uiLock.BanishAssignment)
-			print("Old",v.SSAssignment , "New:", uiLock.SSAssignment)
+			LA.print("Old: ", v.CurseAssignment, "New: ", uiLock.CurseAssignment)
+			LA.print("Old: ", v.BanishAssignment, "New: ", uiLock.BanishAssignment)
+			LA.print("Old",v.SSAssignment , "New:", uiLock.SSAssignment)
 		end
         v.CurseAssignment = uiLock.CurseAssignment
         v.BanishAssignment = uiLock.BanishAssignment
@@ -386,7 +386,7 @@ end
 function LA.SendAnnounceMent(AnnounceOption, message, v)
 	if AnnounceOption == "Addon Only" then
 		if LA.DebugMode then
-			print(message)
+			LA.print(message)
 		end
 	elseif AnnounceOption == "Raid" then
 		SendChatMessage(message, "RAID", nil, nil)
@@ -396,7 +396,7 @@ function LA.SendAnnounceMent(AnnounceOption, message, v)
 		SendChatMessage(message, "WHISPER", nil, v.Name)
 	else
 		if(LA.DebugMode) then
-			print("Should send the announce here: " .. AnnounceOption)
+			LA.print("Should send the announce here: " .. AnnounceOption)
 		end
 		
 		local index = GetChannelName(AnnounceOption) -- It finds General is a channel at index 1

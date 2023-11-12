@@ -29,7 +29,6 @@ function LA.InitLockAssignmentFrameScrollArea() --parent frame
 	scrollbg:SetAllPoints(scrollbar) 
 	scrollbg:SetTexture(0, 0, 0, 0.8) 
 	AssignmentFrame.scrollbar = scrollbar
-	--PrintMessageToMainChatFrame("Created a Scroll Bar")
 	
 	--content frame 	
 	local content = CreateFrame("Frame", nil, scrollframe) 
@@ -48,10 +47,6 @@ function LA.InitLockAssignmentFrameScrollArea() --parent frame
 	-- 410 is perfect for housing 7
 	-- 530 is perfect for housing 8
 	scrollbar:SetMinMaxValues(1, LA.GetMaxValueForScrollBar(content.WarlockFrames))
-	
-	--PrintMessageToMainChatFrame(GetTableLength(content.WarlockFrames))
-	--PrintMessageToMainChatFrame(GetMaxValueForScrollBar(content.WarlockFrames))
-
 	scrollframe:SetScrollChild(content)
 
 	--UpdateAllWarlockFrames()
@@ -253,7 +248,6 @@ end
 --Parent Frame is the drop down control.
 --Curse List Value should be the plain text version of the selected curse option.
 function LA.UpdateCurseGraphic(ParentFrame, CurseListValue)
-	--PrintMessageToMainChatFrame("Updating Curse Graphic to " .. CurseListValue)
 	if not (CurseListValue == nil) then
 		if(ParentFrame.CurseGraphicFrame.CurseTexture == nil) then
 			local CurseGraphic = ParentFrame.CurseGraphicFrame:CreateTexture(nil, "OVERLAY")
@@ -277,7 +271,6 @@ end
 
 --Parent Frame is the drop down control.
 function LA.UpdateBanishGraphic(ParentFrame, BanishListValue)
-	--PrintMessageToMainChatFrame("Updating Banish Graphic to " .. BanishListValue)
 	if not (BanishListValue == nil) then
 		if(ParentFrame.BanishGraphicFrame.BanishTexture == nil) then
 			local BanishGraphic = ParentFrame.BanishGraphicFrame:CreateTexture(nil, "OVERLAY") 
@@ -285,7 +278,6 @@ function LA.UpdateBanishGraphic(ParentFrame, BanishListValue)
 			BanishGraphic:SetTexture(LA.GetAssetLocationFromRaidMarker(BanishListValue))
 			ParentFrame.BanishGraphicFrame.BanishTexture = BanishGraphic
 		else
-			--PrintMessageToMainChatFrame("|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1|t")
 			ParentFrame.BanishGraphicFrame.BanishTexture:SetTexture(LA.GetAssetLocationFromRaidMarker(BanishListValue))
 		end
 	else 
@@ -491,14 +483,14 @@ function LA.CreateDropDownMenu(ParentFrame, OptionList, DropDownType)
 
 		local selection = LA.GetValueFromDropDownList(NewDropDownMenu, OptionList, DropDownType)
 		if LA.DebugMode then
-			print("User changed selection to " .. selection)
+			LA.print("User changed selection to " .. selection)
 		end
         LA.UpdateDropDownSideGraphic(NewDropDownMenu, selection, DropDownType)
     end
 
     local function initialize()
 		local info = {}
-		for k,v in pairs(OptionList) do
+		for _,v in pairs(OptionList) do
 			info = {}
 			if DropDownType == "SSAssignments" then
 				info.text = v.Name
@@ -521,19 +513,19 @@ function LA.CreateDropDownMenu(ParentFrame, OptionList, DropDownType)
 end
 
 function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownType)
-	local function OnClick(self)		
+	local function OnClick(_)
         UIDropDownMenu_SetSelectedID(DropDownMenu, this:GetID())
     
 		local selection = LA.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
 		if LA.DebugMode then
-			print("User changed selection to " .. selection)
+			LA.print("User changed selection to " .. selection)
 		end
         LA.UpdateDropDownSideGraphic(DropDownMenu, selection, DropDownType)
     end
     
     local function initialize()
 		local info = {}
-		for k,v in pairs(OptionList) do
+		for _,v in pairs(OptionList) do
 			info = {}
 			
 			if DropDownType == "SSAssignments" then
@@ -558,7 +550,6 @@ function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownT
     UIDropDownMenu_SetButtonWidth(124, DropDownMenu)
     UIDropDownMenu_SetSelectedID(DropDownMenu, 1)
 	UIDropDownMenu_JustifyText("LEFT", DropDownMenu)
-	--print(DropDownMenu.colorCode);
 end
 
 function LA.InitLockAssignmentCheckFrame()
@@ -645,7 +636,7 @@ end
 
 function LA.SetLockAssignmentCheckFrame(curse, banish, sstarget)
 	if LA.DebugMode then
-		print(curse,banish, sstarget);
+		LA.print(curse,banish, sstarget);
 	end
 	LA.UpdateCurseGraphic(LockAssignmentAssignCheckFrame, curse)
 	LockAssignmentAssignCheckFrame.pendingCurse = curse;
@@ -657,7 +648,7 @@ end
 function LA.LockAssignmentPersonalFrameOnShow()
 	--PlaySound(SOUNDKIT.READY_CHECK)
 	if LA.DebugMode then
-		print("Assignment ready check recieved. Assignment check frame should be showing now.");
+		LA.print("Assignment ready check recieved. Assignment check frame should be showing now.");
 	end	
 end
 
@@ -666,11 +657,11 @@ function LA.LockAssignmentAssignAcceptClick()
 	LockAssignmentAssignCheckFrame:Hide()
 	
 	if LA.DebugMode then
-		print("You clicked Yes.")
+		LA.print("You clicked Yes.")
 	end
 	LockAssignmentAssignCheckFrame.activeCurse = LockAssignmentAssignCheckFrame.pendingCurse;
 	if LA.DebugMode then
-		print("Attempting to create macro for curse: ".. LockAssignmentAssignCheckFrame.activeCurse);
+		LA.print("Attempting to create macro for curse: ".. LockAssignmentAssignCheckFrame.activeCurse);
 	end
 
 	LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
@@ -681,7 +672,7 @@ function LA.LockAssignmentAssignRejectClick()
 	--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	LockAssignmentAssignCheckFrame:Hide()
 	if LA.DebugMode then
-		print("You clicked No.")
+		LA.print("You clicked No.")
 	end
 	LA.SendAssignmentAcknowledgement("false");
 end
@@ -692,7 +683,6 @@ end
 
 
 function LA.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
-	--print("Updating Curse Graphic to " .. CurseListValue)
 	if not (CurseListValue == nil) then
 		if(CurseGraphicFrame.CurseTexture == nil) then
 			local CurseGraphic = CurseGraphicFrame:CreateTexture(nil, "OVERLAY") 
@@ -759,9 +749,6 @@ function LA.InitPersonalMonitorFrame()
 	AssignmentPersonalMonitorFrame.MainLabel:SetPoint("BOTTOM", AssignmentPersonalMonitorFrame, "TOP");
 
 	AssignmentPersonalMonitorFrame:Hide();
-	--UpdateCurseGraphic(AssignmentPersonalMonitorFrame, "Agony")
-	--print("Personal Monitor loaded.")
-	--print(AssignmentPersonalMonitorFrame.CurseGraphicFrame.CurseTexture)
 end
 
 function LA.UpdatePersonalSSAssignment(ParentFrame, SSAssignment)
@@ -803,7 +790,11 @@ function LA.UpdatePersonalMonitorFrame()
 		AssignmentPersonalMonitorFrame.SSAssignmentText:SetPoint("LEFT", AssignmentPersonalMonitorFrame, "LEFT", 2, 0)
 	end
 
-	
+	if myData.CurseAssignment ~= "None" or myData.BanishAssignment ~= "None" or myData.SSAssignment ~= "None" then
+		AssignmentPersonalMonitorFrame:Show()
+	else
+		AssignmentPersonalMonitorFrame:Hide()
+	end
 end
 
 function LA.UpdatePersonalMonitorSize(myData)
@@ -824,18 +815,9 @@ function LA.UpdatePersonalMonitorSize(myData)
 end
 
 function LA.InitAnnouncerOptionFrame()
-		--print("Creating Announcer menu");
 		LockAssignmentAnnouncerOptionMenu = LA.CreateDropDownMenu(NLAnnouncerContainer, LA.AnnouncerOptions, "CHAT")
 		LockAssignmentAnnouncerOptionMenu:SetPoint("CENTER", NLAnnouncerContainer, "CENTER", 0,0);
 end
-
-function GetTableLng(tbl)
-		local getN = 0
-		for n in pairs(tbl) do
-		getN = getN + 1
-		end
-		return getN
-	end
 
 function LA.SetExtraChats()
 	LA.AnnouncerOptions ={

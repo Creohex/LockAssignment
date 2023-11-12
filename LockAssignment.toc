@@ -13,7 +13,6 @@ Libs\AceGUI-3.0\AceGUI-3.0.lua
 Libs\AceConfig-3.0\AceConfigRegistry-3.0\AceConfigRegistry-3.0.lua
 Libs\AceConfig-3.0\AceConfigDialog-3.0\AceConfigDialog-3.0.lua
 Libs\AceConsole-3.0\AceConsole-3.0.lua
-LockAssignmentsCommons.lua
 LockAssignmentGlobalData.lua
 LockAssignmentTableFunctions.lua
 LockAssignmentUI.lua

@@ -11,7 +11,7 @@ LA.CommAction.AssigmentResponse = "AssignmentResponse"
 LA.CommAction.AssignmentReset = "AssignmentReset"
 
 function LA.CreateMessageFromTable(action, data, dataAge)
-    --PrintMessageToMainChatFrame("Creating outbound message.")
+    --LA.print("Creating outbound message.")
     local message = {}
     message.action = action
     message.data = data
@@ -19,7 +19,7 @@ function LA.CreateMessageFromTable(action, data, dataAge)
     message.author = UnitName("player")
     message.addonVersion = LA.Version
     local strMessage = table.serialize(message)
-    --PrintMessageToMainChatFrame("Message created successfully")
+    --LA.print("Message created successfully")
     return strMessage
 end
 
@@ -30,7 +30,7 @@ end
 --Message router where reveived messages land.
 function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     if LA.DebugMode then
-        PrintMessageToMainChatFrame("Message Was Recieved by the Router");
+        LA.print("Message Was Recieved by the Router");
     end
     local message = table.deserialize(message)
 
@@ -48,12 +48,12 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     -- process the incoming message
     if message.action == LA.CommAction.SSonCD then
         if LA.DebugMode then
-            PrintMessageToMainChatFrame("SS on CD: ", message.data.Name, message.data.SSCooldown, message.data.SSonCD, message.dataAge)
+            LA.print("SS on CD: ", message.data.Name, message.data.SSCooldown, message.data.SSonCD, message.dataAge)
         end
         local SendingWarlock = LA.GetAssignmentDataByName(message.author)
             if(SendingWarlock ~= nil) then
                 if LA.DebugMode then
-                    PrintMessageToMainChatFrame("Updating SS data for", message.author);
+                    LA.print("Updating SS data for", message.author);
                 end
                 SendingWarlock.LocalTime = message.dataAge
                 SendingWarlock.MyTime = GetTime()
@@ -70,7 +70,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                     if LA.IsMyDataDirty(assignmentData) or LA.DebugMode then
                         LA.SetLockAssignmentCheckFrame(assignmentData.CurseAssignment, assignmentData.BanishAssignment, assignmentData.SSAssignment)
                     else
-                        --PrintMessageToMainChatFrame("updating curse macro.")
+                        --LA.print("updating curse macro.")
                         LockAssignmentAssignCheckFrame.activeCurse = assignmentData.CurseAssignment;
                         LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                         LA.SendAssignmentAcknowledgement("true");
@@ -81,14 +81,14 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
 
         if LA.RaidMode then
             if LA.DebugMode then
-                PrintMessageToMainChatFrame("Received message from", message.author);
+                LA.print("Received message from", message.author);
             end
             if message.author == LA.CommTarget then
                 return;
             end
         end
         if LA.DebugMode then
-            PrintMessageToMainChatFrame("Recieved a broadcast message from", message.author)
+            LA.print("Recieved a broadcast message from", message.author)
         end
 
         
@@ -97,7 +97,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             for k, v in pairs(message.data)do
                 if LA.DebugMode then
                     for lk, lv in pairs(v) do
-                        PrintMessageToMainChatFrame(lk, lv)
+                        LA.print(lk, lv)
                     end                    
                 end
             end
@@ -109,7 +109,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                         if LA.IsMyDataDirty(assignmentData) or LA.DebugMode then
                             LA.SetLockAssignmentCheckFrame(assignmentData.CurseAssignment, assignmentData.BanishAssignment, assignmentData.SSAssignment)
                         else
-                            PrintMessageToMainChatFrame("updating curse macro.")
+                            LA.print("updating curse macro.")
                             LockAssignmentAssignCheckFrame.activeCurse = assignmentData.CurseAssignment;
                             LA.SetupAssignmentMacro(LockAssignmentAssignCheckFrame.activeCurse);
                             LA.SendAssignmentAcknowledgement("true");
@@ -123,7 +123,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             LA.LockAssignmentsData = LA.UpdateWarlocks(LA.LockAssignmentsData);
             LA.UpdateAllWarlockFrames()
             if LA.DebugMode then
-                PrintMessageToMainChatFrame("UI has been refreshed by request of broadcast message.")
+                LA.print("UI has been refreshed by request of broadcast message.")
             end               
         end 
         
@@ -135,7 +135,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     elseif message.action == LA.CommAction.RequestAssignments then
         if LA.RaidMode then
             if LA.DebugMode then
-                PrintMessageToMainChatFrame("Received Assignment Request message from", message.author);
+                LA.print("Received Assignment Request message from", message.author);
             end
             local myself = LA.GetMyData()
             if myself ~= nil then
@@ -143,20 +143,20 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
             end
             if message.author == LA.CommTarget then
                 if LA.DebugMode then
-                    print("Message was from self, doing nothing.");
+                    LA.print("Message was from self, doing nothing.");
                 end
                 return;
             end
         end
         if LA.DebugMode then
-            print("Assignment request recieved, sending out assignments.")
+            LA.print("Assignment request recieved, sending out assignments.")
         end
         LA.BroadcastTable(LA.LockAssignmentsData)
         
     elseif message.action == LA.CommAction.AssigmentResponse then
         -- When we recieve an assigment response we should stuff with that.
         if LA.DebugMode then
-            print("Recieved an Ack message from", message.author);
+            LA.print("Recieved an Ack message from", message.author);
         end
 
         local SendingWarlock = LA.GetAssignmentDataByName(message.author)
@@ -167,13 +167,13 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
 
     elseif message.action == LA.CommAction.AssignmentReset then
         if LA.DebugMode then
-            print("Recieved assignment reset from", message.author)
+            LA.print("Recieved assignment reset from", message.author)
         end
         LA.ResetAssignmentAcks(LA.LockAssignmentsData);
         
     else
         if LA.DebugMode then
-            print("The following message was recieved: ",sender, prefix, message)
+            LA.print("The following message was recieved: ",sender, prefix, message)
         end
     end
 end
@@ -185,7 +185,7 @@ function LA.BroadcastTable(AssignmentsTable)
     end
     --stringify the assignments table
     if LA.DebugMode then
-        PrintMessageToMainChatFrame("Sending out the assignment table")
+        LA.print("Sending out the assignment table")
     end
     local serializedTable = LA.CreateMessageFromTable(LA.CommAction.BroadcastTable, AssignmentsTable, LockAssignmentData_Timestamp)
     if LA.RaidMode then
@@ -208,7 +208,7 @@ end
 
 function LA.RequestAssignments()
     if LA.DebugMode then
-        print("Requesting Updated Assignment Table")
+        LA.print("Requesting Updated Assignment Table")
     end
     local message = LA.CreateMessageFromTable(LA.CommAction.RequestAssignments, {},GetTime() )
     if LA.RaidMode then
@@ -220,10 +220,10 @@ end
 
 function  LA.SendAssignmentAcknowledgement(answer)
     if LA.DebugMode then
-        print("Sending assignment acknowledgement:", answer)
+        LA.print("Sending assignment acknowledgement:", answer)
     end   
     
-    if answer == "true"then        
+    if answer == "true" then
         LA.UpdatePersonalMonitorFrame()
     end
 
@@ -237,7 +237,7 @@ end
 
 function LA.SendAssignmentReset()
     if LA.DebugMode then
-        print("Sending assignment reset command")
+        LA.print("Sending assignment reset command")
     end    
     local message = LA.CreateMessageFromTable(LA.CommAction.AssignmentReset, {}, GetTime());
     if LA.RaidMode then

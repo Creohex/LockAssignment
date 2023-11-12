@@ -139,4 +139,12 @@ do
 		for _ in pairs(T) do count = count + 1 end
 		return count
 	end
+
+	function GetTableLng(tbl)
+		local getN = 0
+		for n in pairs(tbl) do
+			getN = getN + 1
+		end
+		return getN
+	end
 end

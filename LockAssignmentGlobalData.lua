@@ -41,12 +41,11 @@ end
 function LA.RegisterWarlocks()
 	local raidInfo = {}
 	for i=1, 40 do
-		local name, rank, subgroup, level, class, fileName, 
-		  zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+		local name, _, _, _, _, fileName, _, _, _, _, _ = GetRaidRosterInfo(i);
 		if not (name == nil) then
 			if fileName == "WARLOCK" then
 				if LA.DebugMode then
-					PrintMessageToMainChatFrame(name .. "-" .. fileName)
+					LA.print(name .. "-" .. fileName)
 				end
 				table.insert(raidInfo, LA.CreateWarlock(name, "None", "None", i))
 			end
@@ -63,7 +62,7 @@ function LA.RegisterWarlocks()
 end
 
 function  LA.IsAssignmentsTableDirty(AssignmentData)
-	for k,v in pairs(AssignmentData) do
+	for _,v in pairs(AssignmentData) do
 		local lock = LA.GetAssignmentDataByName(v.Name);
 		if lock.CurseAssignment ~= v.CurseAssignment or
 		lock.BanishAssignment ~= v.BanishAssignment or 
@@ -90,12 +89,12 @@ end
 function LA.UpdateWarlocks(AssignmentsTable)
 	local Newcomers = LA.RegisterWarlocks();
 	--Register Newcomers
-	for k, v in pairs(Newcomers) do
+	for _, v in pairs(Newcomers) do
 		if LA.WarlockIsInTable(v.Name, AssignmentsTable) then
 			--Do nothing I think...
 		else
 			if LA.DebugMode then
-				PrintMessageToMainChatFrame("Newcomer detected")
+				LA.print("Newcomer detected")
 			end
 
 			--Add the newcomer to the data.
@@ -103,13 +102,13 @@ function LA.UpdateWarlocks(AssignmentsTable)
 		end
 	end
 	--De-register deserters
-	for k, v in pairs(AssignmentsTable) do
+	for _, v in pairs(AssignmentsTable) do
 		if LA.WarlockIsInTable(v.Name, Newcomers) then
 			--Do nothing I think...
 		else
 			--Remove the Deserter
 			if LA.DebugMode then
-				print("Deserter detected")
+				LA.print("Deserter detected")
 			end
 			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, v.Name)
 			if not (p==nil) then
@@ -121,7 +120,7 @@ function LA.UpdateWarlocks(AssignmentsTable)
 end
 
 function LA.MergeAssignments(AssignmentsTable)
-	for k,v in pairs(AssignmentsTable) do
+	for _,v in pairs(AssignmentsTable) do
 		local lock = LA.GetAssignmentDataByName(v.Name);
 		if lock~=nil then
 			lock.SSAssignment = v.SSAssignment;
@@ -132,14 +131,14 @@ function LA.MergeAssignments(AssignmentsTable)
 end
 
 function  LA.ResetAssignmentAcks(AssignmentsTable)
-	for k,v in pairs(AssignmentsTable) do
+	for _,v in pairs(AssignmentsTable) do
 		local lock = LA.GetAssignmentDataByName(v.Name);
 		lock.AcceptedAssignments = "nil";
 	end
 end
 
 function LA.WarlockIsInTable(WarlockName, AssignmentsTable)
-	for k, v in pairs(AssignmentsTable) do
+	for _, v in pairs(AssignmentsTable) do
 		if (v.Name == WarlockName) then
 			return true;
 		end
@@ -192,16 +191,16 @@ end
 
 function LA.GetSSTargetsFromRaid()
 	if LA.RaidMode then
-		--print("Raid MODE!!")
+		--LA.print("Raid MODE!!")
 		--I need to implement this next time I am in a raid.
 		local results = {}	
 		for i=1, 40 do
 			local name, rank, subgroup, level, class, fileName, 
 				zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i);
 
-			local rPerc, gPerc, bPerc, argbHex = LA.GetClassColor(fileName);
+			local rPerc, gPerc, bPerc, argbHex = LA.GetClassColor(class);
 			if not (name == nil) then
-				--print(name .. "-" .. fileName .. "-" .. rank .. role)
+				--LA.print(name .. "-" .. fileName .. "-" .. rank .. role)
 				--if fileName == "PRIEST" or fileName == "PALADIN" or fileName == "SHAMAN" or role == "MAINTANK" then
 					local ssWithColor = {};
 					ssWithColor.Name = name;
@@ -223,11 +222,11 @@ function LA.GetSSTargetsFromRaid()
 		return results
 	else
 		-- if LA.DebugMode then
-		-- 	print("Registering Test SS target data.");
+		-- 	LA.print("Registering Test SS target data.");
 		-- 	if LA.SSTargetFlipperTester then
 		-- 		LA.SSTargetFlipperTester = false
 		-- 		if LA.DebugMode then
-		-- 			print("Setting SS target set 1.");
+		-- 			LA.print("Setting SS target set 1.");
 		-- 		end
 		-- 		return {
 		-- 			"Priest1",
@@ -241,7 +240,7 @@ function LA.GetSSTargetsFromRaid()
 		-- 	else
 		-- 		LA.SSTargetFlipperTester = true
 		-- 		if LA.DebugMode then
-		-- 			print("Setting SS target set 2.");
+		-- 			LA.print("Setting SS target set 2.");
 		-- 		end
 		-- 		return {
 		-- 			"PriestA",
@@ -254,7 +253,7 @@ function LA.GetSSTargetsFromRaid()
 		-- 		}
 		-- 	end	
 		-- else
-			--print("Not in debug mode, solo mode enabled no targets");
+			--LA.print("Not in debug mode, solo mode enabled no targets");
 			local ssWithColor = {};
 					ssWithColor.Name = "None";
 					ssWithColor.Color = nil;
@@ -271,13 +270,13 @@ end
 
 function LA.UpdateSSTargets()
 	LA.SSTargets = LA.GetSSTargetsFromRaid();
---	print ("SS Targets Updated success.")
+--	LA.print ("SS Targets Updated success.")
 end
 
 function LA.GetMyData()
 	for k, v in pairs(LA.LockAssignmentsData) do
 		if LA.DebugMode then
-			--print(v.Name, " vs ", UnitName("player"));
+			--LA.print(v.Name, " vs ", UnitName("player"));
 		end
         if v.Name == UnitName("player") then
             return v
@@ -311,7 +310,7 @@ function LA.SetupAssignmentMacro(CurseAssignment)
 	if (macroIndex == 0) then
 		macroIndex = CreateMacro(LA.MacroName, 1, nil, nil, true);
 		if LA.DebugMode then
-			print("Lock Assignment macro did not exist, creating a new one with ID" .. macroIndex);
+			LA.print("Lock Assignment macro did not exist, creating a new one with ID" .. macroIndex);
 		end
 	end
 	
@@ -320,17 +319,17 @@ function LA.SetupAssignmentMacro(CurseAssignment)
 	--print(curseName .. 'vs None');
 	if (curseName == nil) then	
 		if LA.DebugMode then
-			print("No update applied because no curse selected");
+			LA.print("No update applied because no curse selected");
 		end
 	else
 		if LA.DebugMode then
-			print("Updating macro ".. macroIndex .. " to the new assigment " .. curseName);
+			LA.print("Updating macro ".. macroIndex .. " to the new assigment " .. curseName);
 		end
 
 		EditMacro(macroIndex, LA.MacroName, LA.GetSpellTextureFromDropDownList(CurseAssignment), LA.BuildMacroTexe(curseName), 1, 1);
 		
 		if LA.DebugMode then
-			print("Update success!!!!!");
+			LA.print("Macro updated");
 		end
 	end
 	-- CreateMacro("MyMacro", "INV_MISC_QUESTIONMARK", "/script CastSpellById(1);", 1);
@@ -341,4 +340,12 @@ function  LA.BuildMacroTexe(curseName)
 	return "#showtooltip "..
 	 curseName ..
 	 "\n/run CastSpellByName(\""..curseName.."\");"
+end
+
+function LA.print(message)
+	DEFAULT_CHAT_FRAME:AddMessage(message)
+end
+
+function LA.print(message, ...)
+	DEFAULT_CHAT_FRAME:AddMessage(string.format(message, arg))
 end
