@@ -2,7 +2,7 @@
 LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
-LA.Version = 11
+LA.Version = 12
 LA.LockAssignmentWarlockFrameWidth = 500;
 LA.LockAssignmentWarlockFrameHeight = 128
 LA.LockAssignmentFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
@@ -193,83 +193,45 @@ LA.SSTargets = {};
 
 LA.SSTargetFlipperTester = true;
 
---Function will find main healers in the raid and add them to the SS target dropdown
---Need to make test mode dynamic.
+RAID_CLASS_COLORS = {
+	["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43, colorStr = "ffc79c6e" },
+	["MAGE"]    = { r = 0.41, g = 0.8,  b = 0.94, colorStr = "ff69ccf0" },
+	["ROGUE"]   = { r = 1,    g = 0.96, b = 0.41, colorStr = "fffff569" },
+	["DRUID"]   = { r = 1,    g = 0.49, b = 0.04, colorStr = "ffff7d0a" },
+	["HUNTER"]  = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
+	["SHAMAN"]  = { r = 0.14, g = 0.35, b = 1.0,  colorStr = "ff0070de" },
+	["PRIEST"]  = { r = 1,    g = 1,    b = 1,    colorStr = "ffffffff" },
+	["WARLOCK"] = { r = 0.58, g = 0.51, b = 0.79, colorStr = "ff9482c9" },
+	["PALADIN"] = { r = 0.96, g = 0.55, b = 0.73, colorStr = "fff58cba" },
+}
 
-function LA.GetClassColor(fileName)
-return 1, 1, 1, "ffffffff"
+function LA.GetClassColor(class)
+	return RAID_CLASS_COLORS[class]
 end
 
 function LA.GetSSTargetsFromRaid()
 	if LA.RaidMode then
-		--LA.print("Raid MODE!!")
-		--I need to implement this next time I am in a raid.
-		local results = {}	
+		local results = {}
+		local noneSSWithColor = {};
+		noneSSWithColor.Name = "None";
+		noneSSWithColor.Color = "ffffffff";
+		table.insert(results, noneSSWithColor)
 		for i=1, 40 do
-			local name, rank, subgroup, level, class, fileName, 
-				zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i);
-
-			local rPerc, gPerc, bPerc, argbHex = LA.GetClassColor(class);
+			local name, _, _, _, _, class, _, _, _, _, _ = GetRaidRosterInfo(i);
 			if not (name == nil) then
-				--LA.print(name .. "-" .. fileName .. "-" .. rank .. role)
-				--if fileName == "PRIEST" or fileName == "PALADIN" or fileName == "SHAMAN" or role == "MAINTANK" then
-					local ssWithColor = {};
-					ssWithColor.Name = name;
-					ssWithColor.Color = argbHex;
-					table.insert(results, ssWithColor)
-					--table.insert(boostedResults, ssWithColor)
-				--end
+				local color = LA.GetClassColor(class);
+				local ssWithColor = {};
+				ssWithColor.Name = name;
+				ssWithColor.Color = color.colorStr;
+				table.insert(results, ssWithColor)
 			end		
 		end
-		local function compare(a,b)
-			return a.Color > b.Color or (a.Color == b.Color and a.Name < b.Name)
-		  end
-		  table.sort(results, compare)
-		--table.sort(results);
-		local ssWithColor = {};
-			ssWithColor.Name = "None";
-			ssWithColor.Color = nil;
-		table.insert(results,ssWithColor)
 		return results
 	else
-		-- if LA.DebugMode then
-		-- 	LA.print("Registering Test SS target data.");
-		-- 	if LA.SSTargetFlipperTester then
-		-- 		LA.SSTargetFlipperTester = false
-		-- 		if LA.DebugMode then
-		-- 			LA.print("Setting SS target set 1.");
-		-- 		end
-		-- 		return {
-		-- 			"Priest1",
-		-- 			"Priest2",
-		-- 			"Priest3",
-		-- 			"Paladin1",
-		-- 			"Paladin2",				
-		-- 			"WarriorTank1",
-		-- 			"None"
-		-- 		}
-		-- 	else
-		-- 		LA.SSTargetFlipperTester = true
-		-- 		if LA.DebugMode then
-		-- 			LA.print("Setting SS target set 2.");
-		-- 		end
-		-- 		return {
-		-- 			"PriestA",
-		-- 			"PriestB",
-		-- 			"PriestC",
-		-- 			"PaladinA",
-		-- 			"PaladinB",				
-		-- 			"WarriorTankA",
-		-- 			"None"
-		-- 		}
-		-- 	end	
-		-- else
-			--LA.print("Not in debug mode, solo mode enabled no targets");
-			local ssWithColor = {};
-					ssWithColor.Name = "None";
-					ssWithColor.Color = nil;
-			return {ssWithColor};
-		-- end
+		local ssWithColor = {};
+		ssWithColor.Name = "None";
+		ssWithColor.Color = nil;
+		return {ssWithColor};
 	end
 end
 
