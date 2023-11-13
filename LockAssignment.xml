@@ -10,6 +10,73 @@
 	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml" />
 	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml" />
 
+	<Button name="LockAssignmentMinimapButton" parent="Minimap" enableMouse="true" hidden="true" movable="true" toplevel="true">
+		<Size>
+			<AbsDimension x="33" y="33"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="Minimap">
+				<Offset>
+					<AbsDimension x="0" y="-30"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="LockAssignmentMinimapButtonIcon" file="Interface\Icons\Spell_Shadow_ChillTouch">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="LockAssignmentMinimapButtonBorder" file="Interface\Minimap\MiniMap-TrackingBorder.tga">
+					<Size>
+						<AbsDimension x="52" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				if ( LockAssignmentFrame:IsVisible() ) then
+				HideUIPanel(LockAssignmentFrame);
+				else
+				ShowUIPanel(LockAssignmentFrame);
+				end
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetText("Open LockAssignment");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnDragStart>
+				this:StartMoving();
+				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+
 
 	<Frame name="LockAssignmentFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
 		<Size>

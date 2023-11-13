@@ -17,8 +17,13 @@ function LA.LockAssignmentInit()
 		LA.InitLockAssignmentCheckFrame();
 		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
+		LA.ShowMinimapButton()
 		LockAssignmentFrame:Hide()
 	end	
+end
+
+function LA.ShowMinimapButton()
+	LockAssignmentMinimapButton:Show();
 end
 
 -- Update handler to be used for any animations, is called once per frame, but can be throttled using an update interval.
