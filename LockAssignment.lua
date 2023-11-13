@@ -19,6 +19,7 @@ function LA.LockAssignmentInit()
 		LA.InitAnnouncerOptionFrame();
 		LA.ShowMinimapButton()
 		LockAssignmentFrame:Hide()
+		tinsert(UISpecialFrames, "LockAssignmentFrame");
 	end	
 end
 
@@ -66,13 +67,6 @@ function LA.RegisterRaid()
 	return raidInfo
 end
 
-local TestType = {}
-TestType.init = "Initialization Test"
-TestType.add = "Add Test"
-TestType.remove = "Remove Test"
-TestType.setDefault = "Default Settings Test"
-local testmode = TestType.init
-
 function LA.InitLockAssignmentData()
 	if(LA.RaidMode) then
 		if LA.DebugMode then
@@ -80,32 +74,7 @@ function LA.InitLockAssignmentData()
 		end
 		return LA.RegisterWarlocks()
 	else
-		LA.print("Raid mode is not active, running in Test mode.")
-		if testmode == TestType.init then
-			LA.print("Initializing with Test Data.")
-			testmode = TestType.add
-			return LA.RegisterMyTestData()
-		elseif testmode == TestType.add then
-			LA.print("testing add")
-			table.insert(LA.LockAssignmentsData, LA.RegisterMyTestData()[1])
-			testmode = TestType.remove
-			return LA.LockAssignmentsData
-		elseif testmode == TestType.remove then
-			LA.print("testing remove")
-			local p = LA.GetAssignmentIndexByName(LA.LockAssignmentsData, "John Doe")
-			if not (p==nil) then
-				table.remove(LA.LockAssignmentsData, p)
-			end
-			testmode = TestType.setDefault
-			return LA.LockAssignmentsData
-		elseif testmode == TestType.setDefault then
-			LA.print ("Setting default selection")
-			LA.LockAssignmentsData = LA.SetDefaultAssignments(LA.LockAssignmentsData)
-			testmode = TestType.init
-			return LA.LockAssignmentsData
-		else
-			return LA.LockAssignmentsData
-		end
+		return LA.LockAssignmentsData
 	end
 end
 
@@ -125,34 +94,6 @@ function  LA.GetAssignmentIndexByName(table, name)
 		LA.print(name, "is not in the list.")
 	end
 	return nil
-end
-
---Generates a series of test data to populate the ui.
-function LA.RegisterTestData()
-	local testData = {}
-	for i=1, 5 do
-		table.insert(testData, LA.CreateWarlock("John Doe", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	end
-	return testData
-end
-
---Generates test data that more closly mimics what one could see in an actual raid.
-function LA.RegisterRealisicTestData()
-	local testData = {}
-	table.insert(testData, LA.CreateWarlock("Test Player 1", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Test Player 2", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Test Player 3", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Test Player 4", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Test Player 5", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	table.insert(testData, LA.CreateWarlock("Test Player 6", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	return testData
-end
-
---Generates just my data and returns it in a table.
-function LA.RegisterMyTestData()
-	local testData = {}
-	table.insert(testData, LA.CreateWarlock("John Doe", LA.CurseOptions[math.random(1,LA.GetTableLength(LA.CurseOptions))], LA.BanishMarkers[math.random(1,LA.GetTableLength(LA.BanishMarkers))]));
-	return testData
 end
 
 function LA.RegisterMySoloData()
@@ -190,15 +131,6 @@ function LA.LockAssignment_Commit()
 		--PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 		--LockAssignmentFrame:Hide()
 	end
-end
-
---At this time this is just a test function.
-function LA.Test()
-	LA.print("Updating a frame....")
-	LA.LockAssignmentsData = LA.InitLockAssignmentData();
-	LATest_Button.Text:SetText(testmode)
-	--UpdateAllWarlockFrames();
-	LA.BroadcastTable(LA.LockAssignmentsData);
 end
 
 -- Returns my rank to determine whether we should disable commit button
