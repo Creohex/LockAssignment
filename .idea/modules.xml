@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/NeverLocky.iml" filepath="$PROJECT_DIR$/.idea/NeverLocky.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/LockAssignment.iml" filepath="$PROJECT_DIR$/.idea/LockAssignment.iml" />
     </modules>
   </component>
 </project>

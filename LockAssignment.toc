@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11200
 ## Title: Lock Assignments
 ## Notes: Allows the user to see and share warlock assignments.
 ## Author: Zedorff, based on Brylack's NeverLocky
