@@ -156,23 +156,6 @@
 		
 		Possible ready check style confirmations...
 		-->
-			<Button name="LATest_Button" inherits="GameMenuButtonTemplate" text="Test" hidden="true">
-				<Size>
-					<AbsDimension x="90" y="20" />
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="LockAssignmentFrame" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="10" y="16" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						LA.Test()
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="LACancel_Button" inherits="GameMenuButtonTemplate" text="Close">
 				<Size>
 					<AbsDimension x="90" y="20" />

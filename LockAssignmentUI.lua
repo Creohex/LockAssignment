@@ -529,18 +529,16 @@ function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownT
 			info = {}
 			
 			if DropDownType == "SSAssignments" then
-				info.text = v.Name
+				if v.Color ~= nil then
+					info.text = "|c"..v.Color..v.Name
+				else
+					info.text = v.Name
+				end
 			else
 				info.text = v
 			end
 			
 			info.func = OnClick
-			
-			if DropDownType == "SSAssignments" then
-				if v.Color ~= nil then
-					info.colorCode = "|c"..v.Color							
-				end
-			end
 			UIDropDownMenu_AddButton(info)
 		end
 	end
