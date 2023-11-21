@@ -138,24 +138,6 @@
 		</Layers>
 
 		<Frames>
-			<!--
-		I need to add the following into this UI.
-		
-		A scrolling box containing a list of all warlocks in the group.
-			This list will have a portrait, thier spec, thier assigned curse, banish target, soulstone target, soulstone CD.
-		
-		A dropdown list of curses to assign.
-		
-		A dropdown list of names for SoulStones... or maybe a text box for the name... 
-		
-		A timer to keep track of SS targets.
-		
-		A timer to keep track of SS CDs.
-		
-		A drop down list of raid markers for banish assignments.
-		
-		Possible ready check style confirmations...
-		-->
 			<Button name="LACancel_Button" inherits="GameMenuButtonTemplate" text="Close">
 				<Size>
 					<AbsDimension x="90" y="20" />

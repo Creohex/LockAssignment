@@ -703,7 +703,7 @@ function LA.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
 end
 
 function LA.InitPersonalMonitorFrame()
-	AssignmentPersonalMonitorFrame = CreateFrame("Frame", nil, UIParent);
+	AssignmentPersonalMonitorFrame = CreateFrame("Button", nil, UIParent);
 
 	AssignmentPersonalMonitorFrame:SetWidth(66)
 	AssignmentPersonalMonitorFrame:SetHeight(34)
@@ -762,6 +762,11 @@ function LA.UpdatePersonalMonitorFrame()
 	LA.UpdateBanishGraphic(AssignmentPersonalMonitorFrame, myData.BanishAssignment);
 	LA.UpdateCurseGraphic(AssignmentPersonalMonitorFrame, myData.CurseAssignment);
 	LA.UpdatePersonalSSAssignment(AssignmentPersonalMonitorFrame, myData.SSAssignment);
+	AssignmentPersonalMonitorFrame:SetScript("OnClick", function(_)
+		if myData.SSAssignment ~= "None" then
+			TargetByName(tostring(myData.SSAssignment));
+		end
+	end)
 
 	--Need to resize the frame accordingly.
 	LA.UpdatePersonalMonitorSize(myData);
