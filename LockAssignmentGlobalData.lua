@@ -3,6 +3,7 @@ LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
 LA.Version = 12
+LA.UpdateFrame = CreateFrame("Frame", nil, UIParent)
 LA.LockAssignmentWarlockFrameWidth = 500;
 LA.LockAssignmentWarlockFrameHeight = 128
 LA.LockAssignmentFrame_HasInitialized = false; -- Used to prevent reloads from redrawing the ui.
