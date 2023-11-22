@@ -1,4 +1,8 @@
 --Initialization logic for setting up the entire addon
+LA.UpdateFrame:RegisterEvent("RAID_ROSTER_UPDATE")
+LA.UpdateFrame:RegisterEvent("ADDON_LOADED")
+LA.UpdateFrame:SetScript("OnEvent", LA.OnEvent);
+
 function LA.LockAssignmentInit()
 	if not LockAssignmentFrame_HasInitialized then
 		--LA.print("Prepping init")
@@ -15,12 +19,25 @@ function LA.LockAssignmentInit()
 		LockAssignmentFrame_HasInitialized = true
 		LA.UpdateAllWarlockFrames();
 		LA.InitLockAssignmentCheckFrame();
-		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
 		LA.ShowMinimapButton()
 		LockAssignmentFrame:Hide()
 		tinsert(UISpecialFrames, "LockAssignmentFrame");
 	end	
+end
+
+function LA.OnEvent()
+	if event == "RAID_ROSTER_UPDATE" then
+		LA.RosterUpdate()
+	elseif event == "ADDON_LOADED" then
+		LA.InitPersonalMonitorFrame();
+	end
+end
+
+function LA.RosterUpdate()
+	if not (UnitInRaid("player")) then
+		AssignmentPersonalMonitorFrame:Hide()
+	end
 end
 
 function LA.ShowMinimapButton()
@@ -51,20 +68,6 @@ function LockAssignment_OnUpdate(self, elapsed)
 		end
 		LA.CheckSSCD(self)
 	end
-end
-
-function LA.RegisterRaid()
-	local raidInfo = {}
-	for i=1, 40 do
-		local name, _, _, _, _, fileName, _, _, _, _, _ = GetRaidRosterInfo(i);
-		if not (name == nil) then
-			if LA.DebugMode then
-				LA.print(name .. "-" .. fileName)
-			end
-			table.insert(raidInfo, name)
-		end
-	end
-	return raidInfo
 end
 
 function LA.InitLockAssignmentData()
@@ -205,6 +208,6 @@ end
 
 --Short hand /command for reloading the ui.
 SLASH_RL1 = "/rl"
-SlashCmdList["RL"]= function(msg)
+SlashCmdList["RL"]= function(_)
 	ReloadUI();
 end
