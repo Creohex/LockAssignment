@@ -1,5 +1,6 @@
 --Initialization logic for setting up the entire addon
 LA.UpdateFrame:RegisterEvent("RAID_ROSTER_UPDATE")
+LA.UpdateFrame:RegisterEvent("ADDON_LOADED")
 LA.UpdateFrame:SetScript("OnEvent", LA.OnEvent);
 
 function LA.LockAssignmentInit()
@@ -18,7 +19,6 @@ function LA.LockAssignmentInit()
 		LockAssignmentFrame_HasInitialized = true
 		LA.UpdateAllWarlockFrames();
 		LA.InitLockAssignmentCheckFrame();
-		LA.InitPersonalMonitorFrame();
 		LA.InitAnnouncerOptionFrame();
 		LA.ShowMinimapButton()
 		LockAssignmentFrame:Hide()
@@ -29,6 +29,8 @@ end
 function LA.OnEvent()
 	if event == "RAID_ROSTER_UPDATE" then
 		LA.RosterUpdate()
+	elseif event == "ADDON_LOADED" then
+		LA.InitPersonalMonitorFrame();
 	end
 end
 
@@ -206,6 +208,6 @@ end
 
 --Short hand /command for reloading the ui.
 SLASH_RL1 = "/rl"
-SlashCmdList["RL"]= function(msg)
+SlashCmdList["RL"]= function(_)
 	ReloadUI();
 end

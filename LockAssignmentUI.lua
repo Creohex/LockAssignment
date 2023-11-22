@@ -707,7 +707,12 @@ function LA.InitPersonalMonitorFrame()
 
 	AssignmentPersonalMonitorFrame:SetWidth(66)
 	AssignmentPersonalMonitorFrame:SetHeight(34)
-	AssignmentPersonalMonitorFrame:SetPoint("TOP", UIParent, "TOP",0,-25)
+	if PersonalFramedXOfs == nil or PersonalFramedYOfs == nil then
+		AssignmentPersonalMonitorFrame:SetPoint("TOP", UIParent, "TOP",0,-25)
+	else
+		AssignmentPersonalMonitorFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", PersonalFramedXOfs, PersonalFramedYOfs)
+	end
+
 
 	AssignmentPersonalMonitorFrame:SetBackdrop({
 	 	bgFile= "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -727,6 +732,9 @@ function LA.InitPersonalMonitorFrame()
 	end);
 	AssignmentPersonalMonitorFrame:SetScript("OnDragStop", function()
 		AssignmentPersonalMonitorFrame:StopMovingOrSizing()
+		local _, _, _, xOfs, yOfs = AssignmentPersonalMonitorFrame:GetPoint()
+		PersonalFramedXOfs = xOfs
+		PersonalFramedYOfs = yOfs
 	end);
 
 	AssignmentPersonalMonitorFrame.CurseGraphicFrame = CreateFrame("Frame", nil, AssignmentPersonalMonitorFrame)
