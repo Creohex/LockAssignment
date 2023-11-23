@@ -2,7 +2,7 @@
 LA = {};
 LA.RaidMode = true;
 LA.DebugMode = false;
-LA.Version = 12
+LA.Version = 13
 LA.UpdateFrame = CreateFrame("Frame", nil, UIParent)
 LA.LockAssignmentWarlockFrameWidth = 500;
 LA.LockAssignmentWarlockFrameHeight = 128
