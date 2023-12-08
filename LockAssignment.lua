@@ -72,12 +72,15 @@ end
 
 -- Update handler to be used for any animations, is called once per frame, but can be throttled using an update interval.
 function LockAssignmentPersonalFrame_OnUpdate(self, elapsed)
+	if (not LA.HaveSSAssignment) or LockAssignmentFrame:IsVisible() then
+		return
+	end
 	if (self.TimeSinceLastSSCDUpdate == nil) then self.TimeSinceLastSSCDUpdate = 0; end
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
 
 	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
 	self.TimeSinceLastSSCDBroadcast = self.TimeSinceLastSSCDBroadcast + elapsed;
-	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval and LA.HaveSSAssignment) then
+	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval) then
 		self.TimeSinceLastSSCDUpdate = 0;
 		if LA.DebugMode then
 			LA.print("Checking SSCD");
