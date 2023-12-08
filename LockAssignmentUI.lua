@@ -133,7 +133,7 @@ end
 
 --Creates a textframe to display the SS cooldown.
 function LA.CreateSSCooldownTracker(ParentFrame)
-    local TextFrame = LA.AddTextToFrame(ParentFrame, "Available", 120)
+    local TextFrame = LA.AddTextToFrame(ParentFrame, "Unknown", 120)
     TextFrame:SetPoint("TOP", ParentFrame, "BOTTOM", 0,0)
     return TextFrame
 end
@@ -703,10 +703,6 @@ function LA.UpdateAssignedCurseGraphic(CurseGraphicFrame, CurseListValue)
 end
 
 function LA.InitPersonalMonitorFrame()
-	AssignmentPersonalMonitorFrame = CreateFrame("Button", nil, UIParent);
-
-	AssignmentPersonalMonitorFrame:SetWidth(66)
-	AssignmentPersonalMonitorFrame:SetHeight(34)
 	if PersonalFramedXOfs == nil or PersonalFramedYOfs == nil then
 		AssignmentPersonalMonitorFrame:SetPoint("TOP", UIParent, "TOP",0,-25)
 	else
@@ -722,20 +718,6 @@ function LA.InitPersonalMonitorFrame()
 	 	edgeSize = 12,
 	 	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 	 });
-
-	AssignmentPersonalMonitorFrame:RegisterForDrag("LeftButton");
-	AssignmentPersonalMonitorFrame:SetMovable(true);
-	AssignmentPersonalMonitorFrame:EnableMouse(true);
-
-	AssignmentPersonalMonitorFrame:SetScript("OnDragStart", function()
-		AssignmentPersonalMonitorFrame:StartMoving()
-	end);
-	AssignmentPersonalMonitorFrame:SetScript("OnDragStop", function()
-		AssignmentPersonalMonitorFrame:StopMovingOrSizing()
-		local _, _, _, xOfs, yOfs = AssignmentPersonalMonitorFrame:GetPoint()
-		PersonalFramedXOfs = xOfs
-		PersonalFramedYOfs = yOfs
-	end);
 
 	AssignmentPersonalMonitorFrame.CurseGraphicFrame = CreateFrame("Frame", nil, AssignmentPersonalMonitorFrame)
 	AssignmentPersonalMonitorFrame.CurseGraphicFrame:SetWidth(30)
@@ -801,6 +783,7 @@ function LA.UpdatePersonalMonitorFrame()
 		AssignmentPersonalMonitorFrame.SSAssignmentText:SetPoint("LEFT", AssignmentPersonalMonitorFrame, "LEFT", 2, 0)
 	end
 
+	LA.HaveSSAssignment = myData.SSAssignment ~= "None"
 	if myData.CurseAssignment ~= "None" or myData.BanishAssignment ~= "None" or myData.SSAssignment ~= "None" then
 		AssignmentPersonalMonitorFrame:Show()
 	else

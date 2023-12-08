@@ -13,12 +13,13 @@ LA.LockAssignmentsData = {}; -- Global for storing the warlocks and thier assign
 LA.LockAssignmentClock_UpdateInterval = 1.0; -- How often the OnUpdate code will run (in seconds)
 LA.LockAssignmentSSCD_UpdateInterval = 5.0; -- How often to broadcast / check our SS cooldown.
 LA.LockAssignmentSSCD_BroadcastInterval = 60.0; -- How often to broadcast / check our SS cooldown.
+LA.HaveSSAssignment = false
 if LockAssignment == nil then
 	LockAssignment = LibStub("AceAddon-3.0"):NewAddon("LockAssignment", "AceComm-3.0")
 end
 LA.LockAssignmentAssignCheckFrame={}
 LA.IsMyAddonOutOfDate=false;
-LA.MacroName =  "CurseAssignment";
+LA.MacroName = "CurseAssignment";
 
 
 function  LA.CreateWarlock(name, curse, banish, raidIndex)
@@ -27,10 +28,10 @@ function  LA.CreateWarlock(name, curse, banish, raidIndex)
 	Warlock.CurseAssignment = curse
 	Warlock.BanishAssignment = banish
 	Warlock.SSAssignment = "None"
-	Warlock.SSCooldown=0
+	Warlock.SSCooldown=nil
 	Warlock.AcceptedAssignments = "nil"
 	Warlock.AssignmentFrameLocation = ""
-	Warlock.SSonCD = "false"
+	Warlock.SSonCD = "unknown"
 	Warlock.LocalTime= 0
 	Warlock.MyTime = 0
 	if name == UnitName("player") then
@@ -321,5 +322,10 @@ function LA.print(message)
 end
 
 function LA.print(message, ...)
-	DEFAULT_CHAT_FRAME:AddMessage(string.format(message, arg))
+	local printResult = message
+	for i,v in ipairs(arg) do
+		printResult = printResult .. " " .. tostring(v)
+	end
+	printResult = printResult
+	DEFAULT_CHAT_FRAME:AddMessage(printResult)
 end
