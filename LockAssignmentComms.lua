@@ -32,6 +32,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     if LA.DebugMode then
         LA.print("Message Was Recieved by the Router");
     end
+
     local message = table.deserialize(message)
 
     local assignmentVersionStub = LA.GetAssignmentDataByName(message.author)
@@ -46,7 +47,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
     end
     
     -- process the incoming message
-    if message.action == LA.CommAction.SSonCD then
+    if message.action == LA.CommAction.SSonCD and message.author ~= LA.CommTarget then
         if LA.DebugMode then
             LA.print("SS on CD: ", message.data.Name, message.data.SSCooldown, message.data.SSonCD, message.dataAge)
         end
@@ -57,7 +58,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                 end
                 SendingWarlock.LocalTime = message.dataAge
                 SendingWarlock.MyTime = GetTime()
-                SendingWarlock.SSonCD = "true";
+                SendingWarlock.SSonCD = "true"
                 SendingWarlock.SSCooldown = message.data.SSCooldown
             end
         --UpdateAssignmentSSCDByName(message.data.Name, message.data.SSCooldown)
@@ -117,6 +118,7 @@ function LockAssignment:OnCommReceived(prefix, message, distribution, sender)
                     end
                 end
 
+                LA.HaveSSAssignment = myData.SSAssignment ~= "None"
                 if myData.CurseAssignment == "None" and myData.BanishAssignment == "None" and myData.SSAssignment == "None" then
                     AssignmentPersonalMonitorFrame:Hide();
                 else

@@ -78,6 +78,32 @@
 	</Button>
 
 
+	<Button name="AssignmentPersonalMonitorFrame" movable="true" enableMouse="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="66" y="34" />
+		</Size>
+
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+				local _, _, _, xOfs, yOfs = this:GetPoint()
+				PersonalFramedXOfs = xOfs
+				PersonalFramedYOfs = yOfs
+			</OnDragStop>
+			<OnUpdate>
+				if (AssignmentPersonalMonitorFrame:IsVisible()) then
+					LockAssignmentPersonalFrame_OnUpdate(this, arg1);
+				end
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
 	<Frame name="LockAssignmentFrame" movable="true" enableMouse="true" parent="UIParent" hidden="false">
 		<Size>
 			<AbsDimension x="500" y="563" />
@@ -199,7 +225,7 @@
 			<OnDragStop>
 				this:StopMovingOrSizing();
 			</OnDragStop>
-			<OnUpdate function="LockAssignment_OnUpdate" />
+			<OnUpdate>LockAssignmentFrame_OnUpdate(this, arg1);</OnUpdate>
 		</Scripts>
 	</Frame>
 

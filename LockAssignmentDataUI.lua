@@ -147,35 +147,43 @@ end
 	Update the CD Tracker Text
 	else do nothing.
 	]]--
-function LA.UpdateLockAssignmentClock()
+function LA.UpdateAllLocksAssignmentClock()
 	for k,v in pairs(LA.LockAssignmentsData) do
-		if (LA.DebugMode) then
-			--print(v.Name, "on cooldown =", v.SSonCD)
+		LA.UpdateLockClock(v)
+	end
+end
+
+function LA.UpdateLockClock(warlock)
+	if (LA.DebugMode) then
+		LA.print(warlock.Name, "on cooldown =", warlock.SSonCD)
+	end
+
+	local frame = LA.GetWarlockFrameById(warlock.AssignmentFrameLocation)
+
+	if(warlock.SSonCD == "true" and warlock.SSCooldown ~= nil) then
+		-- We have the table item for the SSCooldown
+		local CDLength = 30*60
+		local timeShift = 0
+
+		if (warlock.MyTime ~= 0) then
+			timeShift = warlock.MyTime - warlock.LocalTime;
 		end
-		if(v.SSonCD=="true") then
-			-- We have the table item for the SSCooldown			
-			local CDLength = 30*60
-			local timeShift = 0
-			
-			timeShift = v.MyTime - v.LocalTime;
-			
-			local absCD = v.SSCooldown+timeShift;
 
-			
+		local absCD = warlock.SSCooldown+timeShift;
 
-			local secondsRemaining = math.floor(absCD + CDLength - GetTime())
-			local result = SecondsToTime(secondsRemaining)			
-			if(LA.DebugMode and v.SSCooldown~=0) then
-				--print(v.Name,"my time:", v.MyTime, "localtime:", v.LocalTime, "timeShift:", timeShift, "LocalCD", v.SSCooldown, "Abs CD:",absCD, "Time Remaining:",secondsRemaining)
-			end
-			local frame = LA.GetWarlockFrameById(v.AssignmentFrameLocation)
-			frame.SSCooldownTracker:SetText("CD "..result)
-
-			if secondsRemaining <=0 or v.SSCooldown == 0 then
-				v.SSonCD = "false"
-				frame.SSCooldownTracker:SetText("Available")
-			end
+		local secondsRemaining = math.floor(absCD + CDLength - GetTime())
+		local result = SecondsToTime(secondsRemaining)
+		if(LA.DebugMode) then
+			LA.print(warlock.Name,"my time:", warlock.MyTime, "localtime:", warlock.LocalTime, "timeShift:", timeShift, "LocalCD", warlock.SSCooldown, "Abs CD:",absCD, "Time Remaining:",secondsRemaining)
 		end
+		frame.SSCooldownTracker:SetText("CD "..result)
+
+		if secondsRemaining <=0 or warlock.SSCooldown == 0 then
+			warlock.SSonCD = "false"
+			frame.SSCooldownTracker:SetText("Available")
+		end
+	elseif (warlock.SSonCD == "unknown") then
+		frame.SSCooldownTracker:SetText("Unknown")
 	end
 end
 
@@ -215,55 +223,37 @@ function  LA.GetAssignmentIndexByName(table, name)
 		--print(value.Name)
 		if value.Name == name then
 			if LA.DebugMode then
-				print(value.Name, "is in position", key)
+				LA.print(value.Name, "is in position", key)
 			end
 			return key
 		end
 	end
 	if LA.DebugMode then
-		print(name, "is not in the list.")
+		LA.print(name, "is not in the list.")
 	end
 	return nil
 end
 
 --Checks to see if the SS is on CD, and broadcasts if it is to all everyone.
 function LA.CheckSSCD(self)
-    local startTime, duration, enable = GetItemCooldown(16896)
+    local startTime, duration, enable = GetItemCooldown("Major Soulstone")
     --if my CD in lock assignments is different from the what I am aware of then I need to update.
 	local myself = LA.GetMyData()
 	if myself ~= nil then
 		if(myself.SSCooldown~=startTime) then
-			if LA.DebugMode then
-				print("Personal SSCD detected.")
-			end
-			myself.SSCooldown = startTime
-			myself.LocalTime = GetTime()
-			myself.SSonCD = "true"
+			LA.UpdateSSCD(myself, startTime)
 		end    	
 		--print(startTime, duration, enable, myself.Name)
 		--If the SS is on CD then we broadcast that.
 		
 		--If the CD is on cooldown AND we have not broadcast in the last minute we will broadcast.
-		if(startTime > 0 and self.TimeSinceLastSSCDBroadcast > LA.LockAssignmentSSCD_BroadcastInterval) then
+		if(startTime ~= nil and startTime > 0 and self.TimeSinceLastSSCDBroadcast > LA.LockAssignmentSSCD_BroadcastInterval) then
 			self.TimeSinceLastSSCDBroadcast=0
 			LA.BroadcastSSCooldown(myself)
 		end
 	else
 		if LA.DebugMode then
-			print("Something went horribly wrong.")
-		end
-	end
-end
-
-local function GetBagPosition(itemName)
-	for bag = 0, NUM_BAG_SLOTS do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local containerLink = GetContainerItemLink(bag, slot)
-			if containerLink ~= nil then
-				if string.find(containerLink, itemName) then
-					return bag, slot
-				end
-			end
+			LA.print("Something went horribly wrong.")
 		end
 	end
 end
@@ -273,27 +263,42 @@ function LA.ForceUpdateSSCD()
 		LA.print("Forcing SSCD cache update.")
 	end
 
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType,
-	itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(16896)
-	local bag, slot = GetBagPosition(itemName)
-	if bag ~= nil and slot ~= nil then
-		local startTime, duration, enable = GetContainerItemCooldown(bag, slot)
-		local myself = LA.GetMyData()
-		if myself ~= nil then
-			if(myself.SSCooldown~=startTime) then
-				if LA.DebugMode then
-					LA.print("Personal SSCD detected.")
-				end
-				myself.SSCooldown = startTime
-				myself.LocalTime = GetTime()
+	local startTime, _, _ = GetItemCooldown("Major Soulstone")
+	local myself = LA.GetMyData()
+	if myself ~= nil then
+		if(myself.SSCooldown~=startTime) then
+			LA.UpdateSSCD(myself, startTime)
+		end
+	else
+		if LA.DebugMode then
+			LA.print("Something went horribly wrong.")
+		end
+	end
+end
+
+function LA.UpdateSSCD(myself, startTime)
+	if LA.DebugMode then
+		LA.print("Personal SSCD detected.")
+	end
+	if (startTime == nil) then
+		if (myself.SSCooldown ~= nil) then
+			if (myself.SSCooldown == 0) then
+				myself.SSCooldown = nil
+				myself.SSonCD = "unknown"
+			else
 				myself.SSonCD = "true"
 			end
 		else
-			if LA.DebugMode then
-				LA.print("Something went horribly wrong.")
-			end
+			myself.SSCooldown = nil
+			myself.SSonCD = "unknown"
 		end
+		myself.LocalTime = GetTime()
+	else
+		myself.SSCooldown = startTime
+		myself.LocalTime = GetTime()
+		myself.SSonCD = "true"
 	end
+	--LA.UpdateLockClock(myself)
 end
 
 --Updates the cooldown of a warlock in the ui.

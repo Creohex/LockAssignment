@@ -45,7 +45,7 @@ function LA.ShowMinimapButton()
 end
 
 -- Update handler to be used for any animations, is called once per frame, but can be throttled using an update interval.
-function LockAssignment_OnUpdate(self, elapsed)
+function LockAssignmentFrame_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastClockUpdate == nil) then self.TimeSinceLastClockUpdate = 0; end
 	if (self.TimeSinceLastSSCDUpdate == nil) then self.TimeSinceLastSSCDUpdate = 0; end
 	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
@@ -54,14 +54,30 @@ function LockAssignment_OnUpdate(self, elapsed)
 	if (self.TimeSinceLastClockUpdate > LA.LockAssignmentClock_UpdateInterval) then
 		self.TimeSinceLastClockUpdate = 0;
 		if LA.DebugMode then
-			--LA.print("Updating the UI");
+			LA.print("Updating the UI");
 		end
-		LA.UpdateLockAssignmentClock()
+		LA.UpdateAllLocksAssignmentClock()
 	end
 
 	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
 	self.TimeSinceLastSSCDBroadcast = self.TimeSinceLastSSCDBroadcast + elapsed;
 	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval) then
+		self.TimeSinceLastSSCDUpdate = 0;
+		if LA.DebugMode then
+			LA.print("Checking SSCD");
+		end
+		LA.CheckSSCD(self)
+	end
+end
+
+-- Update handler to be used for any animations, is called once per frame, but can be throttled using an update interval.
+function LockAssignmentPersonalFrame_OnUpdate(self, elapsed)
+	if (self.TimeSinceLastSSCDUpdate == nil) then self.TimeSinceLastSSCDUpdate = 0; end
+	if (self.TimeSinceLastSSCDBroadcast == nil) then self.TimeSinceLastSSCDBroadcast = 0; end
+
+	self.TimeSinceLastSSCDUpdate = self.TimeSinceLastSSCDUpdate + elapsed;
+	self.TimeSinceLastSSCDBroadcast = self.TimeSinceLastSSCDBroadcast + elapsed;
+	if(self.TimeSinceLastSSCDUpdate > LA.LockAssignmentSSCD_UpdateInterval and LA.HaveSSAssignment) then
 		self.TimeSinceLastSSCDUpdate = 0;
 		if LA.DebugMode then
 			LA.print("Checking SSCD");
