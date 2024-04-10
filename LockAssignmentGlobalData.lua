@@ -211,13 +211,13 @@ function LA.GetClassColor(class)
 	return RAID_CLASS_COLORS[class]
 end
 
+function FirstToUpper(str)
+    return (string.gsub(str, "^%l", string.upper))
+end
+
 function LA.GetSSTargetsFromRaid()
 	if LA.RaidMode then
 		local results = {}
-		local noneSSWithColor = {};
-		noneSSWithColor.Name = "None";
-		noneSSWithColor.Color = "ffffffff";
-		table.insert(results, noneSSWithColor)
 		for i=1, 40 do
 			local name, _, _, _, _, class, _, _, _, _, _ = GetRaidRosterInfo(i);
 			if not (name == nil) then
@@ -225,6 +225,7 @@ function LA.GetSSTargetsFromRaid()
 				local ssWithColor = {};
 				ssWithColor.Name = name;
 				ssWithColor.Color = color.colorStr;
+				ssWithColor.Class = "|c" .. color.colorStr .. FirstToUpper(string.lower(class))
 				table.insert(results, ssWithColor)
 			end		
 		end
@@ -233,6 +234,7 @@ function LA.GetSSTargetsFromRaid()
 		local ssWithColor = {};
 		ssWithColor.Name = "None";
 		ssWithColor.Color = nil;
+		ssWithColor.Class = "Warrior"
 		return {ssWithColor};
 	end
 end

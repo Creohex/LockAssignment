@@ -29,27 +29,29 @@ function LA.UpdateAssignmentFrame(Warlock, AssignmentFrame)
 		AssignmentFrame:Show()
 	end
 	--Set the nametag
-    --LA.print("Updating Nameplate Text to: ".. Warlock.Name)
     AssignmentFrame.WarlockName = Warlock.Name
 	AssignmentFrame.NamePlate.TextFrame:SetText(Warlock.Name)
 	--Set the CurseAssignment
-	--LA.print("Updating Curse to: ".. Warlock.CurseAssignment) -- this may need to be done by index.....
-	--GetIndexFromTable(CurseOptions, Warlock.CurseAssignment)
 	UIDropDownMenu_SetSelectedID(AssignmentFrame.CurseAssignmentMenu, LA.GetIndexFromTable(LA.CurseOptions, Warlock.CurseAssignment))
 	LA.UpdateCurseGraphic(AssignmentFrame.CurseAssignmentMenu, LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu))
 	UIDropDownMenu_SetText(LA.GetCurseValueFromDropDownList(AssignmentFrame.CurseAssignmentMenu), AssignmentFrame.CurseAssignmentMenu)
 
 	--Set the BanishAssignmentMenu
-	--LA.print("Updating Banish to: ".. Warlock.BanishAssignment)
 	UIDropDownMenu_SetSelectedID(AssignmentFrame.BanishAssignmentMenu, LA.GetIndexFromTable(LA.BanishMarkers, Warlock.BanishAssignment))
 	LA.UpdateBanishGraphic(AssignmentFrame.BanishAssignmentMenu, LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""))
 	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.BanishAssignmentMenu, LA.BanishMarkers, ""), AssignmentFrame.BanishAssignmentMenu)
 
 	--Set the SS Assignment
-	--LA.print("Updating SS to: ".. Warlock.SSAssignment)
-	LA.UpdateDropDownMenuWithNewOptions(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments");
-	UIDropDownMenu_SetSelectedID(AssignmentFrame.SSAssignmentMenu, LA.GetSSIndexFromTable(LA.GetSSTargets(),Warlock.SSAssignment))
-	UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments"), AssignmentFrame.SSAssignmentMenu)
+	LA.UpdateSoulstoneDropDownMenuWithNewOptions(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments");
+	UIDropDownMenu_SetSelectedID(AssignmentFrame.SSAssignmentMenu, LA.GetSSIndexFromTable(LA.GetSSTargets(), Warlock.SSAssignment))
+	
+	local selecedSSTarget = UIDropDownMenu_GetSelectedID(AssignmentFrame.SSAssignmentMenu)
+	if selecedSSTarget ~= nil then
+		local ssAssignment = LA.GetSSTargets()[selecedSSTarget]
+		UIDropDownMenu_SetText("|c" .. ssAssignment.Color .. ssAssignment.Name, AssignmentFrame.SSAssignmentMenu)
+	else
+		UIDropDownMenu_SetText(LA.GetValueFromDropDownList(AssignmentFrame.SSAssignmentMenu, LA.GetSSTargets(), "SSAssignments"), AssignmentFrame.SSAssignmentMenu)
+	end
 
 	--Update the Portrait picture	
 	if Warlock.Name=="" then

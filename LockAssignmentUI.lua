@@ -429,7 +429,7 @@ function LA.CreateSSAssignmentMenu(ParentFrame)
 
 	local SSTargets = LA.GetSSTargets();
 
-	local SSAssignmentMenu = LA.CreateDropDownMenu(ParentFrame, SSTargets, "SSAssignments")
+	local SSAssignmentMenu = LA.CreateSoulstoneDropDownMenu(ParentFrame, SSTargets, "SSAssignments")
 	SSAssignmentMenu:SetPoint("CENTER", 140, 20)	
 	SSAssignmentMenu.Label = LA.CreateSSAssignmentLabel(SSAssignmentMenu)
 	
@@ -547,6 +547,136 @@ function LA.UpdateDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownT
     UIDropDownMenu_SetWidth(100, DropDownMenu);
     UIDropDownMenu_SetButtonWidth(124, DropDownMenu)
     UIDropDownMenu_SetSelectedID(DropDownMenu, 1)
+	UIDropDownMenu_JustifyText("LEFT", DropDownMenu)
+end
+
+function LA.CreateSoulstoneDropDownMenu(ParentFrame, OptionList, DropDownType)
+    dropdowncount = dropdowncount + 1
+    local NewDropDownMenu = CreateFrame("Frame", "NL_DropDown0"..dropdowncount, ParentFrame, "UIDropDownMenuTemplate")
+
+    local function OnClick(_)
+		UIDropDownMenu_SetSelectedID(NewDropDownMenu, this:GetID())
+
+		local selection = LA.GetValueFromDropDownList(NewDropDownMenu, OptionList, DropDownType)
+		if LA.DebugMode then
+			LA.print("User changed selection to " .. selection)
+		end
+        LA.UpdateDropDownSideGraphic(NewDropDownMenu, selection, DropDownType)
+		CloseDropDownMenus()
+    end
+
+	local classMap = BuildClassMap(OptionList)
+
+	function initialize(level)
+		level = level or 1;
+		if (level == 1) then
+			for key, subarray in classMap do
+				local info = UIDropDownMenu_CreateInfo();
+				info.hasArrow = true;
+				info.notCheckable = true;
+				info.text = key;
+				info.value = {
+					["Level1_Key"] = key,
+				};
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+
+		if (level == 2) then
+			local Level1_Key = UIDROPDOWNMENU_MENU_VALUE["Level1_Key"];
+			local subarray = classMap[Level1_Key];
+			for key, subsubarray in subarray do
+				local info = UIDropDownMenu_CreateInfo();
+				info.hasArrow = false;
+				info.notCheckable = false;
+				info.text = subsubarray;
+				info.func = OnClick
+				info.value = {
+					["Level1_Key"] = Level1_Key,
+					["Sublevel_Key"] = key,
+				};
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	end
+--
+    UIDropDownMenu_Initialize(NewDropDownMenu, initialize)
+    UIDropDownMenu_SetWidth(100, NewDropDownMenu);
+    UIDropDownMenu_SetButtonWidth(100, NewDropDownMenu)
+    UIDropDownMenu_JustifyText("LEFT", NewDropDownMenu)
+
+    return NewDropDownMenu
+end
+
+function BuildClassMap(array)
+    local result = {};
+    for _, v in pairs(array) do
+        if not result[v.Class] then
+            result[v.Class] = {};
+        end
+
+		if v.Color ~= nil then
+			table.insert(result[v.Class], "|c" .. v.Color .. v.Name);
+		else
+			table.insert(result[v.Class], v.Name);
+		end
+        
+    end
+
+   return result;
+end
+
+function LA.UpdateSoulstoneDropDownMenuWithNewOptions(DropDownMenu, OptionList, DropDownType)
+	local function OnClick(_)
+        UIDropDownMenu_SetSelectedID(DropDownMenu, this:GetID())
+    
+		local selection = LA.GetValueFromDropDownList(DropDownMenu, OptionList, DropDownType)
+		if LA.DebugMode then
+			LA.print("User changed selection to " .. selection)
+		end
+        LA.UpdateDropDownSideGraphic(DropDownMenu, selection, DropDownType)
+		CloseDropDownMenus()
+    end
+
+	local classMap = BuildClassMap(OptionList)
+
+	function initialize(level)
+		level = level or 1;
+		if (level == 1) then
+			for key, subarray in classMap do
+				local info = UIDropDownMenu_CreateInfo();
+				info.hasArrow = true;
+				info.notCheckable = false;
+				info.text = key;
+				info.checked = false
+				info.value = {
+					["Level1_Key"] = key,
+				};
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+
+		if (level == 2) then
+			local Level1_Key = UIDROPDOWNMENU_MENU_VALUE["Level1_Key"];
+			local subarray = classMap[Level1_Key];
+			for key, subsubarray in subarray do
+				local info = UIDropDownMenu_CreateInfo();
+				info.hasArrow = false;
+				info.notCheckable = false;
+				info.text = subsubarray;
+				info.func = OnClick
+				info.value = {
+					["Level1_Key"] = Level1_Key,
+					["Sublevel_Key"] = key,
+				};
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	end
+	
+	UIDropDownMenu_Initialize(DropDownMenu, initialize)
+    UIDropDownMenu_SetWidth(100, DropDownMenu);
+    UIDropDownMenu_SetButtonWidth(100, DropDownMenu)
 	UIDropDownMenu_JustifyText("LEFT", DropDownMenu)
 end
 
