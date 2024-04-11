@@ -571,7 +571,7 @@ function LA.CreateSoulstoneDropDownMenu(ParentFrame, OptionList, DropDownType)
 		level = level or 1;
 		if (level == 1) then
 			for key, subarray in classMap do
-				local info = UIDropDownMenu_CreateInfo();
+				local info = {};
 				info.hasArrow = true;
 				info.notCheckable = true;
 				info.text = key;
@@ -586,7 +586,7 @@ function LA.CreateSoulstoneDropDownMenu(ParentFrame, OptionList, DropDownType)
 			local Level1_Key = UIDROPDOWNMENU_MENU_VALUE["Level1_Key"];
 			local subarray = classMap[Level1_Key];
 			for key, subsubarray in subarray do
-				local info = UIDropDownMenu_CreateInfo();
+				local info = {};
 				info.hasArrow = false;
 				info.notCheckable = false;
 				info.text = subsubarray;
@@ -644,7 +644,7 @@ function LA.UpdateSoulstoneDropDownMenuWithNewOptions(DropDownMenu, OptionList, 
 		level = level or 1;
 		if (level == 1) then
 			for key, subarray in classMap do
-				local info = UIDropDownMenu_CreateInfo();
+				local info = {};
 				info.hasArrow = true;
 				info.notCheckable = false;
 				info.text = key;
@@ -660,7 +660,7 @@ function LA.UpdateSoulstoneDropDownMenuWithNewOptions(DropDownMenu, OptionList, 
 			local Level1_Key = UIDROPDOWNMENU_MENU_VALUE["Level1_Key"];
 			local subarray = classMap[Level1_Key];
 			for key, subsubarray in subarray do
-				local info = UIDropDownMenu_CreateInfo();
+				local info = {};
 				info.hasArrow = false;
 				info.notCheckable = false;
 				info.text = subsubarray;
