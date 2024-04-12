@@ -238,7 +238,7 @@ end
 
 --Checks to see if the SS is on CD, and broadcasts if it is to all everyone.
 function LA.CheckSSCD(self)
-    local startTime, duration, enable = GetItemCooldown("Major Soulstone")
+    local startTime, _, _ = LA.GetItemCooldown("Major Soulstone")
     --if my CD in lock assignments is different from the what I am aware of then I need to update.
 	local myself = LA.GetMyData()
 	if myself ~= nil then
@@ -260,12 +260,56 @@ function LA.CheckSSCD(self)
 	end
 end
 
+function LA.FindItem(item)
+	if ( not item ) then return; end
+	item = string.lower(LA.ItemLinkToName(item));
+	local link;
+	for i = 1,23 do
+		link = GetInventoryItemLink("player",i);
+		if ( link ) then
+			if ( item == string.lower(LA.ItemLinkToName(link)) )then
+				return i, nil, GetInventoryItemTexture('player', i), GetInventoryItemCount('player', i);
+			end
+		end
+	end
+	local count, bag, slot, texture;
+	local totalcount = 0;
+	for i = 0,NUM_BAG_FRAMES do
+		for j = 1,MAX_CONTAINER_ITEMS do
+			link = GetContainerItemLink(i,j);
+			if ( link ) then
+				if ( item == string.lower(LA.ItemLinkToName(link))) then
+					bag, slot = i, j;
+					texture, count = GetContainerItemInfo(i,j);
+					totalcount = totalcount + count;
+				end
+			end
+		end
+	end
+	return bag, slot, texture, totalcount;
+end
+
+function LA.GetItemCooldown(item)
+	local bag, slot = FindItem(item);
+	if ( slot ) then
+		return GetContainerItemCooldown(bag, slot);
+	elseif ( bag ) then
+		return GetInventoryItemCooldown('player', bag);
+	end
+end
+
+function LA.ItemLinkToName(link)
+	if ( link ) then
+   	return gsub(link,"^.*%[(.*)%].*$","%1");
+	end
+end
+
 function LA.ForceUpdateSSCD()
 	if LA.DebugMode then
 		LA.print("Forcing SSCD cache update.")
 	end
 
-	local startTime, _, _ = GetItemCooldown("Major Soulstone")
+	local startTime, _, _ = LA.GetItemCooldown("Major Soulstone")
 	local myself = LA.GetMyData()
 	if myself ~= nil then
 		if(myself.SSCooldown~=startTime) then

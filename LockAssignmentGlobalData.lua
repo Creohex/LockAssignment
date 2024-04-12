@@ -216,8 +216,8 @@ function FirstToUpper(str)
 end
 
 function LA.GetSSTargetsFromRaid()
+	local results = {}
 	if LA.RaidMode then
-		local results = {}
 		for i=1, 40 do
 			local name, _, _, _, _, class, _, _, _, _, _ = GetRaidRosterInfo(i);
 			if not (name == nil) then
@@ -229,14 +229,8 @@ function LA.GetSSTargetsFromRaid()
 				table.insert(results, ssWithColor)
 			end		
 		end
-		return results
-	else
-		local ssWithColor = {};
-		ssWithColor.Name = "None";
-		ssWithColor.Color = nil;
-		ssWithColor.Class = "Warrior"
-		return {ssWithColor};
 	end
+	return results
 end
 
 LA.SSTargets = LA.GetSSTargetsFromRaid();
