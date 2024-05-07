@@ -308,9 +308,7 @@ function LA.SetupAssignmentMacro(CurseAssignment)
 end
 
 function  LA.BuildMacroTexe(curseName)
-	return "#showtooltip "..
-	 curseName ..
-	 "\n/run CastSpellByName(\""..curseName.."\");"
+	return "/run CastSpellByName(\""..curseName.."\");"
 end
 
 function LA.print(message)
