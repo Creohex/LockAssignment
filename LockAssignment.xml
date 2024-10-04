@@ -210,6 +210,23 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Button name="LAReset_SS" inherits="GameMenuButtonTemplate" text="Reset SS">
+				<Size>
+					<AbsDimension x="115" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NLAnnouncerContainer" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LA.Reset_SS()
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
